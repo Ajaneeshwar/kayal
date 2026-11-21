@@ -62,14 +62,14 @@ function sendJson(res, status, payload) {
   res.end(body);
 }
 
-async function sendFile(res, file) {
+async function sendFile(res, file, status = 200) {
   let body;
   try {
     body = await readFile(file);
   } catch {
     throw new HttpError(404, 'Not found.');
   }
-  res.writeHead(200, { 'Content-Type': CONTENT_TYPES[path.extname(file)] ?? 'application/octet-stream' });
+  res.writeHead(status, { 'Content-Type': CONTENT_TYPES[path.extname(file)] ?? 'application/octet-stream' });
   res.end(body);
 }
 
@@ -221,9 +221,9 @@ async function route(req, res) {
       if (!file.startsWith(PUBLIC_DIR + path.sep)) throw new HttpError(404, 'Not found.');
       return sendFile(res, file);
     }
-    if (!/^\/api(?:\/|$)/.test(pathname) && /\btext\/html\b/i.test(req.headers.accept ?? '') && existsSync(path.join(WEB_DIST, 'index.html'))) {
+    if (!/^\/api(?:\/|$)/.test(pathname) && !path.posix.extname(pathname) && /\btext\/html\b/i.test(req.headers.accept ?? '') && existsSync(path.join(WEB_DIST, 'index.html'))) {
       res.setHeader('Cache-Control', 'no-cache');
-      return sendFile(res, path.join(WEB_DIST, 'index.html'));
+      return sendFile(res, path.join(WEB_DIST, 'index.html'), 404);
     }
     throw new HttpError(404, 'Not found.');
   }

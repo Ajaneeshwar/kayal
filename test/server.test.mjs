@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -61,4 +62,30 @@ test('state weekly count exceeds the feed cap and excludes old, future and corre
   const state = await (await fetch(`${url}/api/state`)).json();
   assert.equal(state.entries.length, 100);
   assert.equal(state.weeklyEntryCount, 105);
+});
+
+test('SPA pages retain HTTP status and missing files stay JSON', {
+  skip: !existsSync(new URL('../web/dist/index.html', import.meta.url)) && 'Build web/ first to test SPA responses',
+}, async (t) => {
+  const url = await startServer(t);
+  for (const pathname of ['/', '/crew', '/dashboard', '/boat/test']) {
+    const res = await fetch(`${url}${pathname}`, { headers: { accept: 'text/html' } });
+    assert.equal(res.status, 200, pathname);
+    assert.match(res.headers.get('content-type'), /text\/html/);
+  }
+  for (const pathname of ['/foo', '/boat/x/y']) {
+    const res = await fetch(`${url}${pathname}`, { headers: { accept: 'text/html' } });
+    assert.equal(res.status, 404, pathname);
+    assert.match(res.headers.get('content-type'), /text\/html/);
+    assert.match(await res.text(), /<html/);
+  }
+  for (const pathname of ['/assets/x.js', '/missing.png', '/api/missing', '/api']) {
+    const res = await fetch(`${url}${pathname}`, { headers: { accept: 'text/html' } });
+    assert.equal(res.status, 404, pathname);
+    assert.match(res.headers.get('content-type'), /application\/json/);
+    assert.deepEqual(await res.json(), { error: 'Not found.' });
+  }
+  const res = await fetch(`${url}/foo`, { headers: { accept: 'application/json' } });
+  assert.equal(res.status, 404);
+  assert.match(res.headers.get('content-type'), /application\/json/);
 });
