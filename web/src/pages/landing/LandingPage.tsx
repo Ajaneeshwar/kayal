@@ -11,7 +11,7 @@ import { Seal } from '../boat/Seal.tsx';
 import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
 import { Doors } from './Doors.tsx';
-import { ArrowIcon, MicIcon, ProofIcon, SealIcon } from './icons.tsx';
+import { ArrowIcon } from './icons.tsx';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -78,10 +78,10 @@ function Hero({ ready }: { ready: boolean }) {
   );
 }
 
-const STEPS: { n: string; title: StringKey; body: StringKey; Icon: typeof MicIcon }[] = [
-  { n: '01', title: 'sayTitle', body: 'sayBody', Icon: MicIcon },
-  { n: '02', title: 'proveTitle', body: 'proveBody', Icon: ProofIcon },
-  { n: '03', title: 'showTitle', body: 'showBody', Icon: SealIcon },
+const STEPS: { n: string; title: StringKey; body: StringKey }[] = [
+  { n: '1', title: 'sayTitle', body: 'sayBody' },
+  { n: '2', title: 'proveTitle', body: 'proveBody' },
+  { n: '3', title: 'showTitle', body: 'showBody' },
 ];
 
 function Steps() {
@@ -94,30 +94,22 @@ function Steps() {
         className="font-display text-title font-semibold text-ink-inverse"
         mlClassName="mt-1 text-gold"
       />
-      <ol className="relative mt-8 grid gap-4 md:grid-cols-3 md:gap-5">
-        {/* The boat's wake, joining the three steps on wide screens */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-[16%] top-[3.25rem] hidden border-t-2 border-dashed border-gold/25 md:block"
-        />
-        {STEPS.map(({ n, title, body, Icon }, i) => (
+      <ol className="mt-8 grid md:grid-cols-3">
+        {STEPS.map(({ n, title, body }, i) => (
           <motion.li
             key={n}
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '0px 0px -10% 0px' }}
             transition={{ duration: 0.7, ease: EASE, delay: i * 0.08 }}
-            className="relative flex flex-col rounded-card border border-transparent bg-teak-raised p-6 shadow-[inset_0_0_0_1px_oklch(1_0_0/0.07),var(--shadow-card)] sm:p-7"
+            className="flex flex-col border-t border-white/10 py-6 first:border-t-0 first:pt-0 md:border-s md:border-t-0 md:px-7 md:py-0 md:first:border-s-0 md:first:ps-0 md:last:pe-0"
           >
-            <div className="flex items-center justify-between">
-              <span className="grid size-14 place-items-center rounded-full bg-teak text-gold shadow-[inset_0_0_0_1.5px_var(--color-gold-edge)]">
-                <Icon className="size-7" />
-              </span>
-              <span className="font-display text-title font-semibold tabular-nums text-gold/35">{n}</span>
+            <div className="flex items-baseline gap-3">
+              <span className="font-display text-heading font-semibold tabular-nums text-gold">{n}</span>
+              <Bi k={title} as="h3" className="font-display text-heading font-semibold text-ink-inverse" mlClassName="mt-0.5 text-gold" />
             </div>
-            <Bi k={title} as="h3" className="mt-6 font-display text-heading font-semibold text-ink-inverse" mlClassName="mt-0.5 text-gold" />
             <Bi k={body} as="p" className="mt-3 text-body text-ink-inverse-muted" mlClassName="mt-2" />
-            {n === '03' && (
+            {n === '3' && (
               <div className="mt-5 flex flex-wrap gap-2" aria-label="The three seals">
                 <StatusBadge state="verified" />
                 <StatusBadge state="declared" />
