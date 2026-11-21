@@ -154,5 +154,13 @@
   "overdue": {
     "en": "Overdue",
     "ml": "സമയപരിധി കഴിഞ്ഞു"
+  },
+  "confirmed": {
+    "en": "Confirmed",
+    "ml": "സ്ഥിരീകരിച്ചത്"
+  },
+  "disputed": {
+    "en": "Disputed",
+    "ml": "തർക്കത്തിലുള്ളത്"
   }
 }

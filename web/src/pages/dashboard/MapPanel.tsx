@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Boat, Entry, Facility } from './api.ts';
-import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, WASTE_LABELS, ago, esc, whereText } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, WASTE_LABELS, ago, esc, shownLevel, whereText } from './format.ts';
 
 const ALAPPUZHA: L.LatLngTuple = [9.53, 76.38];
 const TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -22,14 +22,17 @@ function facilityIcon(f: Facility) {
   });
 }
 
+/** A cross inside the dot, so a disputed entry differs from a declared one by shape, not only by label. */
+const DISPUTED_MARK = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4"/></svg>';
+
 function entryIcon(e: Entry, fresh: boolean) {
-  const tone = LEVEL_TONE[e.verification.level];
+  const tone = LEVEL_TONE[shownLevel(e)];
   return L.divIcon({
     className: '',
     iconSize: [16, 16],
     // Entries logged at a point sit on the token's lower edge instead of hiding under it.
     iconAnchor: [-2, -2],
-    html: `<span class="kl-entry is-${tone}${fresh ? ' is-fresh' : ''}"></span>`,
+    html: `<span class="kl-entry is-${tone}${fresh ? ' is-fresh' : ''}">${tone === 'disputed' ? DISPUTED_MARK : ''}</span>`,
   });
 }
 
@@ -43,7 +46,9 @@ function facilityPopup(f: Facility) {
 function entryPopup(e: Entry, boat: Boat | undefined) {
   return `<div class="kl-pop"><strong>${esc(boat?.name ?? 'Unknown boat')}</strong>
     <span class="kl-pop-meta">${esc(KIND_LABELS[e.kind])} · ${esc(ago(e.at))}</span>
-    <span class="kl-pop-meta">${esc(LEVEL_LABELS[e.verification.level])} · ${esc(whereText(e))}</span></div>`;
+    <span class="kl-pop-meta">${esc(LEVEL_LABELS[shownLevel(e)])} · ${esc(whereText(e))}</span>${
+      e.confirmation ? `<span class="kl-pop-meta">${esc(e.confirmation.operatorName)}${e.confirmation.quantity ? ` · ${esc(e.confirmation.quantity)}` : ''}</span>` : ''
+    }</div>`;
 }
 
 export interface MapView {

@@ -1,8 +1,9 @@
 // API calls for the inspector dashboard. Routes are described in docs/API.md.
 import { ADMIN_PIN_KEY, readAdminPin, type BoatState } from '../../lib/api.ts';
 import type { Method } from '../../components/MethodIcon.tsx';
+import type { Confirmation } from '../boat/data.ts';
 
-export type Level = 'declared' | 'location' | 'receipt';
+export type Level = 'declared' | 'location' | 'receipt' | 'confirmed';
 export type Waste = 'sewage' | 'solid' | 'oil';
 
 export interface LastHandover {
@@ -52,6 +53,23 @@ export interface Entry {
   voided?: boolean;
   voidedAt?: string | null;
   voidReason?: string | null;
+  handoverCode?: string | null;
+  /** The plant, truck or collector's answer. Missing on a server without operators. */
+  confirmation?: Confirmation | null;
+  /** The receiver said it never arrived. The entry stays Declared and leaves the boat's status. */
+  disputed?: boolean;
+}
+
+/** Litres a truck or pump boat collected from boats against litres it unloaded at a plant, over 30 days. */
+export interface Custody {
+  vehicleNumber: string;
+  operatorName: string | null;
+  pickedUpLitres: number;
+  unloadedLitres: number;
+  /** Picked up minus unloaded. Above 0, waste is not accounted for at a plant. */
+  gapLitres: number;
+  lastPickupAt: string | null;
+  lastUnloadAt: string | null;
 }
 
 export interface Chain {
@@ -70,6 +88,8 @@ export interface State {
   adminPinRequired: boolean;
   /** Tourist reports, newest first. Missing on a server without the reports route. */
   reports?: Record<string, unknown>[];
+  /** One row per registered truck or pump boat. Missing on a server without operators. */
+  custody?: Custody[];
 }
 
 /** A tourist report. The route is new, so the shape is read loosely. */

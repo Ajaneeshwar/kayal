@@ -26,6 +26,8 @@ import { HeardBubble, Intro, Notice, NoticeAction, ReplyBubble, TypedBubble, Voi
 import { SendProgress, type SendStage } from './Progress.tsx';
 import { t } from './i18n.ts';
 import { Receipt } from './Receipt.tsx';
+import { HandoverCard } from './HandoverCard.tsx';
+import { methodOf } from '../../components/MethodIcon.tsx';
 import { RecordButton, Wave, type MicState } from './RecordButton.tsx';
 import type { CrewKey } from './strings.ts';
 import { Icon, MlEn } from './ui.tsx';
@@ -617,6 +619,10 @@ function ExchangeView({
       {x.status === 'sending' && x.stage && <SendProgress stage={x.stage} input={x.input} photo={Boolean(x.hasPhoto)} />}
       {reply && <ReplyBubble reply={reply} speaking={speakingId === reply.id} onPlay={() => onPlay(reply.id)} />}
       {x.entry && <Receipt entry={x.entry} token={x.token ?? null} onCorrected={onCorrected} />}
+      {/* Nobody receives waste at a public bin, so there is no one to show the code to. */}
+      {x.entry?.handoverCode && !x.entry.confirmation && methodOf(x.entry) !== 'waste_bin' && (
+        <HandoverCard entry={{ ...x.entry, handoverCode: x.entry.handoverCode }} />
+      )}
       {x.notice && (
         <Notice
           kind={x.notice.kind}

@@ -5,13 +5,14 @@ import { AppShell } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import { Card } from '../../components/Card.tsx';
-import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
+import { MethodIcon, methodOf, type Method } from '../../components/MethodIcon.tsx';
 import { pick, useLang } from '../../i18n/language.ts';
 import { Seal } from './Seal.tsx';
 import { LevelChip, Timeline } from './Timeline.tsx';
 import { ReportSheet } from './ReportSheet.tsx';
 import {
   bt,
+  CONFIRMED_SENTENCE,
   daysAgo,
   fetchBoat,
   fetchState,
@@ -24,6 +25,7 @@ import {
   type Chain,
   type Entry,
   type Level,
+  type OperatorType,
 } from './data.ts';
 import type { BoatStringKey } from './strings.ts';
 
@@ -92,6 +94,15 @@ const SEAL: Record<BoatState, { word: BoatStringKey; sentence: BoatStringKey; to
   verified: { word: 'sealVerified', sentence: 'sentenceVerified', tone: 'text-verified', soft: 'bg-verified' },
   declared: { word: 'sealDeclared', sentence: 'sentenceDeclared', tone: 'text-declared', soft: 'bg-declared' },
   overdue: { word: 'sealOverdue', sentence: 'sentenceOverdue', tone: 'text-overdue', soft: 'bg-overdue' },
+};
+
+/** Who can confirm a handover made this way, for an entry whose answer did not load. */
+const RECEIVER_OF: Record<Method, OperatorType> = {
+  collection_point: 'plant',
+  suction_truck: 'suction_truck',
+  mobile_pump: 'mobile_pump',
+  waste_collector: 'waste_collector',
+  waste_bin: 'waste_collector',
 };
 
 const enter = (delay: number) => ({
@@ -165,8 +176,13 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
   // Withdrawn entries never back the seal, so they are skipped when finding the one it rests on.
   const lastEntry = lastSewage ? entries.find((e) => !e.voided && e.kind === 'sewage_pumpout' && e.at === lastSewage.at) : undefined;
   const lastMethod = lastEntry ? methodOf(lastEntry) : 'collection_point';
-  // A boat verified by a truck operator's slip was never at a plant, so its sentence says so.
-  const sentence = bt(state === 'verified' && lastMethod !== 'collection_point' ? 'sentenceVerifiedSlip' : seal.sentence);
+  // A receiver's confirmation is the strongest proof, so its sentence names who confirmed. A boat
+  // verified by a truck operator's slip was never at a plant, so its sentence says so.
+  const confirmedBy: OperatorType | null =
+    state === 'verified' && lastSewage?.level === 'confirmed' ? (lastEntry?.confirmation?.operatorType ?? RECEIVER_OF[lastMethod]) : null;
+  const sentence = bt(
+    confirmedBy ? CONFIRMED_SENTENCE[confirmedBy] : state === 'verified' && lastMethod !== 'collection_point' ? 'sentenceVerifiedSlip' : seal.sentence,
+  );
   // The overdue sentence names 90 days, so its Malayalam only holds for the default window.
   const sentenceText = state === 'overdue' && overdueDays !== 90
     ? { en: `This boat has not logged emptying its sewage tank in the last ${overdueDays} days.`, ml: '' }
@@ -345,7 +361,7 @@ function CameraIcon() {
 }
 
 const LEGEND: { state: BoatState; text: string }[] = [
-  { state: 'verified', text: 'The crew’s phone was at an open treatment plant when they logged emptying the sewage tank in the last 90 days.' },
+  { state: 'verified', text: 'The crew logged emptying the sewage tank in the last 90 days, and the receiver confirmed it or the phone was at an open treatment plant.' },
   { state: 'declared', text: 'The crew logged it, but the phone was not at an open plant, or did not share its location.' },
   { state: 'overdue', text: 'No sewage emptying logged in the last 90 days. Boats must empty the tank every three months.' },
 ];
@@ -367,14 +383,17 @@ function Legend() {
           </li>
         ))}
       </ul>
-      <ul className="mt-5 grid gap-2 border-t border-line pt-4">
-        {(['receipt', 'location', 'declared'] as Level[]).map((level) => (
-          <li key={level} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-ink-muted">
-            <LevelChip level={level} />
-            <span>{LEVEL[level].meaning}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-5 border-t border-line pt-4">
+        <Bi as="h3" text={bt('legendLevels')} className="text-small font-semibold text-ink" mlClassName="mt-0.5 font-normal" />
+        <ul className="mt-3 grid gap-3">
+          {(['confirmed', 'receipt', 'location', 'declared', 'disputed'] as (Level | 'disputed')[]).map((level) => (
+            <li key={level} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-ink-muted">
+              <LevelChip level={level} />
+              <Bi text={bt(LEVEL[level].meaning)} className="min-w-0 basis-[16rem] grow" mlClassName="mt-0.5" />
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className="mt-5 flex items-start gap-3 border-t border-line pt-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface text-gold-ink ring-1 ring-line">
           <MethodIcon method="suction_truck" size={22} />

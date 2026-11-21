@@ -6,6 +6,7 @@ import { usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
 import { Icon, MlEn } from './ui.tsx';
 import { MethodIcon, isMobileHandover, methodOf, type Method } from '../../components/MethodIcon.tsx';
+import { DisputedIcon, StampIcon } from '../../components/StatusBadge.tsx';
 
 const KIND: Record<Kind, CrewKey> = {
   sewage_pumpout: 'kindSewage',
@@ -13,14 +14,25 @@ const KIND: Record<Kind, CrewKey> = {
   engine_oil: 'kindOil',
 };
 
-const LEVEL: Record<Level, { key: CrewKey; className: string }> = {
+const LEVEL: Record<Level | 'disputed', { key: CrewKey; className: string }> = {
   declared: { key: 'levelDeclared', className: 'bg-declared-soft text-declared' },
   location: { key: 'levelLocation', className: 'bg-verified-soft text-verified' },
   receipt: { key: 'levelReceipt', className: 'bg-verified-soft text-verified' },
+  confirmed: { key: 'levelConfirmed', className: 'bg-confirmed-soft text-confirmed' },
+  disputed: { key: 'levelDisputed', className: 'bg-declared-soft text-declared' },
 };
+
+function LevelGlyph({ level }: { level: Level | 'disputed' }) {
+  if (level === 'confirmed') return <StampIcon size={15} />;
+  if (level === 'disputed') return <DisputedIcon size={15} />;
+  if (level === 'declared') return <Icon.Alert size={15} />;
+  return <Icon.Check size={15} strokeWidth={2.6} />;
+}
 
 function reasonKey(entry: Entry): CrewKey {
   const { level, reason } = entry.verification;
+  if (entry.disputed || reason === 'operator_disputed') return 'reasonDisputed';
+  if (level === 'confirmed') return 'reasonConfirmed';
   if (reason === 'handover_slip') return 'reasonHandoverSlip';
   if (reason === 'no_fixed_point') return 'reasonNoFixedPoint';
   if (reason === 'waste_bin') return 'reasonWasteBin';
@@ -83,7 +95,8 @@ export function Receipt({
   const [error, setError] = useState<string | null>(null);
   const { amount, unit } = parseQuantity(entry.quantity, entry.kind);
   const [typed, setTyped] = useState('');
-  const level = LEVEL[entry.verification.level];
+  const shown = entry.disputed ? 'disputed' : entry.verification.level;
+  const level = LEVEL[shown];
   const method = methodOf(entry);
   const mobile = isMobileHandover(method);
   const place = method === 'collection_point' ? (entry.verification.facilityName ?? entry.facilityMentioned) : null;
@@ -268,7 +281,7 @@ export function Receipt({
 
           <Row label="proof">
             <span className={`inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-small font-semibold ${level.className}`}>
-              {entry.verification.level === 'declared' ? <Icon.Alert size={15} /> : <Icon.Check size={15} strokeWidth={2.6} />}
+              <LevelGlyph level={shown} />
               <MlEn text={t(level.key)} layout="inline" />
             </span>
             <MlEn text={t(reasonKey(entry))} className="mt-2 text-small" mlClassName="text-small" enClassName="!text-caption text-ink-muted !opacity-100" />

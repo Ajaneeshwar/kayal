@@ -3,8 +3,18 @@ import type { BoatState } from '../../lib/api.ts';
 import type { Method } from '../../components/MethodIcon.tsx';
 
 export type Kind = 'sewage_pumpout' | 'solid_waste' | 'engine_oil';
-export type Level = 'declared' | 'location' | 'receipt';
-export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | 'no_fixed_point' | 'handover_slip' | 'waste_bin' | null;
+export type Level = 'declared' | 'location' | 'receipt' | 'confirmed';
+export type Reason =
+  | 'no_location'
+  | 'no_facility'
+  | 'too_far'
+  | 'closed'
+  | 'no_fixed_point'
+  | 'handover_slip'
+  | 'waste_bin'
+  | 'operator_confirmed'
+  | 'operator_disputed'
+  | null;
 
 export interface Facility {
   id: string;
@@ -59,6 +69,10 @@ export interface Entry {
   method?: Method;
   vehicleNumber?: string | null;
   handedTo?: string | null;
+  /** Six characters the receiver types on the operator page. Null on older entries. */
+  handoverCode?: string | null;
+  confirmation?: { decision: 'received' | 'not_received'; operatorName: string; quantity: string | null } | null;
+  disputed?: boolean;
 }
 
 export interface LogResult {

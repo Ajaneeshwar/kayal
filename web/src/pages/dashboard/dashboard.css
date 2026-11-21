@@ -137,6 +137,27 @@
 .kl-entry.is-declared {
   background: var(--color-declared);
 }
+.kl-entry.is-confirmed {
+  background: var(--color-confirmed);
+}
+/* Disputed: the declared amber with a kasavu cross, so it differs from Declared by shape too. */
+.kl-entry.is-disputed {
+  display: grid;
+  place-items: center;
+  background: var(--color-declared);
+}
+.kl-entry.is-disputed svg {
+  width: 9px;
+  height: 9px;
+  fill: none;
+  stroke: var(--color-kasavu);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.kl-entry.is-key.is-disputed svg {
+  width: 7px;
+  height: 7px;
+}
 .kl-entry.is-key {
   width: 12px;
   height: 12px;

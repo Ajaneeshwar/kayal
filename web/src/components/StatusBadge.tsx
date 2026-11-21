@@ -1,16 +1,64 @@
+import type { SVGProps } from 'react';
 import type { BoatState } from '../lib/api.ts';
 import { t } from '../i18n/index.ts';
 import { useLang } from '../i18n/language.ts';
 
-const STYLES: Record<BoatState, string> = {
+/**
+ * A boat's state, or an entry's receiver answer. `confirmed`: the plant, truck or collector said
+ * they received it, the strongest proof. `disputed`: they said they did not, so it stays Declared.
+ */
+export type BadgeState = BoatState | 'confirmed' | 'disputed';
+
+const STYLES: Record<BadgeState, string> = {
   verified: 'bg-verified-soft text-verified',
   declared: 'bg-declared-soft text-declared',
   overdue: 'bg-overdue-soft text-overdue',
+  confirmed: 'bg-confirmed-soft text-confirmed',
+  disputed: 'bg-declared-soft text-declared',
 };
 
+type GlyphProps = Omit<SVGProps<SVGSVGElement>, 'children'> & { size?: number };
+
+function glyph({ size = 14, ...rest }: GlyphProps) {
+  return {
+    width: size,
+    height: size,
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.9,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    ...rest,
+  };
+}
+
+/** An office rubber stamp, the receiver's own mark. The same glyph as the operator page. */
+export function StampIcon(props: GlyphProps) {
+  return (
+    <svg {...glyph(props)}>
+      <path d="M6.3 8.6V7.2a2.6 2.6 0 1 1 3.4 0v1.4" />
+      <path d="M2.8 10.6a1.6 1.6 0 0 1 1.6-1.6h7.2a1.6 1.6 0 0 1 1.6 1.6v1.2H2.8z" />
+      <path d="M3.5 14.2h9" />
+    </svg>
+  );
+}
+
+/** A cross: the receiver said the waste did not arrive. */
+export function DisputedIcon(props: GlyphProps) {
+  return (
+    <svg {...glyph(props)}>
+      <path d="M4 4l8 8M12 4l-8 8" />
+    </svg>
+  );
+}
+
 /** One icon per state, so the state never rests on colour alone. */
-function StateIcon({ state }: { state: BoatState }) {
-  const common = { width: 14, height: 14, viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+function StateIcon({ state }: { state: BadgeState }) {
+  const common = glyph({});
+  if (state === 'confirmed') return <StampIcon />;
+  if (state === 'disputed') return <DisputedIcon />;
   if (state === 'verified')
     return (
       <svg {...common}>
@@ -33,13 +81,16 @@ function StateIcon({ state }: { state: BoatState }) {
 }
 
 interface StatusBadgeProps {
-  state: BoatState;
+  state: BadgeState;
   /** In the mixed language setting, show the Malayalam label beside the English one. */
   bilingual?: boolean;
   className?: string;
 }
 
-/** Green verified, amber declared only, laterite red overdue. Used for status and nothing else. */
+/**
+ * Green verified, amber declared only, laterite red overdue: used for status and nothing else.
+ * Violet confirmed and amber disputed mark the receiver's answer on an entry.
+ */
 export function StatusBadge({ state, bilingual = true, className = '' }: StatusBadgeProps) {
   const lang = useLang();
   const label = t(state);

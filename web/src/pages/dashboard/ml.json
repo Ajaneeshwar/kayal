@@ -91,6 +91,10 @@
     "en": "Open reports",
     "ml": "അവലോകനത്തിനായി കാത്തിരിക്കുന്ന റിപ്പോർട്ടുകൾ"
   },
+  "statConfirmed": {
+    "en": "Handovers confirmed",
+    "ml": "കൈമാറ്റം സ്ഥിരീകരിച്ചു"
+  },
   "mapTitle": {
     "en": "Collection points and recent entries",
     "ml": "മാലിന്യ ശേഖരണ കേന്ദ്രങ്ങളും സമീപകാല ലോഗ് എൻട്രികളും"
@@ -170,6 +174,50 @@
   "receivedBy": {
     "en": "Received by",
     "ml": "സ്വീകരിച്ചത്"
+  },
+  "feedReceived": {
+    "en": "{name} received {quantity}",
+    "ml": "{name}ക്ക് {quantity} ലഭിച്ചു"
+  },
+  "feedReceivedNoQty": {
+    "en": "{name} confirmed receiving it",
+    "ml": "{name} അത് ലഭിച്ചതായി സ്ഥിരീകരിച്ചു"
+  },
+  "feedNotReceived": {
+    "en": "{name} says it did not arrive",
+    "ml": "{name} അത് എത്തിയില്ലെന്ന് പറയുന്നു"
+  },
+  "custodyTitle": {
+    "en": "Trucks: picked up vs delivered",
+    "ml": "ട്രക്കുകൾ: എടുത്തത് vs വിതരണം ചെയ്തത്"
+  },
+  "custodyVehicle": {
+    "en": "Vehicle",
+    "ml": "വാഹനം"
+  },
+  "custodyPicked": {
+    "en": "Picked up",
+    "ml": "എടുത്തു"
+  },
+  "custodyDelivered": {
+    "en": "Delivered",
+    "ml": "വിതരണം ചെയ്തു"
+  },
+  "custodyGap": {
+    "en": "Gap",
+    "ml": "വിടവ്"
+  },
+  "custodyNoGap": {
+    "en": "None",
+    "ml": "ഒന്നുമില്ല"
+  },
+  "custodyGapLine": {
+    "en": "{litres} litres picked up from boats are not accounted for at a plant.",
+    "ml": "{litres} ലിറ്റർ ബോട്ടുകളിൽ നിന്ന് എടുത്തത് ഒരു പ്ലാന്റിലും കണക്കിൽ എടുക്കുന്നില്ല."
+  },
+  "custodyEmpty": {
+    "en": "No trucks or pump boats are registered yet.",
+    "ml": "ട്രക്കുകളോ പമ്പ് ബോട്ടുകളോ ഇതുവരെ രജിസ്റ്റർ ചെയ്തിട്ടില്ല."
   },
   "withdraw": {
     "en": "Withdraw entry",

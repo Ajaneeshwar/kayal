@@ -63,6 +63,22 @@
     "en": "This boat has not logged emptying its sewage tank in the last 90 days.",
     "ml": "കഴിഞ്ഞ 90 ദിവസത്തിനുള്ളിൽ, ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒഴിഞ്ഞതിനെക്കുറിച്ച് ലോഗ് എൻട്രി ചെയ്തിട്ടില്ല."
   },
+  "sentenceConfirmedPlant": {
+    "en": "The treatment plant confirmed it received this boat’s sewage.",
+    "ml": "ചികിത്സാ പ്ലാന്റ് ഈ ബോട്ടിന്റെ മലിനജലം സ്വീകരിച്ചതായി സ്ഥിരീകരിച്ചു."
+  },
+  "sentenceConfirmedTruck": {
+    "en": "The suction truck operator confirmed they took this boat’s sewage.",
+    "ml": "സക്ഷൻ ട്രക്ക് ഓപ്പറേറ്റർ ഈ ബോട്ടിന്റെ മലിനജലം എടുത്തതായി സ്ഥിരീകരിച്ചു."
+  },
+  "sentenceConfirmedPump": {
+    "en": "The pump boat operator confirmed they took this boat’s sewage.",
+    "ml": "പമ്പ് ബോട്ട് ഓപ്പറേറ്റർ ഈ ബോട്ടിന്റെ മലിനജലം എടുത്തതായി സ്ഥിരീകരിച്ചു."
+  },
+  "sentenceConfirmedCollector": {
+    "en": "The waste collector confirmed they took this boat’s waste.",
+    "ml": "മാലിന്യം ശേഖരിക്കുന്നയാൾ ഈ ബോട്ടിന്റെ മാലിന്യം എടുത്തതായി സ്ഥിരീകരിച്ചു."
+  },
   "lastEmptied": {
     "en": "Sewage last emptied",
     "ml": "അവസാനമായി മലിനജലം ഒഴിഞ്ഞത്"
@@ -111,6 +127,10 @@
     "en": "Used engine oil handed over",
     "ml": "ഉപയോഗിച്ച എഞ്ചിൻ ഓയിൽ കൈമാറി"
   },
+  "levelConfirmed": {
+    "en": "Confirmed",
+    "ml": "സ്ഥിരീകരിച്ചു"
+  },
   "levelReceipt": {
     "en": "Receipt",
     "ml": "രസീത്"
@@ -122,6 +142,54 @@
   "levelDeclared": {
     "en": "Declared",
     "ml": "ക്രൂവിന്റെ പ്രഖ്യാപനം"
+  },
+  "levelDisputed": {
+    "en": "Disputed",
+    "ml": "തർക്കവിഷയം"
+  },
+  "meaningConfirmed": {
+    "en": "The plant, truck or collector that took the waste confirmed they received it.",
+    "ml": "മാലിന്യം എടുത്ത പ്ലാന്റോ, ട്രക്കോ, കളക്ടറോ അത് ലഭിച്ചതായി സ്ഥിരീകരിച്ചു."
+  },
+  "meaningReceipt": {
+    "en": "The phone was at an open collection point and the receipt photo was read.",
+    "ml": "ഫോൺ ഒരു തുറന്ന ശേഖരണ പോയിന്റിലായിരുന്നു, രസീത് ഫോട്ടോ വായിച്ചു."
+  },
+  "meaningLocation": {
+    "en": "The phone was at an open collection point when the crew logged it.",
+    "ml": "ജീവനക്കാർ ലോഗ് ചെയ്യുമ്പോൾ ഫോൺ ഒരു തുറന്ന ശേഖരണ പോയിന്റിലായിരുന്നു."
+  },
+  "meaningDeclared": {
+    "en": "The crew said it. Nothing else confirms it.",
+    "ml": "ജീവനക്കാർ അത് പറഞ്ഞു. മറ്റൊന്നും അത് സ്ഥിരീകരിക്കുന്നില്ല."
+  },
+  "meaningDisputed": {
+    "en": "The receiver said the waste never reached them. It does not count toward the seal.",
+    "ml": "സ്വീകർത്താവ് മാലിന്യം തങ്ങളിലേക്ക് എത്തിയില്ലെന്ന് പറഞ്ഞു. അത് സീലിന്റെ കണക്കിൽ വരുന്നില്ല."
+  },
+  "legendLevels": {
+    "en": "Proof on each entry, strongest first",
+    "ml": "ഓരോ എൻട്രിക്കും തെളിവ്, ആദ്യം ശക്തമായത്"
+  },
+  "confirmedBy": {
+    "en": "Confirmed by {name}",
+    "ml": "{name} സ്ഥിരീകരിച്ചു"
+  },
+  "receivedQuantity": {
+    "en": "Quantity received",
+    "ml": "ലഭിച്ച അളവ്"
+  },
+  "disputedBy": {
+    "en": "{name} said they did not receive this waste.",
+    "ml": "{name} ഈ മാലിന്യം ലഭിച്ചില്ലെന്ന് പറഞ്ഞു."
+  },
+  "disputedNote": {
+    "en": "This entry does not count toward the seal.",
+    "ml": "ഈ എൻട്രി സീലിന്റെ കണക്കിൽ വരുന്നില്ല."
+  },
+  "handoverCode": {
+    "en": "Handover code",
+    "ml": "കൈമാറ്റ കോഡ്"
   },
   "corrected": {
     "en": "Quantity corrected",
@@ -188,8 +256,8 @@
     "ml": "ഒരു ട്രക്കിലേക്കോ പമ്പിലേക്കോ കളക്ടറിലേക്കോ കൈമാറി"
   },
   "legendTruckBody": {
-    "en": "Some boats hand their waste to a septic truck on the shore, a pump boat or a waste collector instead of a plant. Such an entry stays Declared until a photo of the operator’s slip or the vehicle’s number plate backs it up. Then it counts as Receipt.",
-    "ml": "ചില ബോട്ടുകൾ അവയുടെ മാലിന്യം ഒരു പ്ലാന്റിന് പകരം തീരത്ത് ഒരു സെപ്റ്റിക് ട്രക്കിലേക്കോ, പമ്പ് ബോട്ടിലേക്കോ അല്ലെങ്കിൽ മാലിന്യ ശേഖരണികളിലേക്കോ കൈമാറുന്നു. ഓപ്പറേറ്ററുടെ സ്ലിപ്പിൻ്റെയോ വാഹനത്തിൻ്റെ നമ്പർ പ്ലേറ്റിൻ്റെയോ ചിത്രം ഇതിനെ പിന്തുണയ്ക്കുന്നതുവരെ അത്തരം ഒരു എൻട്രി ഡിക്ലയേർഡ് ആയി തുടരുന്നു. തുടർന്ന് അത് രസീതായി കണക്കാക്കപ്പെടുന്നു."
+    "en": "Some boats hand their waste to a septic truck on the shore, a pump boat or a waste collector instead of a plant. Such an entry stays Declared until a photo of the operator’s slip or the vehicle’s number plate backs it up. Then it counts as Receipt. When the operator confirms it on Kayal Log, it becomes Confirmed.",
+    "ml": "ചില ബോട്ടുകൾ അവരുടെ മാലിന്യം തീരത്തുള്ള സെപ്റ്റിക് ട്രക്കിലേക്കോ, പമ്പ് ബോട്ടിലേക്കോ, അല്ലെങ്കിൽ പ്ലാന്റിനു പകരം മാലിന്യം ശേഖരിക്കുന്ന വാഹനത്തിലേക്കോ കൈമാറുന്നു. ഓപ്പറേറ്ററുടെ സ്ലിപ്പിന്റെ ഫോട്ടോയോ വാഹനത്തിന്റെ നമ്പർ പ്ലേറ്റോ തെളിയിക്കുന്നതുവരെ അത്തരം എൻട്രി ഡിക്ലയേർഡ് ആയിരിക്കും. അതിനുശേഷം അത് രസീതായി കണക്കാക്കും. ഓപ്പറേറ്റർ കായൽ ലോഗിൽ ഇത് സ്ഥിരീകരിക്കുമ്പോൾ, അത് സ്ഥിരീകരിക്കപ്പെട്ടു എന്ന് കണക്കാക്കും."
   },
   "chainOk": {
     "en": "Record intact",

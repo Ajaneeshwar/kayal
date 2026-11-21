@@ -9,25 +9,27 @@ import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Entry, type Facility, type Report } from './api.ts';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
-import { KIND_LABELS, LEVEL_LABELS } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS, shownLevel } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
-import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
+import { BoatTable, Feed, Points, Reports, TruckCustody, sortByUrgency } from './Panels.tsx';
 import { QrDialog } from './QrDialog.tsx';
 import { WithdrawDialog } from './WithdrawDialog.tsx';
 import { useDashboard, type Link } from './useDashboard.ts';
 import './dashboard.css';
 
 type Modal = { kind: 'qr'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'withdraw'; entry: Entry } | null;
-type Tone = 'verified' | 'declared' | 'overdue' | 'plain';
+type Tone = 'confirmed' | 'verified' | 'declared' | 'overdue' | 'plain';
 
 const TONE_TEXT: Record<Tone, string> = {
+  confirmed: 'text-confirmed',
   verified: 'text-verified',
   declared: 'text-declared',
   overdue: 'text-overdue',
   plain: 'text-ink',
 };
 const TONE_BAR: Record<Tone, string> = {
+  confirmed: 'bg-confirmed',
   verified: 'bg-verified',
   declared: 'bg-declared',
   overdue: 'bg-overdue',
@@ -116,7 +118,7 @@ interface Toast {
   id: string;
   title: string;
   body: string;
-  tone: 'verified' | 'declared' | 'error' | 'plain';
+  tone: 'confirmed' | 'verified' | 'declared' | 'error' | 'plain';
 }
 
 export default function DashboardPage() {
@@ -152,11 +154,12 @@ function InspectorDashboard() {
     const newest = state?.entries.find((e) => fresh.has(e.id));
     if (!newest || announced.current === newest.id) return;
     announced.current = newest.id;
-    const tone = newest.verification.level === 'declared' ? 'declared' : 'verified';
+    const level = newest.verification.level;
+    const tone = level === 'declared' ? 'declared' : level === 'confirmed' ? 'confirmed' : 'verified';
     showToast({
       id: newest.id,
       title: `${boats.get(newest.boatId)?.name ?? 'A boat'} logged an entry`,
-      body: `${KIND_LABELS[newest.kind]} · ${LEVEL_LABELS[newest.verification.level]}`,
+      body: `${KIND_LABELS[newest.kind]} · ${LEVEL_LABELS[shownLevel(newest)]}`,
       tone,
     });
   }, [state, fresh, boats, showToast]);
@@ -204,6 +207,10 @@ function InspectorDashboard() {
   const openReports = reports ? reports.filter((r) => !r.reviewed).length : reports === null ? '–' : 0;
   const total = state?.boats.length ?? 0;
   const dash = state ? null : '–';
+  // Receiver answers in the recent log. Withdrawn entries no longer count.
+  const answered = (state?.entries ?? []).filter((e) => !e.voided && e.confirmation);
+  const confirmedCount = answered.filter((e) => e.verification.level === 'confirmed').length;
+  const disputedCount = answered.filter((e) => e.disputed).length;
 
   return (
     <div className="kl-dash flex min-h-dvh flex-col bg-surface">
@@ -236,10 +243,16 @@ function InspectorDashboard() {
           </div>
         </div>
 
-        <div className="mx-auto grid max-w-[110rem] grid-cols-2 gap-3 px-5 pb-6 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4 lg:px-8">
+        <div className="mx-auto grid max-w-[110rem] grid-cols-2 gap-3 px-5 pb-6 sm:grid-cols-3 lg:gap-4 lg:px-8 xl:grid-cols-6">
           <Stat label={d('statVerified')} value={dash ?? count('verified')} tone="verified" note={`of ${total} boats`} />
           <Stat label={d('statDeclared')} value={dash ?? count('declared')} tone="declared" note="No location or receipt" />
           <Stat label={d('statOverdue')} value={dash ?? count('overdue')} tone="overdue" note={`${state?.overdueDays ?? 90}-day limit passed`} />
+          <Stat
+            label={d('statConfirmed')}
+            value={dash ?? confirmedCount}
+            tone="confirmed"
+            note={disputedCount ? `${disputedCount} disputed by the receiver` : 'None disputed'}
+          />
           <Stat label={d('statWeek')} value={dash ?? thisWeek} tone="plain" note={`${state?.entries.length ?? 0} in the recent log`} />
           <Stat label={d('statReports')} value={dash ?? openReports} tone="plain" note={reports === null ? 'Not available yet' : 'From guests on board'} />
         </div>
@@ -268,7 +281,9 @@ function InspectorDashboard() {
               <div className="surface-light flex items-start gap-3 rounded-card border border-gold-edge/70 bg-kasavu px-4 py-3 shadow-[var(--shadow-raised)]">
                 <span
                   aria-hidden="true"
-                  className={`mt-1.5 size-2.5 shrink-0 rounded-full ${toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : toast.tone === 'plain' ? 'bg-gold-edge' : 'bg-overdue'}`}
+                  className={`mt-1.5 size-2.5 shrink-0 rounded-full ${
+                    toast.tone === 'confirmed' ? 'bg-confirmed' : toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : toast.tone === 'plain' ? 'bg-gold-edge' : 'bg-overdue'
+                  }`}
                 />
                 <div className="min-w-0">
                   <p className="font-semibold">{toast.title}</p>
@@ -291,10 +306,21 @@ function InspectorDashboard() {
                 <span className="kl-fac is-closed is-key" aria-hidden="true" /> Point closed
               </li>
               <li className="flex items-center gap-2">
+                <span className="kl-entry is-confirmed is-key" aria-hidden="true" /> Entry, confirmed by receiver
+              </li>
+              <li className="flex items-center gap-2">
                 <span className="kl-entry is-verified is-key" aria-hidden="true" /> Entry, location matched
               </li>
               <li className="flex items-center gap-2">
                 <span className="kl-entry is-declared is-key" aria-hidden="true" /> Entry, declared only
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="kl-entry is-disputed is-key" aria-hidden="true">
+                  <svg viewBox="0 0 10 10">
+                    <path d="M3 3l4 4M7 3l-4 4" />
+                  </svg>
+                </span>
+                Entry, disputed by receiver
               </li>
             </ul>
         </section>
@@ -317,6 +343,7 @@ function InspectorDashboard() {
 
         <div className="order-3 flex min-w-0 flex-col gap-5 lg:order-none">
           {state && <Points facilities={state.facilities} busy={busy} onToggle={toggleFacility} onAdd={() => setModal({ kind: 'point' })} />}
+          {state?.custody && <TruckCustody rows={state.custody} />}
           <Reports reports={reports} boats={boats} busy={busy} onReview={review} />
         </div>
       </main>

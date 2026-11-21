@@ -1,20 +1,41 @@
 import { Bi } from '../../components/Bi.tsx';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
+import { DisputedIcon, StampIcon } from '../../components/StatusBadge.tsx';
 import { useLang } from '../../i18n/language.ts';
 import { entryPlace } from './entryPlace.ts';
-import { bt, formatDate, formatTime, handoverReason, KIND, LEVEL, METHOD, reasonText, type Entry, type Level } from './data.ts';
+import {
+  bt,
+  fill,
+  formatDate,
+  formatTime,
+  handoverReason,
+  KIND,
+  LEVEL,
+  METHOD,
+  namedReceiver,
+  reasonText,
+  shownLevel,
+  type Confirmation,
+  type Entry,
+  type Level,
+  type Tone,
+} from './data.ts';
 
-const CHIP: Record<'verified' | 'declared', string> = {
+const CHIP: Record<Tone, string> = {
+  confirmed: 'bg-confirmed-soft text-confirmed',
   verified: 'bg-verified-soft text-verified',
   declared: 'bg-declared-soft text-declared',
 };
 
-const DOT: Record<'verified' | 'declared', string> = {
+const DOT: Record<Tone, string> = {
+  confirmed: 'bg-confirmed',
   verified: 'bg-verified',
   declared: 'bg-declared',
 };
 
-function LevelIcon({ level }: { level: Level }) {
+function LevelIcon({ level }: { level: Level | 'disputed' }) {
+  if (level === 'confirmed') return <StampIcon />;
+  if (level === 'disputed') return <DisputedIcon />;
   const s = { width: 14, height: 14, viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
   if (level === 'receipt')
     return (
@@ -37,8 +58,11 @@ function LevelIcon({ level }: { level: Level }) {
   );
 }
 
-/** The proof level as a chip: icon, English and Malayalam. `stack` puts the Malayalam under it for narrow spaces. */
-export function LevelChip({ level, stack = false }: { level: Level; stack?: boolean }) {
+/**
+ * The proof level as a chip: icon, English and Malayalam. Pass `shownLevel(entry)` so a disputed
+ * entry reads Disputed. `stack` puts the Malayalam under it for narrow spaces.
+ */
+export function LevelChip({ level, stack = false }: { level: Level | 'disputed'; stack?: boolean }) {
   const { key, tone } = LEVEL[level];
   const lang = useLang();
   // Both languages on one line run past a 360 px screen, so the mixed setting always stacks.
@@ -60,8 +84,45 @@ export function LevelChip({ level, stack = false }: { level: Level; stack?: bool
   );
 }
 
+/** What the plant, truck or collector said: who, how much they received, and any comment. */
+export function ReceiverAnswer({ answer, compact = false }: { answer: Confirmation; compact?: boolean }) {
+  const received = answer.decision === 'received';
+  const name = { name: answer.operatorName };
+  return (
+    <div className={`flex items-start gap-2.5 rounded-control px-3 py-2.5 ${received ? 'bg-confirmed-soft' : 'bg-declared-soft'}`}>
+      <span className={`mt-0.5 shrink-0 ${received ? 'text-confirmed' : 'text-declared'}`}>
+        {received ? <StampIcon size={18} /> : <DisputedIcon size={18} />}
+      </span>
+      <div className="min-w-0 text-small text-ink">
+        <Bi
+          text={fill(bt(received ? 'confirmedBy' : 'disputedBy'), name)}
+          className={`font-semibold [overflow-wrap:anywhere] ${received ? 'text-confirmed' : 'text-declared'}`}
+          mlClassName="mt-0.5 font-medium"
+        />
+        {received && answer.quantity && (
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
+            <Bi text={bt('receivedQuantity')} layout="inline" className="text-ink-muted" />
+            <span className="font-semibold tabular-nums">{answer.quantity}</span>
+          </p>
+        )}
+        {!received && !compact && <Bi as="p" text={bt('disputedNote')} className="mt-1 text-ink-muted" mlClassName="mt-0.5" />}
+        {answer.note && !compact && <p className="mt-1 text-ink [overflow-wrap:anywhere]">“{answer.note}”</p>}
+        {!compact && (
+          <p className="mt-1 text-caption tabular-nums text-ink-muted">
+            <time dateTime={answer.at}>
+              {formatDate(answer.at)} <span aria-hidden="true">·</span> {formatTime(answer.at)}
+            </time>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function EntryCard({ entry, flat = false }: { entry: Entry; flat?: boolean }) {
-  const { level } = entry.verification;
+  const level = shownLevel(entry);
+  const answer = entry.confirmation ?? null;
+  const receiver = namedReceiver(entry);
   const method = methodOf(entry);
   const handover = handoverReason(entry);
   const place = entryPlace(entry);
@@ -118,19 +179,23 @@ function EntryCard({ entry, flat = false }: { entry: Entry; flat?: boolean }) {
             </dd>
           </div>
         )}
-        {entry.handedTo && (
+        {receiver && (
           <div className="flex flex-wrap items-baseline gap-x-2 ps-[1.4375rem] text-small">
             <dt className="text-ink-muted">
               <Bi text={bt('receivedBy')} layout="inline" />
             </dt>
             <dd className="font-semibold [overflow-wrap:anywhere]">
-              <bdi>{entry.handedTo}</bdi>
+              <bdi>{receiver}</bdi>
             </dd>
           </div>
         )}
       </dl>
 
-      {handover ? (
+      {answer ? (
+        <div className="mt-3">
+          <ReceiverAnswer answer={answer} />
+        </div>
+      ) : handover ? (
         <Bi text={bt(handover)} as="p" className="mt-2 text-small text-ink-muted" mlClassName="mt-0.5" />
       ) : (
         <p className="mt-2 text-small text-ink-muted">{reasonText(entry)}</p>
@@ -225,7 +290,7 @@ export function Timeline({ entries }: { entries: Entry[] }) {
           <span
             aria-hidden="true"
             className={`absolute start-1 top-5 size-[0.875rem] rounded-full ring-4 ring-surface ${
-              entry.voided ? 'border-2 border-field-border bg-kasavu' : DOT[LEVEL[entry.verification.level].tone]
+              entry.voided ? 'border-2 border-field-border bg-kasavu' : DOT[LEVEL[shownLevel(entry)].tone]
             }`}
           />
           {entry.voided ? <WithdrawnCard entry={entry} /> : <EntryCard entry={entry} />}

@@ -4,9 +4,31 @@ import mlFile from './ml.json';
 import type { Method } from '../../components/MethodIcon.tsx';
 
 export type BoatState = 'verified' | 'declared' | 'overdue';
-export type Level = 'declared' | 'location' | 'receipt';
+export type Level = 'declared' | 'location' | 'receipt' | 'confirmed';
 export type Kind = 'sewage_pumpout' | 'solid_waste' | 'engine_oil';
-export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | 'no_fixed_point' | 'handover_slip' | 'waste_bin' | null;
+export type Reason =
+  | 'no_location'
+  | 'no_facility'
+  | 'too_far'
+  | 'closed'
+  | 'no_fixed_point'
+  | 'handover_slip'
+  | 'waste_bin'
+  | 'operator_confirmed'
+  | 'operator_disputed'
+  | null;
+export type OperatorType = 'plant' | 'suction_truck' | 'mobile_pump' | 'waste_collector';
+
+/** The receiver's answer on an entry, from the operator page. */
+export interface Confirmation {
+  decision: 'received' | 'not_received';
+  at: string;
+  operatorId: string;
+  operatorName: string;
+  operatorType: OperatorType;
+  quantity: string | null;
+  note: string | null;
+}
 
 export interface LastHandover {
   at: string;
@@ -45,6 +67,24 @@ export interface Entry {
   voided?: boolean;
   voidedAt?: string | null;
   voidReason?: string | null;
+  /** Six characters the receiver types on the operator page. Null on older entries. */
+  handoverCode?: string | null;
+  confirmation?: Confirmation | null;
+  /** The receiver said they did not receive it. The entry stays Declared and leaves the seal. */
+  disputed?: boolean;
+}
+
+/** The chip an entry shows: its proof level, or Disputed when the receiver said no. */
+export function shownLevel(e: Pick<Entry, 'verification' | 'disputed'>): Level | 'disputed' {
+  return e.disputed ? 'disputed' : e.verification.level;
+}
+
+/** The crew's named receiver, unless the receiver's own answer already names them. */
+export function namedReceiver(e: Pick<Entry, 'handedTo' | 'confirmation'>): string | null {
+  const named = e.handedTo?.trim();
+  if (!named) return null;
+  const answered = e.confirmation?.operatorName.trim().toLocaleLowerCase();
+  return answered === named.toLocaleLowerCase() ? null : named;
 }
 
 export interface Chain {
@@ -64,6 +104,12 @@ const ml = mlFile as Record<string, { en: string; ml: string } | undefined>;
 export function bt(key: BoatStringKey): Text {
   const entry = ml[key];
   return { en: en[key], ml: entry && entry.en === en[key] ? entry.ml : '' };
+}
+
+/** Fills `{name}`-style placeholders in both languages. Placeholders stay English tokens in ml.json. */
+export function fill(text: Text, values: Record<string, string>): Text {
+  const sub = (s: string) => s.replace(/\{(\w+)\}/g, (all, k: string) => values[k] ?? all);
+  return { en: sub(text.en), ml: text.ml ? sub(text.ml) : '' };
 }
 
 export class NotFoundError extends Error {}
@@ -154,15 +200,30 @@ export const KIND: Record<Kind, BoatStringKey> = {
   engine_oil: 'kindOil',
 };
 
-export const LEVEL: Record<Level, { key: BoatStringKey; tone: 'verified' | 'declared'; meaning: string }> = {
-  receipt: { key: 'levelReceipt', tone: 'verified', meaning: 'The phone was at an open collection point and the receipt photo was read.' },
-  location: { key: 'levelLocation', tone: 'verified', meaning: 'The phone was at an open collection point when the crew logged it.' },
-  declared: { key: 'levelDeclared', tone: 'declared', meaning: 'The crew said it. Nothing else confirms it.' },
+export type Tone = 'confirmed' | 'verified' | 'declared';
+
+/** Strongest first. Disputed is a Declared entry the receiver said they never got. */
+export const LEVEL: Record<Level | 'disputed', { key: BoatStringKey; tone: Tone; meaning: BoatStringKey }> = {
+  confirmed: { key: 'levelConfirmed', tone: 'confirmed', meaning: 'meaningConfirmed' },
+  receipt: { key: 'levelReceipt', tone: 'verified', meaning: 'meaningReceipt' },
+  location: { key: 'levelLocation', tone: 'verified', meaning: 'meaningLocation' },
+  declared: { key: 'levelDeclared', tone: 'declared', meaning: 'meaningDeclared' },
+  disputed: { key: 'levelDisputed', tone: 'declared', meaning: 'meaningDisputed' },
+};
+
+/** The receiver kinds, for the seal sentence of a confirmed sewage entry. */
+export const CONFIRMED_SENTENCE: Record<OperatorType, BoatStringKey> = {
+  plant: 'sentenceConfirmedPlant',
+  suction_truck: 'sentenceConfirmedTruck',
+  mobile_pump: 'sentenceConfirmedPump',
+  waste_collector: 'sentenceConfirmedCollector',
 };
 
 /** Why an entry has the proof level it has, in one sentence. */
 export function reasonText(e: Entry): string {
   const { level, reason, facilityName, distanceM } = e.verification;
+  if (level === 'confirmed') return 'The receiver confirmed they took this waste.';
+  if (reason === 'operator_disputed') return 'The receiver said they did not receive this waste.';
   if (level === 'receipt') return `The phone was at ${facilityName ?? 'a collection point'}, and the receipt photo was read.`;
   if (level === 'location') return `The phone was at ${facilityName ?? 'a collection point'} when the crew logged it.`;
   switch (reason) {

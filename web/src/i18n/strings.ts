@@ -50,6 +50,8 @@ export const en = {
   verified: 'Verified',
   declared: 'Declared only',
   overdue: 'Overdue',
+  confirmed: 'Confirmed',
+  disputed: 'Disputed',
 } as const;
 
 export type StringKey = keyof typeof en;

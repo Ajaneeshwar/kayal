@@ -2,10 +2,19 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Bi } from '../../components/Bi.tsx';
 import { usePick } from '../../i18n/language.ts';
 import { methodOf } from '../../components/MethodIcon.tsx';
-import { bt, fetchBoat, formatDate, formatTime, KIND, METHOD, type Entry } from '../boat/data.ts';
-import { LevelChip } from '../boat/Timeline.tsx';
+import { bt, fetchBoat, formatDate, formatTime, KIND, METHOD, namedReceiver, shownLevel, type Entry } from '../boat/data.ts';
+import { LevelChip, ReceiverAnswer } from '../boat/Timeline.tsx';
 import { entryPlace } from '../boat/entryPlace.ts';
 import { t } from './i18n.ts';
+
+/** The receiver can confirm for 3 days after the handover, as the operator page allows. */
+const CONFIRM_WINDOW_MS = 72 * 3_600_000;
+
+/** The code to show the receiver, while they can still confirm. */
+function openCode(entry: Entry, now: number): string | null {
+  if (!entry.handoverCode || entry.voided || entry.confirmation || methodOf(entry) === 'waste_bin') return null;
+  return now - Date.parse(entry.at) < CONFIRM_WINDOW_MS ? entry.handoverCode.toUpperCase() : null;
+}
 
 export function PastEntries({ boatId, revision, onClose }: { boatId: string; revision: number; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -43,6 +52,8 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
         {entries?.map((entry) => {
           const method = methodOf(entry);
           const place = entryPlace(entry);
+          const receiver = namedReceiver(entry);
+          const code = openCode(entry, Date.now());
           return (
             <li key={entry.id} className="rounded-control border border-line bg-surface p-4">
               <time dateTime={entry.at} className="text-caption text-ink-muted">{formatDate(entry.at)} · {formatTime(entry.at)}</time>
@@ -51,11 +62,20 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
               <Bi text={bt(METHOD[method])} className="mt-2 text-small font-semibold" />
               <p className="mt-1 break-words text-small text-ink-muted">{place ?? <Bi text={bt('noPlaceNamed')} />}</p>
               {entry.vehicleNumber && <p className="mt-1 break-words text-small"><Bi text={bt('vehicle')} layout="inline" />: {entry.vehicleNumber}</p>}
-              {entry.handedTo && <p className="mt-1 break-words text-small"><Bi text={bt('receivedBy')} layout="inline" />: {entry.handedTo}</p>}
+              {receiver && <p className="mt-1 break-words text-small"><Bi text={bt('receivedBy')} layout="inline" />: {receiver}</p>}
               {entry.voided ? (
                 <Bi text={entry.voidReason ? { en: bt('withdrawnBy').en.replace('{reason}', entry.voidReason), ml: bt('withdrawnBy').ml.replace('{reason}', entry.voidReason) } : bt('withdrawnNoReason')} className="mt-2 block text-small font-semibold [overflow-wrap:anywhere]" />
               ) : (
-                <div className="mt-2"><LevelChip level={entry.verification.level} /></div>
+                <>
+                  <div className="mt-2"><LevelChip level={shownLevel(entry)} /></div>
+                  {entry.confirmation && <div className="mt-2"><ReceiverAnswer answer={entry.confirmation} compact /></div>}
+                  {code && (
+                    <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-small">
+                      <Bi text={bt('handoverCode')} layout="inline" className="text-ink-muted" />
+                      <span className="font-semibold tabular-nums tracking-[0.2em]">{code}</span>
+                    </p>
+                  )}
+                </>
               )}
             </li>
           );

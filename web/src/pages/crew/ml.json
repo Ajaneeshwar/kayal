@@ -211,6 +211,22 @@
     "en": "Receipt",
     "ml": "രസീത്"
   },
+  "levelConfirmed": {
+    "en": "Confirmed",
+    "ml": "സ്ഥിരീകരിച്ചു"
+  },
+  "levelDisputed": {
+    "en": "Disputed",
+    "ml": "തർക്കവിഷയം"
+  },
+  "reasonConfirmed": {
+    "en": "The receiver confirmed they took this waste.",
+    "ml": "സ്വീകർത്താവ് ഈ മാലിന്യം എടുത്തതായി സ്ഥിരീകരിച്ചു."
+  },
+  "reasonDisputed": {
+    "en": "The receiver said they did not receive this waste.",
+    "ml": "സ്വീകർത്താവ് ഈ മാലിന്യം ലഭിച്ചില്ലെന്ന് പറഞ്ഞു."
+  },
   "reasonLocation": {
     "en": "The phone was at an open collection point that takes this waste.",
     "ml": "ഫോൺ ഒരു മാലിന്യ ശേഖരണ കേന്ദ്രത്തിലായിരുന്നു. കേന്ദ്രം തുറന്നിട്ടുണ്ട്, ഈ മാലിന്യം സ്വീകരിക്കുന്നു."
@@ -294,6 +310,22 @@
   "photoIsSlip": {
     "en": "Slip or number plate read",
     "ml": "സ്ലിപ്പോ നമ്പർ പ്ലേറ്റോ വായിക്കുക"
+  },
+  "handoverTitle": {
+    "en": "Show this to the receiver",
+    "ml": "ഇത് സ്വീകർത്താവിന് കാണിക്കുക"
+  },
+  "handoverCode": {
+    "en": "Handover code",
+    "ml": "കൈമാറ്റ കോഡ്"
+  },
+  "handoverBody": {
+    "en": "When the treatment plant, truck or collector confirms it, this entry becomes Confirmed, the strongest proof.",
+    "ml": "ട്രീറ്റ്മെന്റ് പ്ലാന്റോ, ട്രക്കോ, കളക്ടറോ ഇത് സ്ഥിരീകരിക്കുമ്പോൾ, ഈ എൻട്രി സ്ഥിരീകരിക്കപ്പെട്ടതായി മാറുന്നു, ഇത് ഏറ്റവും ശക്തമായ തെളിവാണ്."
+  },
+  "handoverQr": {
+    "en": "QR code for the receiver to scan",
+    "ml": "സ്കാൻ ചെയ്യാൻ സ്വീകർത്താവിനുള്ള QR കോഡ്"
   },
   "photoNotSlip": {
     "en": "Photo kept, but it did not show a slip or a number plate.",

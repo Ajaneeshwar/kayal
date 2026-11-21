@@ -1,13 +1,14 @@
 import { useId, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Bi } from '../../components/Bi.tsx';
-import { StatusBadge } from '../../components/StatusBadge.tsx';
+import { DisputedIcon, StampIcon, StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
 import { t } from '../../i18n/index.ts';
 import { boatsCsv, filterBoats } from '../../lib/boatTools.ts';
-import type { Boat, Entry, Facility, Report } from './api.ts';
-import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, whereText } from './format.ts';
+import type { Boat, Custody, Entry, Facility, Report } from './api.ts';
+import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, shownLevel, whereText, type LevelTone, type Shown } from './format.ts';
+import { fill, namedReceiver } from '../boat/data.ts';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
 import { d } from './i18n.ts';
 
@@ -31,17 +32,46 @@ export function Panel({ children, className = '', id }: { children: ReactNode; c
   );
 }
 
-function LevelChip({ level }: { level: Entry['verification']['level'] }) {
+const CHIP: Record<LevelTone, string> = {
+  confirmed: 'bg-confirmed-soft text-confirmed',
+  verified: 'bg-verified-soft text-verified',
+  declared: 'bg-declared-soft text-declared',
+  disputed: 'bg-declared-soft text-declared',
+};
+
+const DOT: Record<LevelTone, string> = {
+  confirmed: 'bg-confirmed',
+  verified: 'bg-verified',
+  declared: 'bg-declared',
+  disputed: 'bg-declared',
+};
+
+function LevelChip({ level }: { level: Shown }) {
   const tone = LEVEL_TONE[level];
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-pill px-2 py-0.5 text-caption font-semibold ${
-        tone === 'verified' ? 'bg-verified-soft text-verified' : 'bg-declared-soft text-declared'
-      }`}
-    >
-      <span aria-hidden="true" className={`size-1.5 rounded-full ${tone === 'verified' ? 'bg-verified' : 'bg-declared'}`} />
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-pill px-2 py-0.5 text-caption font-semibold ${CHIP[tone]}`}>
+      {/* A cross, not a dot, so Disputed never rests on its label alone beside Declared. */}
+      {tone === 'disputed' ? <DisputedIcon size={11} strokeWidth={2.4} /> : <span aria-hidden="true" className={`size-1.5 rounded-full ${DOT[tone]}`} />}
       {LEVEL_LABELS[level]}
     </span>
+  );
+}
+
+/** The receiver's answer under the chip: who, how much they took, and any comment. */
+function Answer({ answer }: { answer: NonNullable<Entry['confirmation']> }) {
+  const received = answer.decision === 'received';
+  const values = { name: answer.operatorName, quantity: answer.quantity ?? '' };
+  const line = fill(d(!received ? 'feedNotReceived' : answer.quantity ? 'feedReceived' : 'feedReceivedNoQty'), values);
+  return (
+    <p className="mt-1.5 flex items-start gap-1.5 text-caption">
+      <span className={`mt-px shrink-0 ${received ? 'text-confirmed' : 'text-declared'}`}>
+        {received ? <StampIcon size={14} /> : <DisputedIcon size={14} />}
+      </span>
+      <span className="min-w-0">
+        <Bi text={line} layout="inline" className="font-semibold text-ink" mlClassName="font-medium" />
+        {answer.note && <span className="ms-1.5 text-ink-muted [overflow-wrap:anywhere]">“{answer.note}”</span>}
+      </span>
+    </p>
   );
 }
 
@@ -54,6 +84,8 @@ const KIND_GLYPH: Record<Entry['kind'], string> = {
 /** Where the waste went. A truck, pump, collector or bin shows the method and vehicle, never a distance to a plant. */
 function Where({ entry }: { entry: Entry }) {
   const method = methodOf(entry);
+  // When the receiver has answered, their own line names them, so the crew's name for them is not repeated.
+  const receiver = namedReceiver(entry);
   if (method === 'collection_point') return <span className="text-caption text-ink-muted">{whereText(entry)}</span>;
   return (
     <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-caption text-ink-muted">
@@ -65,11 +97,11 @@ function Where({ entry }: { entry: Entry }) {
           <bdi className="font-semibold tabular-nums tracking-[0.02em] text-ink [overflow-wrap:anywhere]">{entry.vehicleNumber}</bdi>
         </span>
       )}
-      {entry.handedTo && (
+      {receiver && (
         <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
           <span aria-hidden="true">·</span>
           <Bi text={d('receivedBy')} layout="inline" />
-          <bdi className="[overflow-wrap:anywhere]">{entry.handedTo}</bdi>
+          <bdi className="[overflow-wrap:anywhere]">{receiver}</bdi>
         </span>
       )}
     </span>
@@ -135,10 +167,13 @@ function FeedItem({ entry, boat, fresh, onWithdraw }: { entry: Entry; boat: Boat
               {entry.voidReason && <bdi className="min-w-0 [overflow-wrap:anywhere]">{entry.voidReason}</bdi>}
             </p>
           ) : (
-            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <LevelChip level={entry.verification.level} />
-              <Where entry={entry} />
-            </div>
+            <>
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <LevelChip level={shownLevel(entry)} />
+                <Where entry={entry} />
+              </div>
+              {entry.confirmation && <Answer answer={entry.confirmation} />}
+            </>
           )}
           {translated && (
             <p lang={entry.heard!.language} className="mt-2 border-s-2 border-gold-edge/60 ps-2.5 text-small text-ink-muted">
@@ -400,6 +435,82 @@ export function Reports({ reports, boats, busy, onReview }: { reports: Report[] 
             </li>
           ))}
         </ul>
+      )}
+    </Panel>
+  );
+}
+
+const litres = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+
+/**
+ * Each truck and pump boat: litres it collected from boats (on receiver confirmations) against
+ * litres a plant recorded it unloading, over 30 days. A positive gap is waste with no known end.
+ */
+export function TruckCustody({ rows }: { rows: Custody[] }) {
+  const sorted = [...rows].sort((a, b) => b.gapLitres - a.gapLitres || a.vehicleNumber.localeCompare(b.vehicleNumber));
+  const flagged = rows.filter((r) => r.gapLitres > 0).length;
+  return (
+    <Panel>
+      <PanelHead title={d('custodyTitle')} meta={`Litres, last 30 days${flagged ? ` · ${flagged === 1 ? '1 vehicle' : `${flagged} vehicles`} with a gap` : ''}`} />
+      {rows.length === 0 ? (
+        <Bi as="p" text={d('custodyEmpty')} className="px-5 pb-5 text-small text-ink-muted" />
+      ) : (
+        <div className="@container px-3 pb-3">
+          <table className="w-full border-separate border-spacing-0 text-small">
+            <thead>
+              <tr className="text-caption font-semibold text-ink-muted">
+                <th scope="col" className="hidden px-2 pb-2 text-start font-semibold @sm:table-cell"><Bi text={d('custodyVehicle')} /></th>
+                <th scope="col" className="px-2 pb-2 text-end font-semibold"><Bi text={d('custodyPicked')} /></th>
+                <th scope="col" className="px-2 pb-2 text-end font-semibold"><Bi text={d('custodyDelivered')} /></th>
+                <th scope="col" className="px-2 pb-2 text-end font-semibold"><Bi text={d('custodyGap')} /></th>
+              </tr>
+            </thead>
+            {sorted.map((r) => {
+              const gap = r.gapLitres > 0;
+              // A number plate never breaks across lines.
+              const vehicle = (
+                <>
+                  <bdi className="block whitespace-nowrap font-semibold tabular-nums tracking-[0.02em]">{r.vehicleNumber}</bdi>
+                  {r.operatorName && <span className="block text-caption text-ink-muted [overflow-wrap:anywhere]">{r.operatorName}</span>}
+                </>
+              );
+              const cell = 'px-2 pb-2 text-end align-top tabular-nums @sm:border-t @sm:border-line @sm:pt-2.5';
+              return (
+                <tbody key={r.vehicleNumber}>
+                  {/* In a narrow panel the vehicle takes its own line, so the three numbers keep their columns. */}
+                  <tr className="@sm:hidden">
+                    <th scope="rowgroup" colSpan={4} className="border-t border-line px-2 pb-1 pt-2.5 text-start font-normal">
+                      {vehicle}
+                    </th>
+                  </tr>
+                  <tr>
+                    <th scope="row" className="hidden border-t border-line px-2 pb-2 pt-2.5 text-start align-top font-normal @sm:table-cell">
+                      {vehicle}
+                    </th>
+                    <td className={cell}>{litres.format(r.pickedUpLitres)}</td>
+                    <td className={cell}>{litres.format(r.unloadedLitres)}</td>
+                    <td className={`${cell} ${gap ? 'font-semibold text-overdue' : 'text-ink-muted'}`}>
+                      {gap ? litres.format(r.gapLitres) : <Bi text={d('custodyNoGap')} className="whitespace-nowrap" />}
+                    </td>
+                  </tr>
+                  {gap && (
+                    <tr>
+                      <td colSpan={4} className="px-2 pb-2.5">
+                        <p className="flex items-start gap-2 rounded-control bg-overdue-soft px-2.5 py-2 text-caption font-medium text-overdue">
+                          <svg viewBox="0 0 16 16" className="mt-px size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true">
+                            <circle cx="8" cy="8" r="6.2" />
+                            <path d="M8 4.6v4M8 11.2v.1" />
+                          </svg>
+                          <Bi text={fill(d('custodyGapLine'), { litres: litres.format(r.gapLitres) })} className="min-w-0" mlClassName="mt-0.5 font-normal" />
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              );
+            })}
+          </table>
+        </div>
       )}
     </Panel>
   );

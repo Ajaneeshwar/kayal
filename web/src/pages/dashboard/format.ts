@@ -1,6 +1,7 @@
 import type { Entry, Level, Waste } from './api.ts';
 import { methodOf, type Method } from '../../components/MethodIcon.tsx';
 import { en, type DashKey } from './strings.ts';
+import { namedReceiver } from '../boat/data.ts';
 
 /** Labels for the handovers that happen away from a fixed collection point. */
 export const METHOD_KEY: Record<Exclude<Method, 'collection_point'>, DashKey> = {
@@ -18,17 +19,30 @@ export const KIND_LABELS: Record<Entry['kind'], string> = {
 
 export const WASTE_LABELS: Record<Waste, string> = { sewage: 'Sewage', solid: 'Solid waste', oil: 'Used oil' };
 
-export const LEVEL_LABELS: Record<Level, string> = {
-  declared: 'Declared only',
-  location: 'Location matched',
+/** The level an entry shows. Disputed is a Declared entry the receiver said never arrived. */
+export type Shown = Level | 'disputed';
+
+export function shownLevel(e: Pick<Entry, 'verification' | 'disputed'>): Shown {
+  return e.disputed ? 'disputed' : e.verification.level;
+}
+
+export const LEVEL_LABELS: Record<Shown, string> = {
+  confirmed: 'Confirmed by receiver',
   receipt: 'Location and receipt',
+  location: 'Location matched',
+  declared: 'Declared only',
+  disputed: 'Disputed by receiver',
 };
 
-/** Proof level to the boat state colour it shares. */
-export const LEVEL_TONE: Record<Level, 'verified' | 'declared'> = {
-  declared: 'declared',
-  location: 'verified',
+/** Proof level to its colour: violet confirmed, green verified, amber declared. Disputed is amber with a cross. */
+export type LevelTone = 'confirmed' | 'verified' | 'declared' | 'disputed';
+
+export const LEVEL_TONE: Record<Shown, LevelTone> = {
+  confirmed: 'confirmed',
   receipt: 'verified',
+  location: 'verified',
+  declared: 'declared',
+  disputed: 'disputed',
 };
 
 const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
@@ -53,7 +67,8 @@ export function distance(m: number) {
 export function whereText(entry: Entry) {
   const method = methodOf(entry);
   if (method !== 'collection_point') {
-    return [en[METHOD_KEY[method]], entry.vehicleNumber, entry.handedTo ? `${en.receivedBy} ${entry.handedTo}` : null].filter(Boolean).join(' · ');
+    const receiver = namedReceiver(entry);
+    return [en[METHOD_KEY[method]], entry.vehicleNumber, receiver ? `${en.receivedBy} ${receiver}` : null].filter(Boolean).join(' · ');
   }
   const { reason, facilityName, distanceM } = entry.verification;
   switch (reason) {

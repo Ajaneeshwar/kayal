@@ -17,7 +17,12 @@ export function filterBoats<T extends SearchableBoat>(boats: readonly T[], query
   );
 }
 
-const PROOF: Record<Level, string> = { receipt: boatStrings.levelReceipt, location: boatStrings.levelLocation, declared: boatStrings.levelDeclared };
+const PROOF: Record<Level, string> = {
+  confirmed: boatStrings.levelConfirmed,
+  receipt: boatStrings.levelReceipt,
+  location: boatStrings.levelLocation,
+  declared: boatStrings.levelDeclared,
+};
 
 function csvCell(value: string | number | null | undefined) {
   let text = String(value ?? '');

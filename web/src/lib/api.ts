@@ -31,6 +31,8 @@ export async function signInInspector(pin: string): Promise<SigninResult> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'inspector', pin }),
+      // Never leave the button spinning if the server cannot be reached.
+      signal: AbortSignal.timeout(15_000),
     });
     if (res.ok) return 'ok';
     return res.status === 401 ? 'wrong' : 'error';
