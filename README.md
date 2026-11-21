@@ -21,14 +21,14 @@ The High Court ordered that houseboats without pollution control and valid certi
 
 A crew member says what waste they emptied and who took it. The handover can be at a collection point, to a suction truck, a pump boat or a waste collector, or into a waste bin. Kayal Log records the vehicle number and the receiver, checks the phone's location against the known collection points, and adds the entry to the boat's public record. The crew's phone then shows a handover code and a QR code. The plant, truck or collector that took the waste confirms it on their own phone.
 
-The crew can speak Malayalam, Tamil, Hindi or another Indian language, and they hear the reply in the language they spoke. They can also type. Recording takes one tap to start and one tap to send. After an entry is saved, the crew can add a receipt or slip photo to it, or tap Fix to correct a misheard quantity.
+The crew can speak Malayalam, Tamil, Hindi or another Indian language, and they hear the reply in the language they spoke. They can also type. Recording takes one tap to start and one tap to send. After an entry is saved, the crew can add a receipt or slip photo to it, or tap Fix to correct a misheard quantity. The crew can also ask where to empty waste, and the reply names the open collection points that take it, with directions when the phone shares its location.
 
 The screens open in English. Every page has a language switch for English, Malayalam, or English with Malayalam beside it, and it remembers the choice.
 
 | Screen | Path | For | What happens |
 | --- | --- | --- | --- |
 | Landing and sign-in | `/` | Everyone | The product in one view, with Crew, Receiver, Inspector and Guest doors. |
-| Crew page | `/crew` | Boat crew, on a phone | Speak or type a handover, hear the reply, add a receipt photo, fix the quantity and show the handover code. |
+| Crew page | `/crew` | Boat crew, on a phone | Speak or type a handover, hear the reply, add a receipt photo, fix the quantity and show the handover code. See past entries and the boat's QR codes. |
 | Receiver page | `/operator` | Receivers, on a phone | Treatment plants, suction trucks, pump boats and waste collectors sign in, scan or type the handover code, and mark it received or not received. Plants also record trucks that unload there. |
 | Boat record | `/boat/<id>` | Tourists, on a phone | A certificate with a green, amber or red seal, the boat's log, and a form to report dumping with a photo. Reached by QR code. |
 | Dashboard | `/dashboard` | Inspectors, on a laptop | Map, boats by urgency, live log, truck custody, tourist reports, QR stickers, CSV export and Call owner. |
