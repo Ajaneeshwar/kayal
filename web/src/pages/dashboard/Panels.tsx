@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
-import { useLang } from '../../i18n/language.ts';
+import { useLang, usePick } from '../../i18n/language.ts';
+import { t } from '../../i18n/index.ts';
+import { boatsCsv, filterBoats } from '../../lib/boatTools.ts';
 import type { Boat, Entry, Facility, Report } from './api.ts';
 import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, whereText } from './format.ts';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
@@ -188,9 +190,32 @@ function LastPump({ boat, window }: { boat: Boat; window: number }) {
 }
 
 export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; window: number; onQr: (b: Boat) => void; freshBoats: ReadonlySet<string> }) {
+  const id = useId();
+  const pick = usePick();
+  const [query, setQuery] = useState('');
+  const [state, setState] = useState('all');
+  const searched = filterBoats(boats, query);
+  const filtered = filterBoats(searched, '', state);
+  const count = t('boatMatches');
+  function exportCsv() {
+    const url = URL.createObjectURL(new Blob([boatsCsv(filtered)], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kayal-boats-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   return (
     <Panel>
       <PanelHead title={d('boatsTitle')} meta={`${boats.length} boats · a pump-out is due every ${window} days`} />
+      <div className="grid gap-3 px-5 pb-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
+        <label className="min-w-0 text-small font-semibold" htmlFor={`${id}-search`}><Bi text={d('boatSearch')} /><input id={`${id}-search`} type="search" value={query} onChange={(e) => setQuery(e.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-field-border bg-kasavu px-3 text-ink" /></label>
+        <label className="text-small font-semibold" htmlFor={`${id}-state`}><Bi text={d('stateFilter')} /><select id={`${id}-state`} value={state} onChange={(e) => setState(e.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-field-border bg-kasavu px-3 text-ink">
+          {(['all', 'overdue', 'declared', 'verified'] as const).map((value) => <option key={value} value={value}>{pick(value === 'all' ? d('filterAll') : t(value))} ({value === 'all' ? searched.length : searched.filter((b) => b.status.state === value).length})</option>)}
+        </select></label>
+        <button type="button" onClick={exportCsv} className="min-h-12 rounded-control bg-gold px-4 text-small font-semibold text-teak"><Bi text={d('exportCsv')} /></button>
+        <p role="status" className="text-small text-ink-muted sm:col-span-full"><Bi text={{ en: count.en.replace('{count}', String(filtered.length)), ml: count.ml.replace('{count}', String(filtered.length)) }} /></p>
+      </div>
       <div className="relative overflow-x-auto px-2 pb-2">
         <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-small">
           <thead>
@@ -204,7 +229,8 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
             </tr>
           </thead>
           <tbody>
-            {boats.map((b) => (
+            {!filtered.length && <tr><td colSpan={4} className="px-3 py-6"><Bi k="noBoatMatches" /></td></tr>}
+            {filtered.map((b) => (
               <motion.tr layout="position" transition={{ type: 'spring', duration: 0.5, bounce: 0 }} key={b.id} className={`kl-row ${freshBoats.has(b.id) ? 'is-fresh' : ''}`}>
                 <td className="border-t border-line px-3 py-3">
                   <a href={`/boat/${encodeURIComponent(b.id)}`} className="group block">

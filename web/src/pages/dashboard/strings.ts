@@ -5,6 +5,20 @@
   then copy ml.json back. Never write Malayalam by hand. Plain data only: Node imports this file.
 */
 export const en = {
+  boatSearch: 'Search boats by name or registration',
+  stateFilter: 'Boat state',
+  filterAll: 'All',
+  exportCsv: 'Export CSV',
+  csvName: 'Name',
+  csvRegistration: 'Registration',
+  csvState: 'State',
+  csvDays: 'Days since sewage',
+  csvSewageDate: 'Last sewage date',
+  csvSewageProof: 'Sewage proof',
+  csvSewagePlace: 'Sewage place',
+  csvSolidDate: 'Last solid date',
+  csvSolidProof: 'Solid proof',
+  csvSolidPlace: 'Solid place',
   title: 'Inspector dashboard',
   statVerified: 'Boats verified',
   statDeclared: 'Declared only',
