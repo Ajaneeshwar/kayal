@@ -28,6 +28,7 @@ export const en = {
   inspectorBody: 'See every boat on one map, most overdue first.',
   guestTitle: 'Guest',
   guestBody: 'See any boat’s public record. No sign-in needed.',
+  loggedDaysAgo: 'Logged {days} days ago',
 
   yourBoat: 'Your boat',
   openCrew: 'Open the crew page',

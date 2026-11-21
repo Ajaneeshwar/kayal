@@ -24,7 +24,11 @@ const heroItem: Variants = {
 function Hero({ ready }: { ready: boolean }) {
   const pick = usePick();
   const { boats, status } = useBoats();
-  const boat = status === 'ready' ? boats[0] : undefined;
+  const boat = status === 'ready'
+    ? boats.filter((b) => b.lastEntryAt).sort((a, b) => Date.parse(b.lastEntryAt!) - Date.parse(a.lastEntryAt!))[0]
+    : undefined;
+  const loggedDays = boat?.lastEntryAt ? Math.max(0, Math.floor((Date.now() - Date.parse(boat.lastEntryAt)) / 86_400_000)) : 0;
+  const logged = t('loggedDaysAgo');
   return (
     <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
       <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_75%,transparent)] lg:h-full lg:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]" />
@@ -68,6 +72,7 @@ function Hero({ ready }: { ready: boolean }) {
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{boat.name}</span>
                 <span className="mb-1 block break-words text-caption text-ink-muted">{boat.registration}</span>
+                <Bi text={{ en: logged.en.replace('{days}', String(loggedDays)), ml: logged.ml.replace('{days}', String(loggedDays)) }} className="mb-1 block text-caption text-ink-muted" />
                 <StatusBadge state={boat.status.state} bilingual={false} />
               </span>
               <ArrowIcon className="size-5 shrink-0 text-gold-ink transition-transform group-hover:translate-x-0.5" />

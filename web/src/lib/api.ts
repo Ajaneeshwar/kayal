@@ -7,14 +7,20 @@ export interface Boat {
   name: string;
   registration: string;
   status: { state: BoatState };
+  lastEntryAt?: string;
 }
 
 export async function fetchBoats(signal?: AbortSignal): Promise<Boat[]> {
   const res = await fetch('/api/state', { signal });
   if (!res.ok) throw new Error(`GET /api/state returned ${res.status}`);
   const data: unknown = await res.json();
-  const boats = (data as { boats?: unknown }).boats;
-  return Array.isArray(boats) ? (boats as Boat[]) : [];
+  const { boats, entries } = data as { boats?: Boat[]; entries?: { boatId: string; at: string }[] };
+  if (!Array.isArray(boats)) return [];
+  const latest = new Map<string, string>();
+  for (const entry of Array.isArray(entries) ? entries : []) {
+    if (Date.parse(entry.at) > Date.parse(latest.get(entry.boatId) ?? '1970-01-01')) latest.set(entry.boatId, entry.at);
+  }
+  return boats.map((boat) => ({ ...boat, lastEntryAt: latest.get(boat.id) }));
 }
 
 export type SigninResult = 'ok' | 'wrong' | 'error';
