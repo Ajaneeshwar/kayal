@@ -5,11 +5,15 @@ export type Link = 'connecting' | 'live' | 'polling';
 
 const FRESH_MS = 8000;
 const POLL_MS = 5000;
-const SAFETY_POLL_MS = 30_000;
+/** Polling pauses only while events keep arriving. A quiet stream may be a dead one. */
+const QUIET_MS = 20_000;
+const EVENTS = ['entry', 'correction', 'facility', 'boat', 'report'] as const;
 
 /**
- * Loads /api/state and the tourist reports, then keeps them current: the events route pushes a
- * nudge and we refetch, and polling takes over whenever the event stream is down.
+ * Loads /api/state and the tourist reports, then keeps them current. The events route pushes a
+ * nudge and we refetch. A proxy or tunnel can hold the stream open and never pass a byte, so the
+ * badge turns live only after a real event, and /api/state is polled every 5 s whenever no event
+ * has come in the last 20 s. Polling skips hidden tabs.
  * `fresh` holds the ids of entries that arrived since the page loaded, for a few seconds.
  */
 export function useDashboard() {
@@ -19,8 +23,10 @@ export function useDashboard() {
   const [link, setLink] = useState<Link>('connecting');
   const [fresh, setFresh] = useState<ReadonlySet<string>>(new Set());
   const known = useRef<Set<string> | null>(null);
+  const inFlight = useRef(false);
+  const again = useRef(false);
 
-  const refresh = useCallback(async () => {
+  const load = useCallback(async () => {
     try {
       const next = await fetchState();
       const ids = new Set(next.entries.map((e) => e.id));
@@ -41,10 +47,28 @@ export function useDashboard() {
       setState(next);
       setReports(reportsOf(next));
       setError(null);
+      setLink((l) => (l === 'connecting' ? 'polling' : l));
     } catch (err) {
       setError((err as Error).message);
     }
   }, []);
+
+  // One fetch at a time. A call that lands mid-fetch runs once more afterwards, so an event is never lost.
+  const refresh = useCallback(async () => {
+    if (inFlight.current) {
+      again.current = true;
+      return;
+    }
+    inFlight.current = true;
+    try {
+      do {
+        again.current = false;
+        await load();
+      } while (again.current);
+    } finally {
+      inFlight.current = false;
+    }
+  }, [load]);
 
   // Coalesce bursts of events into one fetch.
   const timer = useRef<number | undefined>(undefined);
@@ -57,25 +81,24 @@ export function useDashboard() {
     refresh();
     let source: EventSource | null = null;
     let retry: number | undefined;
-    let current: Link = 'connecting';
-    const setMode = (m: Link) => {
-      current = m;
-      setLink(m);
+    let lastEventAt = 0;
+
+    const onEvent = () => {
+      lastEventAt = Date.now();
+      setLink('live');
+      nudge();
     };
 
     const connect = () => {
-      if (typeof EventSource === 'undefined') return setMode('polling');
+      if (typeof EventSource === 'undefined') return;
       source = new EventSource('/api/events');
-      source.onopen = () => {
-        setMode('live');
-        nudge();
-      };
-      source.onmessage = nudge;
-      for (const name of ['entry', 'correction', 'facility', 'boat', 'report']) {
-        source.addEventListener(name, nudge);
-      }
+      // Headers alone fire onopen, so it fetches state but does not mark the stream live.
+      source.onopen = nudge;
+      source.onmessage = onEvent;
+      for (const name of EVENTS) source.addEventListener(name, onEvent);
       source.onerror = () => {
-        setMode('polling');
+        lastEventAt = 0;
+        setLink((l) => (l === 'connecting' ? l : 'polling'));
         if (source?.readyState === EventSource.CLOSED) {
           source.close();
           retry = window.setTimeout(connect, 15_000);
@@ -85,7 +108,9 @@ export function useDashboard() {
     connect();
 
     const poll = window.setInterval(() => {
-      if (current !== 'live' || Date.now() % SAFETY_POLL_MS < POLL_MS) refresh();
+      if (document.visibilityState === 'hidden') return;
+      if (Date.now() - lastEventAt < QUIET_MS) return;
+      refresh();
     }, POLL_MS);
     const onVisible = () => document.visibilityState === 'visible' && refresh();
     document.addEventListener('visibilitychange', onVisible);

@@ -48,6 +48,16 @@ export const en = {
   methodCollector: 'Waste collector',
   methodBin: 'Waste bin',
   receivedBy: 'Received by',
+  withdraw: 'Withdraw entry',
+  withdrawTitle: 'Withdraw this entry from {boat}?',
+  withdrawBody: 'The entry stays in the record, struck through, with your reason beside it. It stops counting toward the boat’s status. You cannot undo this.',
+  withdrawReason: 'Reason',
+  withdrawReasonHint: 'Shown on the boat’s public record. Up to 200 characters.',
+  withdrawSuggestion: 'Test entry',
+  withdrawn: 'Withdrawn',
+  withdrawnToast: 'Entry withdrawn',
+  withdrawnToastBody: 'It no longer counts toward {boat}’s status.',
+  cancel: 'Cancel',
 } as const;
 
 export type DashKey = keyof typeof en;

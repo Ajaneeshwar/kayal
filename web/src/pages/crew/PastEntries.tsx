@@ -46,13 +46,17 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
           return (
             <li key={entry.id} className="rounded-control border border-line bg-surface p-4">
               <time dateTime={entry.at} className="text-caption text-ink-muted">{formatDate(entry.at)} · {formatTime(entry.at)}</time>
-              <Bi as="h3" text={bt(KIND[entry.kind])} className="mt-1 font-semibold" />
+              <Bi as="h3" text={bt(KIND[entry.kind])} className={`mt-1 font-semibold ${entry.voided ? 'line-through decoration-ink-muted/80' : ''}`} />
               {entry.quantity && <p className="mt-1 font-semibold">{entry.quantity}</p>}
               <Bi text={bt(METHOD[method])} className="mt-2 text-small font-semibold" />
               <p className="mt-1 break-words text-small text-ink-muted">{place ?? <Bi text={bt('noPlaceNamed')} />}</p>
               {entry.vehicleNumber && <p className="mt-1 break-words text-small"><Bi text={bt('vehicle')} layout="inline" />: {entry.vehicleNumber}</p>}
               {entry.handedTo && <p className="mt-1 break-words text-small"><Bi text={bt('receivedBy')} layout="inline" />: {entry.handedTo}</p>}
-              <div className="mt-2"><LevelChip level={entry.verification.level} /></div>
+              {entry.voided ? (
+                <Bi text={entry.voidReason ? { en: bt('withdrawnBy').en.replace('{reason}', entry.voidReason), ml: bt('withdrawnBy').ml.replace('{reason}', entry.voidReason) } : bt('withdrawnNoReason')} className="mt-2 block text-small font-semibold [overflow-wrap:anywhere]" />
+              ) : (
+                <div className="mt-2"><LevelChip level={entry.verification.level} /></div>
+              )}
             </li>
           );
         })}

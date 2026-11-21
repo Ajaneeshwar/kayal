@@ -1,4 +1,32 @@
 {
+  "noPlaceNamed": {
+    "en": "No place named",
+    "ml": "പേരില്ലാത്ത ഒരിടം"
+  },
+  "sticker": {
+    "en": "Printable sticker",
+    "ml": "അച്ചടിക്കാവുന്ന സ്റ്റിക്കർ"
+  },
+  "stickerScan": {
+    "en": "Scan to see this boat’s waste record",
+    "ml": "ഈ ബോട്ടിന്റെ മാലിന്യ രേഖ കാണാൻ സ്കാൻ ചെയ്യുക."
+  },
+  "stickerLoading": {
+    "en": "Preparing the sticker…",
+    "ml": "സ്റ്റിക്കർ തയ്യാറാക്കുന്നു..."
+  },
+  "stickerError": {
+    "en": "Could not prepare this sticker. Check the boat link and try again.",
+    "ml": "ഈ സ്റ്റിക്കർ തയ്യാറാക്കാൻ കഴിഞ്ഞില്ല. ബോട്ട് ലിങ്ക് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "print": {
+    "en": "Print",
+    "ml": "അച്ചടിക്കുക"
+  },
+  "retrySticker": {
+    "en": "Try again",
+    "ml": "വീണ്ടും ശ്രമിക്കൂ"
+  },
   "recordLabel": {
     "en": "Public waste record",
     "ml": "പൊതു മാലിന്യ രേഖ"
@@ -51,6 +79,22 @@
     "en": "Days left before overdue",
     "ml": "സമയപരിധി അവസാനിക്കാൻ ദിവസങ്ങൾ ബാക്കി"
   },
+  "overdueBy": {
+    "en": "Overdue by",
+    "ml": "വൈകിയത് കാരണം"
+  },
+  "lastEntryProof": {
+    "en": "Proof of last sewage entry",
+    "ml": "അവസാനമായി മലിനജലം പ്രവേശിച്ചതിന്റെ തെളിവ്"
+  },
+  "daysOverdue": {
+    "en": "{days} days overdue",
+    "ml": "{days} ദിവസങ്ങൾ വൈകി."
+  },
+  "emptyEvery": {
+    "en": "Must empty every {days} days",
+    "ml": "ഓരോ {days} ദിവസത്തിലും കാലിയാക്കണം."
+  },
   "logTitle": {
     "en": "Waste log",
     "ml": "മാലിന്യ ലോഗ്"
@@ -82,6 +126,18 @@
   "corrected": {
     "en": "Quantity corrected",
     "ml": "മാലിന്യത്തിന്റെ അളവ് തിരുത്തിയിട്ടുണ്ട്"
+  },
+  "withdrawnBy": {
+    "en": "Withdrawn by the inspector: {reason}",
+    "ml": "ഇൻസ്പെക്ടർ പിൻവലിച്ചത്: {reason}"
+  },
+  "withdrawnNoReason": {
+    "en": "Withdrawn by the inspector",
+    "ml": "ഇൻസ്പെക്ടർ പിൻവലിച്ചു."
+  },
+  "withdrawnNote": {
+    "en": "This entry is not counted in the seal. It stays here so the record shows every change.",
+    "ml": "ഈ എൻട്രി സീലിൽ എണ്ണുന്നില്ല. എല്ലാ മാറ്റങ്ങളും രേഖയിൽ കാണിക്കുന്നതിന് ഇത് ഇവിടെത്തന്നെ ഉണ്ടാകും."
   },
   "receiptPhoto": {
     "en": "Receipt photo",
@@ -142,6 +198,26 @@
   "chainBroken": {
     "en": "Record altered",
     "ml": "രേഖയിൽ മാറ്റം വരുത്തി"
+  },
+  "boatChainIntact": {
+    "en": "This boat’s {count} entries are sealed and intact. Each entry is sealed to the one before it so old entries cannot be quietly changed.",
+    "ml": "ഈ ബോട്ടിന്റെ {count} എൻട്രികൾ സീൽ ചെയ്തതും കേടുകൂടാതെയും നിലകൊള്ളുന്നു. പഴയ എൻട്രികൾ രഹസ്യമായി മാറ്റാൻ കഴിയാത്തവിധം ഓരോ എൻട്രിയും തൊട്ടുമുമ്പുള്ള എൻട്രിയുമായി സീൽ ചെയ്തിരിക്കുന്നു."
+  },
+  "share": {
+    "en": "Share",
+    "ml": "പങ്കിടുക"
+  },
+  "linkCopied": {
+    "en": "Link copied",
+    "ml": "ലിങ്ക് പകർത്തി."
+  },
+  "shareFailed": {
+    "en": "Could not share the link. Copy the address from your browser.",
+    "ml": "ലിങ്ക് പങ്കിടാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ ബ്രൗസറിൽ നിന്ന് വിലാസം പകർത്തുക."
+  },
+  "sealHelp": {
+    "en": "What does this mean?",
+    "ml": "ഇതിനർത്ഥം എന്താണ്?"
   },
   "reportTitle": {
     "en": "Report dumping",

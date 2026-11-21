@@ -162,7 +162,8 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
   const { state, overdueDays, lastSewage } = boat.status;
   const seal = SEAL[state];
   const word = bt(seal.word);
-  const lastEntry = lastSewage ? entries.find((e) => e.kind === 'sewage_pumpout' && e.at === lastSewage.at) : undefined;
+  // Withdrawn entries never back the seal, so they are skipped when finding the one it rests on.
+  const lastEntry = lastSewage ? entries.find((e) => !e.voided && e.kind === 'sewage_pumpout' && e.at === lastSewage.at) : undefined;
   const lastMethod = lastEntry ? methodOf(lastEntry) : 'collection_point';
   // A boat verified by a truck operator's slip was never at a plant, so its sentence says so.
   const sentence = bt(state === 'verified' && lastMethod !== 'collection_point' ? 'sentenceVerifiedSlip' : seal.sentence);
@@ -307,6 +308,14 @@ function DaysLeft({ state, left, overdueDays, hasSewage, daysSince }: { state: B
       </span>
     </>
   );
+}
+
+/** "4 entries, newest first", with any withdrawn ones counted apart. */
+function LogCount({ entries }: { entries: Entry[] }) {
+  const withdrawn = entries.filter((e) => e.voided).length;
+  const counted = entries.length - withdrawn;
+  const main = counted === 1 ? '1 entry' : `${counted} entries`;
+  return <>{withdrawn ? `${main} and ${withdrawn} withdrawn, newest first` : `${main}, newest first`}</>;
 }
 
 function ReportCard({ onOpen }: { onOpen: () => void }) {
@@ -533,7 +542,7 @@ export default function BoatPage() {
                     <Bi text={bt('logTitle')} mlClassName="text-[0.6em]! mt-1" />
                   </h2>
                   <p className="pb-1 text-small tabular-nums text-ink-muted">
-                    {ready.entries.length === 1 ? '1 entry' : `${ready.entries.length} entries`}, newest first
+                    <LogCount entries={ready.entries} />
                   </p>
                 </div>
                 <Timeline entries={ready.entries} />

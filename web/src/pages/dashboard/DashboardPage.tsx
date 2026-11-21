@@ -7,17 +7,18 @@ import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { usePick } from '../../i18n/language.ts';
 import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
-import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Facility, type Report } from './api.ts';
+import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Entry, type Facility, type Report } from './api.ts';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
 import { KIND_LABELS, LEVEL_LABELS } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
 import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
 import { QrDialog } from './QrDialog.tsx';
+import { WithdrawDialog } from './WithdrawDialog.tsx';
 import { useDashboard, type Link } from './useDashboard.ts';
 import './dashboard.css';
 
-type Modal = { kind: 'qr'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | null;
+type Modal = { kind: 'qr'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'withdraw'; entry: Entry } | null;
 type Tone = 'verified' | 'declared' | 'overdue' | 'plain';
 
 const TONE_TEXT: Record<Tone, string> = {
@@ -60,7 +61,7 @@ function Stat({ label, value, tone, note }: { label: Text; value: number | strin
 function LinkPill({ link }: { link: Link }) {
   const live = link === 'live';
   return (
-    <span className="inline-flex items-center gap-2 rounded-pill bg-surface px-2.5 py-1 text-caption font-semibold text-ink-muted ring-1 ring-line" title={live ? 'Entries arrive as they are logged' : 'Checking for new entries every 5 seconds'}>
+    <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-pill bg-surface px-2.5 py-1 text-caption font-semibold text-ink-muted ring-1 ring-line" title={live ? 'Entries arrive as they are logged' : 'Checking for new entries every 5 seconds'}>
       <span className="relative grid size-2 place-items-center" aria-hidden="true">
         {live && <span className="kl-ping absolute inset-0 rounded-full bg-gold-ink" />}
         <span className={`size-2 rounded-full ${live ? 'bg-gold-ink' : 'bg-ink-muted/60'}`} />
@@ -115,7 +116,7 @@ interface Toast {
   id: string;
   title: string;
   body: string;
-  tone: 'verified' | 'declared' | 'error';
+  tone: 'verified' | 'declared' | 'error' | 'plain';
 }
 
 export default function DashboardPage() {
@@ -141,6 +142,8 @@ function InspectorDashboard() {
 
   const boats = useMemo(() => new Map((state?.boats ?? []).map((b) => [b.id, b])), [state]);
   const sorted = useMemo(() => sortByUrgency(state?.boats ?? []), [state]);
+  // A withdrawn entry stays in the live log, struck through, but leaves the map.
+  const mapEntries = useMemo(() => (state?.entries ?? []).filter((e) => !e.voided), [state]);
   const freshBoats = useMemo(() => new Set((state?.entries ?? []).filter((e) => fresh.has(e.id)).map((e) => e.boatId)), [state, fresh]);
 
   // Announce the newest arrival above the map.
@@ -265,7 +268,7 @@ function InspectorDashboard() {
               <div className="surface-light flex items-start gap-3 rounded-card border border-gold-edge/70 bg-kasavu px-4 py-3 shadow-[var(--shadow-raised)]">
                 <span
                   aria-hidden="true"
-                  className={`mt-1.5 size-2.5 shrink-0 rounded-full ${toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : 'bg-overdue'}`}
+                  className={`mt-1.5 size-2.5 shrink-0 rounded-full ${toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : toast.tone === 'plain' ? 'bg-gold-edge' : 'bg-overdue'}`}
                 />
                 <div className="min-w-0">
                   <p className="font-semibold">{toast.title}</p>
@@ -276,7 +279,7 @@ function InspectorDashboard() {
           )}
         </AnimatePresence>
         <section id="map" aria-label="Map" className="relative h-[28rem] min-w-0 overflow-hidden rounded-card border border-line bg-teak shadow-[var(--shadow-card)] lg:h-[min(64vh,38rem)]">
-          {state && <MapPanel facilities={state.facilities} entries={state.entries} boats={boats} fresh={fresh} onView={onView} />}
+          {state && <MapPanel facilities={state.facilities} entries={mapEntries} boats={boats} fresh={fresh} onView={onView} />}
             <div className="kl-glass absolute start-3 top-3 z-[500] max-w-[calc(100%-1.5rem)] rounded-control px-4 py-2.5">
               <Bi as="h2" text={d('mapTitle')} className="font-display text-body font-semibold" />
             </div>
@@ -298,7 +301,7 @@ function InspectorDashboard() {
 
         <div className="order-2 min-h-0 min-w-0 lg:order-none lg:h-[min(64vh,38rem)] [&>section]:h-full">
           {state ? (
-            <Feed entries={state.entries} boats={boats} fresh={fresh} link={<LinkPill link={link} />} />
+            <Feed entries={state.entries} boats={boats} fresh={fresh} link={<LinkPill link={link} />} onWithdraw={(entry) => setModal({ kind: 'withdraw', entry })} />
           ) : (
             <div className="h-full min-h-60 animate-pulse rounded-card bg-line/50" />
           )}
@@ -325,6 +328,24 @@ function InspectorDashboard() {
       </footer>
 
       {modal?.kind === 'qr' && <QrDialog boat={modal.boat} onClose={() => setModal(null)} />}
+      {modal?.kind === 'withdraw' && (
+        <WithdrawDialog
+          entry={modal.entry}
+          boatName={boats.get(modal.entry.boatId)?.name ?? 'this boat'}
+          onClose={() => setModal(null)}
+          onDone={(next, reason) => {
+            const id = modal.entry.id;
+            setModal(null);
+            setState((s) => s && {
+              ...s,
+              entries: s.entries.map((e) => (e.id === id ? { ...e, ...next, voided: true, voidReason: next.voidReason ?? reason } : e)),
+            });
+            const name = boats.get(modal.entry.boatId)?.name ?? 'the boat';
+            showToast({ id: `void-${id}`, title: pick(d('withdrawnToast')), body: pick(d('withdrawnToastBody')).replace('{boat}', name), tone: 'plain' });
+            refresh();
+          }}
+        />
+      )}
       {modal?.kind === 'boat' && (
         <AddBoatDialog
           onClose={() => setModal(null)}

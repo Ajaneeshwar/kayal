@@ -114,7 +114,36 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
 export const getBoat = (id: string) =>
   request<{ boat: Boat; entries: Entry[]; facilities: Facility[] }>(`/api/boats/${encodeURIComponent(id)}`);
 
-export const postLog = (payload: LogPayload) => request<LogResult>('/api/log', payload);
+/**
+ * Sends an entry. XMLHttpRequest rather than fetch, because only it reports when the body has
+ * left the phone: `onUploaded` fires then, so the progress steps can move past "Uploading".
+ */
+export function postLog(payload: LogPayload, onUploaded?: () => void): Promise<LogResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/log');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    if (onUploaded) {
+      let sent = false;
+      const done = () => !sent && (sent = true) && onUploaded();
+      xhr.upload.addEventListener('load', done);
+      xhr.upload.addEventListener('progress', (e) => e.lengthComputable && e.loaded >= e.total && done());
+    }
+    xhr.onerror = () => reject(new ApiError('No network.', 0));
+    xhr.onabort = xhr.onerror;
+    xhr.onload = () => {
+      let data: (LogResult & { error?: string }) | null = null;
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        // Not JSON: a proxy error page, for example.
+      }
+      if (xhr.status >= 200 && xhr.status < 300 && data) resolve(data);
+      else reject(new ApiError(data?.error ?? `The server answered ${xhr.status}.`, xhr.status, data));
+    };
+    xhr.send(JSON.stringify(payload));
+  });
+}
 
 export const speak = (replyId: string) => request<{ audioBase64: string; mime: string }>('/api/speak', { replyId });
 

@@ -1,4 +1,64 @@
 {
+  "boatSearch": {
+    "en": "Search boats by name or registration",
+    "ml": "ബോട്ട് പേര് അല്ലെങ്കിൽ രജിസ്ട്രേഷൻ ഉപയോഗിച്ച് തിരയുക"
+  },
+  "stateFilter": {
+    "en": "Boat state",
+    "ml": "ബോട്ട് സ്റ്റേറ്റ്"
+  },
+  "filterAll": {
+    "en": "All",
+    "ml": "എല്ലാം"
+  },
+  "exportCsv": {
+    "en": "Export CSV",
+    "ml": "CSV എക്സ്പോർട്ട് ചെയ്യുക"
+  },
+  "csvName": {
+    "en": "Name",
+    "ml": "പേര്"
+  },
+  "csvRegistration": {
+    "en": "Registration",
+    "ml": "രജിസ്ട്രേഷൻ"
+  },
+  "csvState": {
+    "en": "State",
+    "ml": "സ്റ്റേറ്റ്"
+  },
+  "csvDays": {
+    "en": "Days since counted sewage pump-out",
+    "ml": "കണക്കാക്കിയ മലിനജല പമ്പ്-ഔട്ട് ദിവസങ്ങൾ"
+  },
+  "csvSewageDate": {
+    "en": "Counted sewage pump-out date",
+    "ml": "കണക്കാക്കിയ മലിനജല പമ്പ്-ഔട്ട് തീയതി"
+  },
+  "csvSewageProof": {
+    "en": "Counted sewage pump-out proof",
+    "ml": "കണക്കാക്കിയ മലിനജല പമ്പ്-ഔട്ട് തെളിവ്"
+  },
+  "csvSewagePlace": {
+    "en": "Counted sewage pump-out place",
+    "ml": "കണക്കാക്കിയ മലിനജല പമ്പ്-ഔട്ട് സ്ഥലം"
+  },
+  "countedPumpOut": {
+    "en": "Counted sewage pump-out",
+    "ml": "കണക്കാക്കിയ മലിനജല പമ്പ്-ഔട്ട്"
+  },
+  "csvSolidDate": {
+    "en": "Last solid date",
+    "ml": "അവസാനമായി ഉറപ്പുവരുത്തിയ തീയതി"
+  },
+  "csvSolidProof": {
+    "en": "Solid proof",
+    "ml": "ഉറപ്പുവരുത്തിയ തെളിവ്"
+  },
+  "csvSolidPlace": {
+    "en": "Solid place",
+    "ml": "ഉറപ്പുവരുത്തിയ സ്ഥലം"
+  },
   "title": {
     "en": "Inspector dashboard",
     "ml": "ഇൻസ്പെക്ടർ ഡാഷ്ബോർഡ്"
@@ -18,6 +78,14 @@
   "statToday": {
     "en": "Entries today",
     "ml": "ഇന്നത്തെ എൻട്രികൾ"
+  },
+  "statWeek": {
+    "en": "Entries this week",
+    "ml": "ഈ ആഴ്ചയിലെ എൻട്രികൾ"
+  },
+  "unlinkedReport": {
+    "en": "Unlinked report",
+    "ml": "ബന്ധിപ്പിക്കാത്ത റിപ്പോർട്ട്"
   },
   "statReports": {
     "en": "Open reports",
@@ -102,5 +170,45 @@
   "receivedBy": {
     "en": "Received by",
     "ml": "സ്വീകരിച്ചത്"
+  },
+  "withdraw": {
+    "en": "Withdraw entry",
+    "ml": "എൻട്രി പിൻവലിക്കുക"
+  },
+  "withdrawTitle": {
+    "en": "Withdraw this entry from {boat}?",
+    "ml": "{boat} ൽ നിന്ന് ഈ എൻട്രി പിൻവലിക്കുകയാണോ?"
+  },
+  "withdrawBody": {
+    "en": "The entry stays in the record, struck through, with your reason beside it. It stops counting toward the boat’s status. You cannot undo this.",
+    "ml": "നിങ്ങളുടെ കാരണം എഴുതി വെച്ച് എൻട്രി റെക്കോർഡിൽ ഉണ്ടാകും. ഇത് ബോട്ടിന്റെ സ്റ്റാറ്റസിലേക്ക് എണ്ണുന്നത് നിർത്തും. ഇത് പഴയപടിയാക്കാൻ കഴിയില്ല."
+  },
+  "withdrawReason": {
+    "en": "Reason",
+    "ml": "കാരണം"
+  },
+  "withdrawReasonHint": {
+    "en": "Shown on the boat’s public record. Up to 200 characters.",
+    "ml": "ബോട്ടിന്റെ പൊതു റെക്കോർഡിൽ കാണിച്ചിരിക്കുന്നു. 200 അക്ഷരങ്ങൾ വരെ."
+  },
+  "withdrawSuggestion": {
+    "en": "Test entry",
+    "ml": "ടെസ്റ്റ് എൻട്രി"
+  },
+  "withdrawn": {
+    "en": "Withdrawn",
+    "ml": "പിൻവലിച്ചു"
+  },
+  "withdrawnToast": {
+    "en": "Entry withdrawn",
+    "ml": "എൻട്രി പിൻവലിച്ചു"
+  },
+  "withdrawnToastBody": {
+    "en": "It no longer counts toward {boat}’s status.",
+    "ml": "ഇത് ഇനി {boat} ന്റെ സ്റ്റാറ്റസിലേക്ക് എണ്ണുന്നില്ല."
+  },
+  "cancel": {
+    "en": "Cancel",
+    "ml": "റദ്ദാക്കുക"
   }
 }

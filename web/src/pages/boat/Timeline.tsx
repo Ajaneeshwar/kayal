@@ -60,7 +60,7 @@ export function LevelChip({ level, stack = false }: { level: Level; stack?: bool
   );
 }
 
-function EntryCard({ entry }: { entry: Entry }) {
+function EntryCard({ entry, flat = false }: { entry: Entry; flat?: boolean }) {
   const { level } = entry.verification;
   const method = methodOf(entry);
   const handover = handoverReason(entry);
@@ -70,7 +70,7 @@ function EntryCard({ entry }: { entry: Entry }) {
   const translated = lang !== 'en' && entry.heard.original.trim() !== entry.heard.english.trim();
   const photo = entry.photo;
   return (
-    <article className="rounded-card border border-line bg-kasavu p-4 shadow-[var(--shadow-card)] sm:p-5">
+    <article className={flat ? 'border-t border-line pt-4' : 'rounded-card border border-line bg-kasavu p-4 shadow-[var(--shadow-card)] sm:p-5'}>
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <p className="text-small text-ink-muted tabular-nums">
           <time dateTime={entry.at}>
@@ -178,6 +178,37 @@ function EntryCard({ entry }: { entry: Entry }) {
   );
 }
 
+/** A withdrawn entry, folded to one line. Opening it shows the original, which no longer counts. */
+function WithdrawnCard({ entry }: { entry: Entry }) {
+  const reason = entry.voidReason?.trim();
+  const line = bt(reason ? 'withdrawnBy' : 'withdrawnNoReason');
+  const text = reason ? { en: line.en.replace('{reason}', reason), ml: line.ml.replace('{reason}', reason) } : line;
+  return (
+    <details className="group rounded-card border border-dashed border-field-border/60 bg-kasavu/60">
+      <summary className="flex min-h-12 cursor-pointer list-none items-start gap-3 rounded-card px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-baseline gap-x-2 text-caption text-ink-muted">
+            <time dateTime={entry.at} className="tabular-nums">
+              {formatDate(entry.at)} <span aria-hidden="true">·</span> {formatTime(entry.at)}
+            </time>
+            <Bi text={bt(KIND[entry.kind])} layout="inline" className="line-through decoration-ink-muted/80" />
+          </span>
+          <Bi text={text} className="mt-1 block text-small font-semibold text-ink [overflow-wrap:anywhere]" mlClassName="mt-0.5 font-normal" />
+        </span>
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-1 shrink-0 text-ink-muted transition-transform duration-200 ease-[var(--ease-out)] group-open:rotate-180">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </summary>
+      <div className="px-4 pb-4 sm:px-5">
+        <Bi as="p" text={bt('withdrawnNote')} className="mb-3 text-small text-ink-muted" mlClassName="mt-0.5" />
+        <div className="opacity-75">
+          <EntryCard entry={entry} flat />
+        </div>
+      </div>
+    </details>
+  );
+}
+
 export function Timeline({ entries }: { entries: Entry[] }) {
   if (!entries.length) {
     return (
@@ -193,9 +224,11 @@ export function Timeline({ entries }: { entries: Entry[] }) {
         <li key={entry.id} className="relative min-w-0 ps-9">
           <span
             aria-hidden="true"
-            className={`absolute start-1 top-5 size-[0.875rem] rounded-full ring-4 ring-surface ${DOT[LEVEL[entry.verification.level].tone]}`}
+            className={`absolute start-1 top-5 size-[0.875rem] rounded-full ring-4 ring-surface ${
+              entry.voided ? 'border-2 border-field-border bg-kasavu' : DOT[LEVEL[entry.verification.level].tone]
+            }`}
           />
-          <EntryCard entry={entry} />
+          {entry.voided ? <WithdrawnCard entry={entry} /> : <EntryCard entry={entry} />}
         </li>
       ))}
     </ol>

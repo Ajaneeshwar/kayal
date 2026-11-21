@@ -1,7 +1,39 @@
 {
+  "boatSearch": {
+    "en": "Search boats by name or registration",
+    "ml": "പേര് അല്ലെങ്കിൽ രജിസ്ട്രേഷൻ ഉപയോഗിച്ച് ബോട്ടുകൾ തിരയുക"
+  },
+  "boatMatches": {
+    "en": "{count} matching boats",
+    "ml": "{count} അനുയോജ്യമായ ബോട്ടുകൾ"
+  },
+  "noBoatMatches": {
+    "en": "No boat matches",
+    "ml": "ഒറ്റ ബോട്ടും ലഭ്യമല്ല"
+  },
   "tagline": {
     "en": "Proof of where houseboat waste went",
     "ml": "ഹൗസ് ബോട്ട് മാലിന്യം എവിടെയെല്ലാം പോയി എന്നതിന്റെ തെളിവ്"
+  },
+  "pageMissing": {
+    "en": "This page does not exist",
+    "ml": "ഈ പേജ് നിലവിലില്ല"
+  },
+  "chooseDoorHelp": {
+    "en": "Go back to the start and choose a door.",
+    "ml": "തുടക്കത്തിലേക്ക് പോയി ഒരു വാതിൽ തിരഞ്ഞെടുക്കുക."
+  },
+  "goHome": {
+    "en": "Go to the start",
+    "ml": "തുടക്കത്തിലേക്ക് പോകുക"
+  },
+  "pickBoatFirst": {
+    "en": "Pick your boat first",
+    "ml": "ആദ്യം നിങ്ങളുടെ ബോട്ട് തിരഞ്ഞെടുക്കുക"
+  },
+  "inspectorFirst": {
+    "en": "Sign in as inspector",
+    "ml": "ഇൻസ്പെക്ടറായി സൈൻ ഇൻ ചെയ്യുക"
   },
   "howTitle": {
     "en": "How it works",
@@ -58,6 +90,14 @@
   "guestBody": {
     "en": "See any boat’s public record. No sign-in needed.",
     "ml": "ഏത് ബോട്ടിന്റെയും പൊതു രേഖ കാണുക. സൈൻ-ഇൻ ആവശ്യമില്ല."
+  },
+  "loggedDaysAgo": {
+    "en": "Logged {days} days ago",
+    "ml": "{days} ദിവസം മുമ്പ് ലോഗിൻ ചെയ്തു"
+  },
+  "loggedDayAgo": {
+    "en": "Logged 1 day ago",
+    "ml": "1 ദിവസം മുമ്പ് ലോഗിൻ ചെയ്തു"
   },
   "yourBoat": {
     "en": "Your boat",

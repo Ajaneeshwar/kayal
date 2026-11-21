@@ -276,3 +276,15 @@
     max-width: 70mm !important;
   }
 }
+
+/* Withdraw sits quietly on each live-log entry: always shown on touch, on hover or focus with a mouse. */
+@media (hover: hover) and (pointer: fine) {
+  .kl-feed-item .kl-withdraw {
+    opacity: 0;
+    transition: opacity 150ms var(--ease-out), color 150ms var(--ease-out);
+  }
+  .kl-feed-item:hover .kl-withdraw,
+  .kl-feed-item:focus-within .kl-withdraw {
+    opacity: 1;
+  }
+}

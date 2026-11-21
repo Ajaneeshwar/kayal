@@ -22,7 +22,8 @@ import {
   type LogPayload,
   type LogResult,
 } from './api.ts';
-import { HeardBubble, Intro, Notice, NoticeAction, ReplyBubble, Thinking, TypedBubble, VoiceNoteBubble, type NoticeKind } from './Conversation.tsx';
+import { HeardBubble, Intro, Notice, NoticeAction, ReplyBubble, TypedBubble, VoiceNoteBubble, type NoticeKind } from './Conversation.tsx';
+import { SendProgress, type SendStage } from './Progress.tsx';
 import { t } from './i18n.ts';
 import { Receipt } from './Receipt.tsx';
 import { RecordButton, Wave, type MicState } from './RecordButton.tsx';
@@ -33,6 +34,8 @@ import { useRecorder, type RecorderFailure } from './useRecorder.ts';
 import { PastEntries } from './PastEntries.tsx';
 
 const MAX_SECONDS = 25;
+/** A first GPS fix can take several seconds. A send waits this long for one, then goes without it. */
+const FIX_WAIT_MS = 8000;
 
 interface Exchange {
   id: string;
@@ -41,6 +44,8 @@ interface Exchange {
   seconds?: number;
   photoUrl?: string;
   status: 'sending' | 'done' | 'failed';
+  stage?: SendStage;
+  hasPhoto?: boolean;
   result?: Partial<LogResult>;
   entry?: Entry;
   token?: string | null;
@@ -89,6 +94,7 @@ function Crew({ boatId }: { boatId: string }) {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
 
   const location = useLocation();
+  const { waitForFix } = location;
   const payloads = useRef(new Map<string, LogPayload>());
   const audio = useRef<HTMLAudioElement>(null);
   const silence = useMemo(() => silentWavUrl(), []);
@@ -144,13 +150,24 @@ function Crew({ boatId }: { boatId: string }) {
 
   const send = useCallback(
     async (id: string) => {
-      const payload = payloads.current.get(id);
+      let payload = payloads.current.get(id);
       if (!payload) return;
-      update(id, { status: 'sending', notice: undefined });
+      const started = Date.now();
+      const stage = (phase: SendStage['phase']) => update(id, { stage: { phase, since: Date.now(), started } });
+      update(id, { status: 'sending', notice: undefined, stage: { phase: 'uploading', since: started, started } });
       setMic('sending');
+      // Without a fix yet, give the GPS a few seconds: a fix can raise the entry to Location proof.
+      if (payload.lat === undefined) {
+        const pos = await waitForFix(FIX_WAIT_MS, () => stage('locating'));
+        if (pos) {
+          payload = { ...payload, lat: pos.lat, lon: pos.lon, accuracy: pos.accuracy };
+          payloads.current.set(id, payload);
+        }
+        stage('uploading');
+      }
       try {
         // The reply follows the language the crew spoke, whatever the page language is.
-        const result = await postLog({ ...payload, replyLanguage: 'auto' });
+        const result = await postLog({ ...payload, replyLanguage: 'auto' }, () => stage('processing'));
         update(id, { status: 'done', result, entry: result.entry, token: result.correctionToken ?? null });
         if (result.stored) {
           setPastRevision((n) => n + 1);
@@ -168,7 +185,7 @@ function Crew({ boatId }: { boatId: string }) {
         setMic('ready');
       }
     },
-    [playReply, update],
+    [playReply, update, waitForFix],
   );
 
   const submit = useCallback(
@@ -181,7 +198,7 @@ function Crew({ boatId }: { boatId: string }) {
         ...(pos ? { lat: pos.lat, lon: pos.lon, accuracy: pos.accuracy } : {}),
         photoBase64: photo?.base64 ?? null,
       });
-      setExchanges((list) => [...list, { id, status: 'sending', photoUrl: photo?.previewUrl, input: 'voice', ...extra }]);
+      setExchanges((list) => [...list, { id, status: 'sending', photoUrl: photo?.previewUrl, hasPhoto: Boolean(photo), input: 'voice', ...extra }]);
       send(id);
     },
     [boatId, location.position, photo, send],
@@ -214,6 +231,8 @@ function Crew({ boatId }: { boatId: string }) {
     audio.current?.pause();
     setSpeakingId(null);
     setMicProblem(null);
+    // Ask for location with the microphone, on the tap, so neither prompt comes out of nowhere.
+    location.start();
     await recorder.start();
   }
 
@@ -222,8 +241,15 @@ function Crew({ boatId }: { boatId: string }) {
     const text = typed.trim();
     if (!text || mic === 'sending') return;
     unlockAudio();
+    location.start();
     setTyped('');
     submit({ text }, { input: 'text', typed: text });
+  }
+
+  /** A receipt photo is taken at the handover, so it is a good moment to ask for location too. */
+  function openCamera() {
+    location.start();
+    fileInput.current?.click();
   }
 
   async function pickPhoto(file: File | undefined) {
@@ -391,7 +417,7 @@ function Crew({ boatId }: { boatId: string }) {
                 )}
               </div>
               <div className="flex w-full items-center justify-between">
-                <SideButton icon={<Icon.Camera size={24} />} k="photo" active={Boolean(photo)} disabled={micState === 'listening'} onClick={() => fileInput.current?.click()} />
+                <SideButton icon={<Icon.Camera size={24} />} k="photo" active={Boolean(photo)} disabled={micState === 'listening'} onClick={openCamera} />
                 <RecordButton state={micState} level={recorder.level} label={pick(t(micState === 'listening' ? 'recordStop' : 'recordStart'), lang)} onPress={pressRecord} />
                 <SideButton icon={<Icon.Keyboard size={24} />} k="type" disabled={micState === 'listening'} onClick={switchToText} />
               </div>
@@ -442,7 +468,7 @@ function Crew({ boatId }: { boatId: string }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => fileInput.current?.click()}
+                  onClick={openCamera}
                   aria-label={pick(t('photo'), lang)}
                   className={`grid size-12 shrink-0 place-items-center rounded-full border bg-teak-raised transition-[scale] duration-[var(--duration-press)] active:scale-[0.96] ${
                     photo ? 'border-gold text-gold-bright' : 'border-gold-edge/40 text-gold'
@@ -525,14 +551,16 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
 
   const pickText = usePick();
   const off = location.status === 'denied' || location.status === 'unavailable';
-  const label: CrewKey = location.status === 'ready' ? 'locReady' : off ? 'locOff' : 'locFinding';
+  const label: CrewKey = location.status === 'ready' ? 'locReady' : off ? 'locOff' : location.status === 'idle' ? 'locIdle' : 'locFinding';
+  // Until a fix is in, say what location is for. A denial has its own notice.
+  const why = location.status !== 'ready' && location.status !== 'denied';
   const Glyph = off ? Icon.PinOff : Icon.Pin;
 
   return (
     <button
       type="button"
-      onClick={location.retry}
-      disabled={location.status === 'ready'}
+      onClick={location.start}
+      disabled={location.status === 'ready' || location.status === 'finding'}
       className="flex w-full items-center gap-3 rounded-control bg-teak-raised px-3 py-2 text-start transition-[scale] duration-[var(--duration-press)] enabled:active:scale-[0.98]"
     >
       <span
@@ -549,6 +577,7 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
             {location.status === 'ready' ? location.position.accuracy < 5 ? pickText(t('locAccurate')) : `± ${location.position.accuracy} m` : off ? pickText(t('tryAgain')) : ''}
           </span>
         </span>
+        {why && <MlEn text={t('locWhy')} className="mt-0.5 text-caption text-ink-inverse-muted" mlClassName="text-caption" />}
         {nearest && (
           <span className="mt-0.5 block break-words text-caption text-ink-inverse-muted">
             {pickText(t('nearestOpen'))}: <span className="font-semibold tabular-nums text-gold-bright">{formatDistance(nearest.d)}</span> · {nearest.f.name}
@@ -585,7 +614,7 @@ function ExchangeView({
       ) : (
         <VoiceNoteBubble seconds={x.seconds ?? 1} photoUrl={x.photoUrl} />
       )}
-      {x.status === 'sending' && <Thinking />}
+      {x.status === 'sending' && x.stage && <SendProgress stage={x.stage} input={x.input} photo={Boolean(x.hasPhoto)} />}
       {reply && <ReplyBubble reply={reply} speaking={speakingId === reply.id} onPlay={() => onPlay(reply.id)} />}
       {x.entry && <Receipt entry={x.entry} token={x.token ?? null} onCorrected={onCorrected} />}
       {x.notice && (

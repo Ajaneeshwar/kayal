@@ -1,7 +1,39 @@
 {
+  "pastEntries": {
+    "en": "My past entries",
+    "ml": "എൻ്റെ പഴയ എൻട്രികൾ"
+  },
+  "pastLoading": {
+    "en": "Loading your entries…",
+    "ml": "നിങ്ങളുടെ എൻട്രികൾ ലോഡ് ചെയ്യുന്നു..."
+  },
+  "pastEmpty": {
+    "en": "No entries for this boat yet.",
+    "ml": "ഈ ബോട്ടിന് ഇതുവരെ എൻട്രികളൊന്നും ലഭ്യമല്ല."
+  },
+  "pastError": {
+    "en": "Could not load your entries. Check your connection and try again.",
+    "ml": "നിങ്ങളുടെ എൻട്രികൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
+  },
+  "pastRetry": {
+    "en": "Try again",
+    "ml": "വീണ്ടും ശ്രമിക്കുക"
+  },
+  "pastClose": {
+    "en": "Close past entries",
+    "ml": "പഴയ എൻട്രികൾ അടയ്ക്കുക"
+  },
+  "pastNoPlace": {
+    "en": "No place named",
+    "ml": "സ്ഥലമൊന്നുമില്ല"
+  },
   "back": {
     "en": "Back to start",
     "ml": "തുടക്കത്തിലേക്ക് മടങ്ങുക"
+  },
+  "locAccurate": {
+    "en": "Accurate",
+    "ml": "കൃത്യം"
   },
   "stateReady": {
     "en": "Tap to speak",
@@ -278,6 +310,42 @@
   "locOff": {
     "en": "Location off",
     "ml": "ഫോൺ ലൊക്കേഷൻ ഓഫാണ്"
+  },
+  "locIdle": {
+    "en": "Share location",
+    "ml": "ലൊക്കേഷൻ പങ്കിടുക"
+  },
+  "locWhy": {
+    "en": "It shows you were at the collection point, so the entry gets Location proof.",
+    "ml": "നിങ്ങൾ ശേഖരണ സ്ഥലത്ത് ഉണ്ടായിരുന്നത് ഇത് കാണിക്കുന്നു, അതിനാൽ എൻട്രിയ്ക്ക് ലൊക്കേഷൻ തെളിവ് ലഭിക്കുന്നു."
+  },
+  "stageLocating": {
+    "en": "Finding your location",
+    "ml": "നിങ്ങളുടെ ലൊക്കേഷൻ കണ്ടെത്തുന്നു"
+  },
+  "stageUploading": {
+    "en": "Uploading",
+    "ml": "അപ്‌ലോഡ് ചെയ്യുന്നു"
+  },
+  "stageListening": {
+    "en": "Listening to your recording",
+    "ml": "നിങ്ങളുടെ റെക്കോർഡിംഗ് കേൾക്കുന്നു"
+  },
+  "stageChecking": {
+    "en": "Checking where it went",
+    "ml": "അത് എവിടെ പോയെന്ന് പരിശോധിക്കുന്നു"
+  },
+  "stageCheckingPhoto": {
+    "en": "Reading the photo and checking where it went",
+    "ml": "ഫോട്ടോ വായിച്ച് അത് എവിടെ പോയെന്ന് പരിശോധിക്കുന്നു"
+  },
+  "stageReplying": {
+    "en": "Writing the reply",
+    "ml": "മറുപടി എഴുതുന്നു"
+  },
+  "stageSlow": {
+    "en": "On a slow connection this can take up to a minute.",
+    "ml": "ഒരു മന്ദഗതിയിലുള്ള കണക്ഷനിൽ ഇതിന് ഒരു മിനിറ്റ് വരെ എടുത്തേക്കാം."
   },
   "nearestOpen": {
     "en": "Nearest open point",

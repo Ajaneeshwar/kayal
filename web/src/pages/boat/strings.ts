@@ -41,6 +41,9 @@ export const en = {
   levelLocation: 'Location',
   levelDeclared: 'Declared',
   corrected: 'Quantity corrected',
+  withdrawnBy: 'Withdrawn by the inspector: {reason}',
+  withdrawnNoReason: 'Withdrawn by the inspector',
+  withdrawnNote: 'This entry is not counted in the seal. It stays here so the record shows every change.',
   receiptPhoto: 'Receipt photo',
 
   methodPoint: 'Collection point',

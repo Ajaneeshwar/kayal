@@ -41,6 +41,10 @@ export interface Entry {
   method?: Method;
   vehicleNumber?: string | null;
   handedTo?: string | null;
+  /** Withdrawn by an inspector. Missing on a server without the void route; read it as false. */
+  voided?: boolean;
+  voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export interface Chain {

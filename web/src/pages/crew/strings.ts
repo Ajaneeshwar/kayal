@@ -93,6 +93,16 @@ export const en = {
   locFinding: 'Finding location',
   locReady: 'Location known',
   locOff: 'Location off',
+  locIdle: 'Share location',
+  locWhy: 'It shows you were at the collection point, so the entry gets Location proof.',
+
+  stageLocating: 'Finding your location',
+  stageUploading: 'Uploading',
+  stageListening: 'Listening to your recording',
+  stageChecking: 'Checking where it went',
+  stageCheckingPhoto: 'Reading the photo and checking where it went',
+  stageReplying: 'Writing the reply',
+  stageSlow: 'On a slow connection this can take up to a minute.',
   nearestOpen: 'Nearest open point',
 
   micDeniedTitle: 'The microphone is blocked',

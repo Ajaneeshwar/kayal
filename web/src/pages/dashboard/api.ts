@@ -48,6 +48,10 @@ export interface Entry {
   method?: Method;
   vehicleNumber?: string | null;
   handedTo?: string | null;
+  /** Withdrawn by an inspector. Missing on a server without the void route; read it as false. */
+  voided?: boolean;
+  voidedAt?: string | null;
+  voidReason?: string | null;
 }
 
 export interface Chain {
@@ -149,6 +153,10 @@ function normaliseReport(r: Loose, i: number): Report {
 export function reportsOf(state: State): Report[] | null {
   return Array.isArray(state.reports) ? state.reports.map((r, i) => normaliseReport(r as Loose, i)) : null;
 }
+
+/** Withdraws an entry. It stays in the chain, marked voided, and stops counting toward the boat's status. */
+export const voidEntry = (id: string, reason: string) =>
+  request<{ entry: Entry }>(`/api/log/${encodeURIComponent(id)}/void`, { reason });
 
 export const markReportReviewed = (id: string) =>
   request<unknown>(`/api/reports/${encodeURIComponent(id)}/review`, {});

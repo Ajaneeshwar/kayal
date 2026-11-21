@@ -76,20 +76,23 @@ function Where({ entry }: { entry: Entry }) {
   );
 }
 
-function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined; fresh: boolean }) {
+function FeedItem({ entry, boat, fresh, onWithdraw }: { entry: Entry; boat: Boat | undefined; fresh: boolean; onWithdraw?: (e: Entry) => void }) {
   const lang = useLang();
+  const pick = usePick();
+  // A server without the void route sends no flag: the entry counts.
+  const voided = entry.voided === true;
   // The crew's own words. The English setting shows only the English summary.
-  const translated = lang !== 'en' && entry.heard && entry.heard.original !== entry.heard.english;
+  const translated = !voided && lang !== 'en' && entry.heard && entry.heard.original !== entry.heard.english;
   return (
     <motion.li
       layout="position"
       initial={fresh ? { opacity: 0, y: -14, scale: 0.98 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', duration: 0.55, bounce: 0.18 }}
-      className={`kl-feed-item relative rounded-control px-4 py-3.5 ${fresh ? 'is-fresh' : ''}`}
+      className={`kl-feed-item relative rounded-control px-4 py-3.5 ${fresh ? 'is-fresh' : ''} ${voided ? 'is-void' : ''}`}
     >
       <div className="flex items-start gap-3">
-        <span aria-hidden="true" className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-surface text-wood ring-1 ring-line">
+        <span aria-hidden="true" className={`mt-0.5 grid size-9 shrink-0 place-items-center rounded-full bg-surface ring-1 ring-line ${voided ? 'text-ink-muted' : 'text-wood'}`}>
           <svg viewBox="0 0 20 20" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round">
             <path d={KIND_GLYPH[entry.kind]} />
           </svg>
@@ -110,20 +113,39 @@ function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined
               {ago(entry.at)}
             </time>
           </div>
-          <p className="text-small text-ink-muted">
-            {KIND_LABELS[entry.kind]}
-            {entry.quantity ? ` · ${entry.quantity}` : ''}
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <LevelChip level={entry.verification.level} />
-            <Where entry={entry} />
+          {/* The action wraps under the line on a narrow screen instead of squeezing it. */}
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <p className={`text-small text-ink-muted ${voided ? 'line-through decoration-ink-muted/80' : ''}`}>
+              {KIND_LABELS[entry.kind]}
+              {entry.quantity ? ` · ${entry.quantity}` : ''}
+            </p>
+            {!voided && onWithdraw && (
+              <button
+                type="button"
+                onClick={() => onWithdraw(entry)}
+                className="kl-withdraw -my-1 -me-1.5 ms-auto shrink-0 rounded-md px-1.5 py-1 text-caption font-semibold text-ink-muted underline decoration-ink-muted/40 underline-offset-2 hover:text-ink hover:decoration-ink"
+              >
+                {pick(d('withdraw'))}
+              </button>
+            )}
           </div>
+          {voided ? (
+            <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-caption text-ink-muted">
+              <Bi text={d('withdrawn')} layout="inline" className="rounded-pill bg-surface px-2 py-0.5 font-semibold text-ink ring-1 ring-line" />
+              {entry.voidReason && <bdi className="min-w-0 [overflow-wrap:anywhere]">{entry.voidReason}</bdi>}
+            </p>
+          ) : (
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <LevelChip level={entry.verification.level} />
+              <Where entry={entry} />
+            </div>
+          )}
           {translated && (
             <p lang={entry.heard!.language} className="mt-2 border-s-2 border-gold-edge/60 ps-2.5 text-small text-ink-muted">
               {entry.heard!.original}
             </p>
           )}
-          {entry.photo && (
+          {entry.photo && !voided && (
             <a href={`/uploads/${entry.photo.file}`} target="_blank" rel="noopener" className="mt-2 flex items-center gap-2.5 text-caption text-ink-muted hover:text-ink">
               <img src={`/uploads/${entry.photo.file}`} alt="" loading="eager" className="kl-img h-16 w-12 shrink-0 rounded-md bg-white object-contain" />
               <span className="line-clamp-2">
@@ -138,7 +160,7 @@ function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined
   );
 }
 
-export function Feed({ entries, boats, fresh, link }: { entries: Entry[]; boats: Map<string, Boat>; fresh: ReadonlySet<string>; link: ReactNode }) {
+export function Feed({ entries, boats, fresh, link, onWithdraw }: { entries: Entry[]; boats: Map<string, Boat>; fresh: ReadonlySet<string>; link: ReactNode; onWithdraw?: (e: Entry) => void }) {
   const shown = entries.slice(0, 40);
   return (
     <Panel className="flex min-h-0 flex-col">
@@ -151,7 +173,7 @@ export function Feed({ entries, boats, fresh, link }: { entries: Entry[]; boats:
         <ol className="kl-scroll min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain px-2 pb-3" aria-live="polite" aria-relevant="additions">
           <AnimatePresence initial={false}>
             {shown.map((e) => (
-              <FeedItem key={e.id} entry={e} boat={boats.get(e.boatId)} fresh={fresh.has(e.id)} />
+              <FeedItem key={e.id} entry={e} boat={boats.get(e.boatId)} fresh={fresh.has(e.id)} onWithdraw={onWithdraw} />
             ))}
           </AnimatePresence>
         </ol>
