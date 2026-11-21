@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kayal Log: dashboard</title>
+  <link rel="stylesheet" href="/static/vendor/leaflet.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">Kayal Log</a>
+    <span class="bar-sub">Inspector dashboard</span>
+    <nav><a href="/crew">Crew page</a></nav>
+  </header>
+  <main class="wide">
+    <section id="metrics" class="metrics"></section>
+    <p id="error" class="error" hidden></p>
+    <div class="columns">
+      <div class="stack">
+        <section class="card">
+          <h2>Collection points and logged handovers</h2>
+          <div id="map"></div>
+          <p class="small muted" style="margin-top:8px">Plant positions and open or closed states are approximate. Confirm them with the DTPC.</p>
+        </section>
+        <section class="card">
+          <h2>Collection points</h2>
+          <table>
+            <thead><tr><th>Name</th><th>Takes</th><th>State</th><th></th></tr></thead>
+            <tbody id="facilities"></tbody>
+          </table>
+          <form id="facility-form" class="form-row">
+            <input id="facility-name" type="text" placeholder="New point at my location" maxlength="80" required>
+            <span class="checks">
+              <label><input type="checkbox" name="accepts" value="sewage" checked> Sewage</label>
+              <label><input type="checkbox" name="accepts" value="solid"> Solid</label>
+              <label><input type="checkbox" name="accepts" value="oil"> Oil</label>
+            </span>
+            <button class="btn small" type="submit">Add here</button>
+          </form>
+        </section>
+      </div>
+      <div class="stack">
+        <section class="card">
+          <h2>Boats, most urgent first</h2>
+          <table>
+            <thead><tr><th>Boat</th><th>Sewage pump-out</th><th>Last</th><th></th></tr></thead>
+            <tbody id="boats"></tbody>
+          </table>
+          <form id="boat-form" class="form-row">
+            <input id="boat-name" type="text" placeholder="Boat name" maxlength="80" required>
+            <input id="boat-reg" type="text" placeholder="Registration number" maxlength="40" required>
+            <button class="btn small" type="submit">Add boat</button>
+          </form>
+          <div id="pin-row" class="form-row" hidden>
+            <input id="pin" type="password" placeholder="Admin PIN" autocomplete="off">
+          </div>
+          <p id="form-error" class="error small" hidden></p>
+        </section>
+        <section class="card">
+          <h2>Live log</h2>
+          <div id="feed" class="entries feed"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="qr">
+    <h2 id="qr-title"></h2>
+    <div class="qr-pair">
+      <div><div id="qr-crew"></div><strong>Crew: log by voice</strong><br><a id="qr-crew-link" target="_blank" rel="noopener"></a></div>
+      <div><div id="qr-public"></div><strong>Guests: public record</strong><br><a id="qr-public-link" target="_blank" rel="noopener"></a></div>
+    </div>
+    <form method="dialog"><button class="btn">Close</button></form>
+  </dialog>
+
+  <script src="/static/vendor/leaflet.js"></script>
+  <script src="/static/vendor/qrcode.js"></script>
+  <script type="module" src="/static/js/dashboard.js"></script>
+</body>
+</html>

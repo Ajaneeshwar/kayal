@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kayal Log</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">Kayal Log</a>
+    <span class="bar-sub">Proof of where houseboat waste went</span>
+  </header>
+  <main>
+    <section class="card">
+      <h2>What this is</h2>
+      <p>A houseboat crew member says in Malayalam what they emptied or handed over. Kayal Log checks the phone's location against the collection points, reads a receipt photo, and adds a tamper-evident entry to the boat's public record.</p>
+    </section>
+    <section class="card">
+      <h2>Open a page</h2>
+      <div class="entries">
+        <a class="entry" href="/crew"><strong>Crew page</strong><span class="small muted">Log by voice from a phone</span></a>
+        <a class="entry" href="/dashboard"><strong>Inspector dashboard</strong><span class="small muted">Map, overdue boats, live log and QR codes</span></a>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Public boat records</h2>
+      <div id="boats" class="entries"></div>
+    </section>
+  </main>
+  <script type="module">
+    import { api, esc, badge, STATES } from '/static/js/common.js';
+    const { boats } = await api('/api/state');
+    document.getElementById('boats').innerHTML = boats.map((b) => `
+      <a class="entry" href="/boat/${encodeURIComponent(b.id)}">
+        <span class="entry-top"><strong>${esc(b.name)}</strong>${badge(STATES[b.status.state].tone, STATES[b.status.state].label)}</span>
+        <span class="small muted">${esc(b.registration)}</span>
+      </a>`).join('');
+  </script>
+</body>
+</html>

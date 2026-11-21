@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kayal Log: crew</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">Kayal Log</a>
+    <span id="boat-name" class="bar-sub"></span>
+  </header>
+  <main>
+    <section id="picker" class="card" hidden>
+      <h2>Choose your boat</h2>
+      <div id="picker-list" class="entries"></div>
+    </section>
+
+    <section id="recorder" class="card recorder" hidden>
+      <p class="hint">
+        <span lang="ml">ടാപ്പ് ചെയ്ത് സംസാരിക്കുക</span>
+        <span class="muted small">Tap, then say what you emptied or handed over, and where</span>
+      </p>
+      <button id="mic" class="mic" type="button" data-state="idle" aria-label="Start recording">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 0 0-8 0v5a4 4 0 0 0 4 4Zm7-4a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.08A7 7 0 0 0 19 11Z"/>
+        </svg>
+      </button>
+      <div id="mic-status" class="mic-status" role="status">Ready</div>
+      <div class="chips">
+        <span id="gps" class="chip">Finding location</span>
+        <label class="chip action">
+          <input id="photo" type="file" accept="image/*" capture="environment" hidden>
+          <span id="photo-label">Add receipt photo</span>
+        </label>
+      </div>
+      <details class="typed">
+        <summary>Type instead</summary>
+        <form id="typed-form">
+          <textarea id="typed" rows="2" maxlength="600" placeholder="We emptied the toilet tank at the Kumarakom plant"></textarea>
+          <button class="btn" type="submit">Send</button>
+        </form>
+      </details>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section id="history" class="card" hidden>
+      <h2>This boat's log</h2>
+      <div id="history-list" class="entries"></div>
+    </section>
+  </main>
+  <audio id="player"></audio>
+  <script type="module" src="/static/js/crew.js"></script>
+</body>
+</html>

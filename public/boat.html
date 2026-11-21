@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kayal Log: boat record</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">Kayal Log</a>
+    <span class="bar-sub">Public waste record</span>
+  </header>
+  <main>
+    <section id="hero" class="hero" hidden></section>
+    <section class="card" id="log" hidden>
+      <h2>Waste log</h2>
+      <div id="entries" class="entries"></div>
+    </section>
+    <section class="card">
+      <h2>How to read this</h2>
+      <ul class="levels">
+        <li><span class="badge ok">Location and receipt verified</span><span class="small">The crew's phone was at an open collection point and they photographed a receipt.</span></li>
+        <li><span class="badge ok">Location verified</span><span class="small">The crew's phone was at an open collection point when they logged it.</span></li>
+        <li><span class="badge warn">Self-declared</span><span class="small">The crew said so, but the phone was not at a collection point.</span></li>
+      </ul>
+      <p class="small muted" style="margin-top:10px">Each entry carries a code chained to the entry before it, so an old entry cannot be changed quietly.</p>
+    </section>
+    <p id="error" class="error" hidden></p>
+  </main>
+  <script type="module" src="/static/js/boat.js"></script>
+</body>
+</html>
