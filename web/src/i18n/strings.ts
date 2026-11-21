@@ -29,8 +29,9 @@ export const en = {
   footerSource: 'Source on GitHub',
   footerBuiltWith: 'Built with',
 
-  // The partner logos above the footer (landing/Partners.tsx).
-  partnersTitle: 'HackaThoni partners',
+  // The credits row above the footer (landing/Partners.tsx). "Built with" is footerBuiltWith.
+  creditsTitle: 'Built with and partners',
+  partnerLabel: 'HackaThoni partner',
   partnerSarvamNote: 'Runs the speech, translation and voice in Kayal Log',
 
   signinTitle: 'Choose your door',

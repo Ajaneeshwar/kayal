@@ -79,9 +79,13 @@
     "en": "Built with",
     "ml": "ഇതുപയോഗിച്ച് നിർമ്മിച്ചത്"
   },
-  "partnersTitle": {
-    "en": "HackaThoni partners",
-    "ml": "ഹക്കത്തോണി പങ്കാളികൾ"
+  "creditsTitle": {
+    "en": "Built with and partners",
+    "ml": "നിർമ്മിച്ചത്, പങ്കാളികളുമായി ചേർന്ന്"
+  },
+  "partnerLabel": {
+    "en": "HackaThoni partner",
+    "ml": "ഹാക്കത്തോണി പങ്കാളി"
   },
   "partnerSarvamNote": {
     "en": "Runs the speech, translation and voice in Kayal Log",
