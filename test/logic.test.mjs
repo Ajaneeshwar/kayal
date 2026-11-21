@@ -259,6 +259,17 @@ test('handover extraction validates methods and caps optional strings', () => {
     ['suction_truck', 'A'.repeat(40), 'Ravi ' + 'b'.repeat(95)]);
 });
 
+test('a registration without a facility disambiguates an explicit collection point', () => {
+  const raw = { method: 'collection_point', vehicle_number: 'KL-04-AB-1234' };
+  assert.equal(normaliseExtraction(raw, '').method, 'suction_truck');
+  assert.equal(normaliseExtraction({ ...raw, facility_mentioned: 'Kumarakom STP' }, '').method, 'collection_point');
+  assert.equal(normaliseExtraction({ ...raw, vehicle_number: ' ' }, '').method, 'collection_point');
+  for (const method of [undefined, 'invalid']) {
+    assert.equal(normaliseExtraction({ ...raw, method }, '').method, 'collection_point');
+  }
+  assert.equal(normaliseExtraction({ ...raw, method: 'mobile_pump' }, '').method, 'mobile_pump');
+});
+
 test('public handover summaries use emptying or handover wording', () => {
   for (const verb of ['Dumped', 'Discharged', 'Thrown', 'Disposed of', 'Discarded']) {
     const entry = normaliseExtraction({ kind: 'sewage_pumpout', summary_en: verb + ' the contents at Kumarakom.' }, '');
