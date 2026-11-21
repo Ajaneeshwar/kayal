@@ -7,6 +7,7 @@
 */
 export const en = {
   back: 'Back to start',
+  locAccurate: 'Accurate',
 
   stateReady: 'Tap to speak',
   stateListening: 'Listening. Tap to stop.',

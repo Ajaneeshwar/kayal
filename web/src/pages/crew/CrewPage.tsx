@@ -277,7 +277,7 @@ function Crew({ boatId }: { boatId: string }) {
   const busy = micState === 'sending';
 
   return (
-    <div className="flex h-dvh flex-col bg-teak-deep text-ink-inverse">
+    <div className="mx-auto flex h-dvh w-full max-w-[36rem] flex-col bg-teak-deep text-ink-inverse">
       <header className="relative z-10 bg-teak pt-[env(safe-area-inset-top)] shadow-[0_12px_32px_-18px_var(--color-teak-deep)]">
         <div className="mx-auto flex max-w-[36rem] items-start gap-1.5 px-2 pt-2">
           <Link
@@ -304,7 +304,7 @@ function Crew({ boatId }: { boatId: string }) {
       </header>
 
       <main id="main" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto flex max-w-[36rem] flex-col gap-4 px-4 py-5" aria-live="polite">
+        <div className="mx-auto flex max-w-[36rem] flex-col gap-4 px-4 pb-24 pt-5" aria-live="polite">
           <Intro boat={boat} />
           {exchanges.map((x) => (
             <ExchangeView
@@ -540,11 +540,11 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
         <span className="flex flex-wrap items-baseline gap-x-2">
           <MlEn text={t(label)} layout="inline" className="text-small font-semibold" mlClassName="text-small font-normal" />
           <span className="text-caption tabular-nums text-ink-inverse-muted">
-            {location.status === 'ready' ? `± ${location.position.accuracy} m` : off ? pickText(t('tryAgain')) : ''}
+            {location.status === 'ready' ? location.position.accuracy < 5 ? pickText(t('locAccurate')) : `± ${location.position.accuracy} m` : off ? pickText(t('tryAgain')) : ''}
           </span>
         </span>
         {nearest && (
-          <span className="mt-0.5 block truncate text-caption text-ink-inverse-muted">
+          <span className="mt-0.5 block break-words text-caption text-ink-inverse-muted">
             {pickText(t('nearestOpen'))}: <span className="font-semibold tabular-nums text-gold-bright">{formatDistance(nearest.d)}</span> · {nearest.f.name}
           </span>
         )}
