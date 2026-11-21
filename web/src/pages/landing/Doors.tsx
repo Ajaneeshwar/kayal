@@ -172,7 +172,7 @@ function InspectorDoor() {
 function GuestDoor({ status, boats, retry }: BoatsProps) {
   const id = useId();
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7" aria-labelledby={`${id}-t`}>
+    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 lg:col-span-2" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<EyeIcon className="size-6" />} title="guestTitle" body="guestBody" />
       </div>
@@ -183,24 +183,24 @@ function GuestDoor({ status, boats, retry }: BoatsProps) {
           <ul
             aria-label="Boats"
             aria-busy={status === 'loading' || undefined}
-            className="max-h-[17.5rem] divide-y divide-line overflow-y-auto overscroll-contain rounded-control border border-line bg-kasavu"
+            className="grid gap-2 md:grid-cols-2 lg:grid-cols-3"
           >
             {!boats.length &&
               [0, 1, 2, 3].map((i) => (
-                <li key={i} className="flex h-14 items-center gap-3 px-4" aria-hidden>
+                <li key={i} className="flex h-14 items-center gap-3 rounded-control border border-line px-4" aria-hidden>
                   <span className="h-3 w-28 rounded-pill bg-line" />
                   <span className="ms-auto h-5 w-16 rounded-pill bg-line" />
                 </li>
               ))}
             {boats.map((b) => (
-              <li key={b.id}>
+              <li key={b.id} className="min-w-0 rounded-control border border-line">
                 <a
                   href={`/boat/${encodeURIComponent(b.id)}`}
                   className="group flex min-h-14 items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-surface focus-visible:-outline-offset-3"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold leading-snug text-ink">{b.name}</span>
-                    <span className="block truncate text-caption tabular-nums text-ink-muted">{b.registration}</span>
+                    <span className="block break-words text-caption tabular-nums text-ink-muted">{b.registration}</span>
                   </span>
                   <StatusBadge state={b.status.state} bilingual={false} />
                   <ArrowIcon className="hidden size-4 shrink-0 text-ink-muted transition-transform min-[400px]:block duration-150 group-hover:translate-x-0.5" />
@@ -226,7 +226,7 @@ export function Doors() {
           <Bi k="signinTitle" as="h2" id="doors-title" className="font-display text-title font-semibold text-ink" mlClassName="mt-1 text-gold-ink" />
           <p className="mt-3 text-body text-ink-muted">Demo sign-ins for HackaThoni, not real accounts.</p>
         </div>
-        <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-3">
+        <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-2">
           <CrewDoor {...boats} />
           <InspectorDoor />
           <GuestDoor {...boats} />
