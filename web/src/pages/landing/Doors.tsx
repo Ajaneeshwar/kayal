@@ -49,7 +49,7 @@ function CrewDoor({ status, boats, retry }: BoatsProps) {
   }
 
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7" aria-labelledby={`${selectId}-t`}>
+    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${selectId}-t`}>
       <div id={`${selectId}-t`}>
         <DoorHeader icon={<OarIcon className="size-6" />} title="crewTitle" body="crewBody" />
       </div>
@@ -122,7 +122,7 @@ function InspectorDoor() {
   }
 
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7" aria-labelledby={`${id}-t`}>
+    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<ShieldIcon className="size-6" />} title="inspectorTitle" body="inspectorBody" />
       </div>
