@@ -120,16 +120,6 @@ Phones need an https link to allow the microphone and location.
 
 Every route is described in [docs/API.md](docs/API.md).
 
-## Honest limits
-
-- It is not a blockchain. It is a hash-chained, tamper-evident log. Whoever runs the server could still rewrite the whole chain.
-- It does not measure tank volume. It records what the crew declares.
-- Location proves the phone was there, not that the tank was emptied.
-- A receipt is read, not checked against the plant's own records.
-- The Malayalam is unchecked until a native speaker has heard it.
-- Sign-in is a demo. Crews pick their boat from a list and inspectors use a shared PIN.
-- It needs a network connection. Offline use is not built.
-
 ## What is next
 
 - Real sign-in: phone OTP for crews and government accounts for inspectors.
