@@ -42,6 +42,13 @@
     font-size: max(16px, 1em);
   }
 
+  /* Native menus draw options on a light sheet on some platforms, so set both colours. */
+  option,
+  optgroup {
+    background-color: var(--color-kasavu);
+    color: var(--color-ink);
+  }
+
   [lang='ml'] {
     font-family: var(--font-ml);
     line-height: 1.6;
