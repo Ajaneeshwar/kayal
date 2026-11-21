@@ -10,7 +10,7 @@ Start the app locally with the instructions in [Run it](#run-it). The sample dat
 
 - Crew: choose **Kayal Rani** (`SAMPLE-ALP-0101`) on the landing page, or open `/crew?boat=kayal-rani`.
 - Inspector: sign in with whatever `ADMIN_PIN` is set to in your environment.
-- Receiver: open `/operator`, choose **Vembanad Septic Services** (`KL-04-AB-1234`) and enter demo code `5826`, or choose **Kumarakom STP desk** and enter demo code `2714`. These are synthetic demo codes from `lib/seed.mjs`.
+- Receiver: open `/operator` and pick a demo receiver. The codes follow the picker order: `1111` for a plant (**Kumarakom STP desk**), `2222` for a suction truck (**Vembanad Septic Services**, `KL-04-AB-1234`), `3333` for a pump boat and `4444` for a waste collector. These are synthetic demo codes from `lib/seed.mjs`.
 - Guest: open `/boat/kayal-rani`. No sign-in is needed.
 
 ## The problem
@@ -62,7 +62,7 @@ On the dashboard, an inspector can:
 ## Demo in three steps
 
 1. On Crew, pick Kayal Rani and log a sewage handover to the demo suction truck. For example: “A septic truck, KL-04-AB-1234, took 300 litres.” Keep the six-character handover code shown after saving.
-2. At `/operator`, choose Vembanad Septic Services and sign in with demo code `5826`. Type the handover code or scan the crew's QR code, check the quantity and choose **Confirm received**. The matching receiver can confirm within 72 hours of the entry.
+2. At `/operator`, choose Vembanad Septic Services and sign in with demo code `2222`. Type the handover code or scan the crew's QR code, check the quantity and choose **Confirm received**. The matching receiver can confirm within 72 hours of the entry.
 3. Open `/boat/kayal-rani` and the inspector dashboard. The entry now has Confirmed proof; the recent sewage handover qualifies for the green Verified seal. Both pages refresh after the confirmation. Kayal Rani may already have a green seal from another sewage entry, so check the entry's proof badge as well.
 
 ## Screenshots
