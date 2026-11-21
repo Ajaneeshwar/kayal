@@ -11,7 +11,7 @@ import { createPipeline } from './lib/pipeline.mjs';
 import { submitReport } from './lib/reports.mjs';
 import { createEvents } from './lib/events.mjs';
 import { HttpError, correctionQuantity, identifier, parseLocation, shortText } from './lib/input.mjs';
-import { boatStatus, checkChain, projectEntries } from './lib/logic.mjs';
+import { boatStatus, checkChain, projectEntries, reminderMessage } from './lib/logic.mjs';
 import { canConfirm, custodyTotals, HANDOVER_ALPHABET, isVehicleOperator, normaliseVehicle, OPERATOR_TYPES } from './lib/confirm.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +59,8 @@ const WASTE_TYPES = ['sewage', 'solid', 'oil'];
 const store = await Store.open(DATA_DIR, seed);
 const pipeline = createPipeline({ sarvam, store, uploadsDir: UPLOADS_DIR, overdueDays: OVERDUE_DAYS });
 const events = createEvents();
+const reminderCalls = [];
+let nextReminderAt = 0;
 
 function sendJson(res, status, payload) {
   const body = JSON.stringify(payload);
@@ -150,9 +152,53 @@ function requestPath(target) {
 }
 
 function apiMethod(pathname) {
+  if (reminderPath.test(pathname)) return 'POST';
   if (/^\/api\/(?:health|state|events|boats\/[\w-]+|operators\/[\w-]+\/(?:pending|handover\/[\w-]+))$/.test(pathname)) return 'GET';
   if (/^\/api\/(?:log(?:\/[\w-]+\/(?:correction|void|confirm))?|speak|signin|boats|operators(?:\/[\w-]+\/unload)?|facilities(?:\/[\w-]+\/status)?|reports(?:\/[\w-]+\/review)?)$/.test(pathname)) return 'POST';
   return null;
+}
+
+const reminderPath = /^\/api\/boats\/([\w-]+)\/reminder-call$/;
+
+async function callOwner(req, res, boatId) {
+  requireAdmin(req);
+  const { language = 'Malayalam' } = await readJson(req);
+  if (language !== 'Malayalam' && language !== 'English') throw new HttpError(400, 'Choose Malayalam or English.');
+  const boat = store.boat(boatId);
+  if (!boat) throw new HttpError(404, 'This boat is not registered.');
+  const config = sarvam.reminderCallConfig();
+  if (!config || (language === 'Malayalam' && !process.env.SARVAM_API_KEY)) {
+    throw new HttpError(503, 'Reminder calls are not configured.');
+  }
+
+  const retryAfterSeconds = Math.ceil((nextReminderAt - performance.now()) / 1000);
+  if (retryAfterSeconds > 0) {
+    res.setHeader('Retry-After', retryAfterSeconds);
+    throw new HttpError(429, 'A reminder call was just requested.', { retryAfterSeconds });
+  }
+  nextReminderAt = performance.now() + 60_000;
+
+  const now = new Date();
+  const status = boatStatus(store.entriesFor(boatId), now, OVERDUE_DAYS);
+  const { english, notDueSoon } = reminderMessage(boat.name, config.ownerName, status, store.facilities, now);
+  const signal = AbortSignal.timeout(20_000);
+  let local = english;
+  let attemptId;
+  let at;
+  try {
+    if (language === 'Malayalam') local = (await sarvam.translate(english, 'ml-IN', 'en-IN', signal)).text;
+    at = new Date().toISOString();
+    attemptId = await sarvam.sendReminderCall(config, local, language, signal);
+  } catch (error) {
+    if (!(error instanceof sarvam.SarvamError)) throw error;
+    throw new HttpError(502, signal.aborted ? 'The reminder request timed out.' : error.message);
+  } finally {
+    nextReminderAt = performance.now() + 60_000;
+  }
+  const to = config.maskedTo;
+  reminderCalls.unshift({ boatId, at, attemptId, language, to });
+  if (reminderCalls.length > 20) reminderCalls.pop();
+  return sendJson(res, 202, { attemptId, to, language, message: { english, local }, notDueSoon });
 }
 
 function boatView(boat, now) {
@@ -177,6 +223,7 @@ function stateView() {
       return at >= weekStart && at <= now;
     }).length,
     reports: store.reports.slice().reverse(),
+    reminderCalls,
     chain: checkChain(store.entries),
     overdueDays: OVERDUE_DAYS,
     adminPinRequired: Boolean(ADMIN_PIN),
@@ -196,7 +243,9 @@ async function route(req, res) {
   }
 
   if (method === 'GET') {
-    if (pathname === '/api/health') return sendJson(res, 200, { ok: true, sarvamKey: Boolean(process.env.SARVAM_API_KEY) });
+    if (pathname === '/api/health') return sendJson(res, 200, {
+      ok: true, sarvamKey: Boolean(process.env.SARVAM_API_KEY), reminderCallConfigured: Boolean(sarvam.reminderCallConfig()),
+    });
     if (pathname === '/api/state') return sendJson(res, 200, stateView());
     if (pathname === '/api/events') return events.subscribe(res);
 
@@ -264,6 +313,9 @@ async function route(req, res) {
   }
 
   if (method === 'POST') {
+    const reminder = pathname.match(reminderPath);
+    if (reminder) return callOwner(req, res, reminder[1]);
+
     if (pathname === '/api/log') {
       const result = await pipeline.logEvent(await readJson(req));
       if (result.stored) events.publish('entry', { action: 'created', id: result.entry.id, boatId: result.entry.boatId });

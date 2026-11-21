@@ -8,10 +8,11 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 
 | Method and path | Caller | Request body | Success | Errors |
 | --- | --- | --- | --- | --- |
-| `GET /api/health` | Anyone | None | 200 `{ok, sarvamKey}` | Common errors below |
-| `GET /api/state` | Anyone | None | 200 `{boats, facilities, operators, custody, entries, weeklyEntryCount, reports, chain, overdueDays, adminPinRequired}` | Common errors below |
+| `GET /api/health` | Anyone | None | 200 `{ok, sarvamKey, reminderCallConfigured}` | Common errors below |
+| `GET /api/state` | Anyone | None | 200 `{boats, facilities, operators, custody, entries, weeklyEntryCount, reports, reminderCalls, chain, overdueDays, adminPinRequired}` | Common errors below |
 | **New** `GET /api/events` | Anyone | None | 200 `text/event-stream` with named events | 400 request body. 405 wrong method. |
 | `GET /api/boats/:boatId` | Anyone | None | 200 `{boat, entries, facilities}` | 404 unknown boat |
+| `POST /api/boats/:boatId/reminder-call` | Inspector | `{"language":"Malayalam"}` or `{"language":"English"}`. Send `{}` for Malayalam. | 202 `{attemptId, to, language, message:{english, local}, notDueSoon}` | 400 invalid body or language. 401 wrong or missing PIN when enabled. 404 unknown boat. 429 cooldown. 502 Sarvam error or timeout. 503 missing or invalid configuration. |
 | `POST /api/log` | Crew with a registered boat ID | See crew request below | 200 stored entry or an answer to a waste question | 400 missing or invalid input, media or position. 404 unknown boat. 413 body, photo or text too large. 422 recording too short or too long, no speech, invalid quantity or no waste handover found. 502 language service failed or timed out. |
 | **New** `POST /api/log/:entryId/correction` | Crew holding the correction token issued for that entry | `{boatId, quantity, correctionToken}` | 200 `{entry, correction}` | 400 invalid fields or quantity. 403 wrong token. 404 entry missing or belongs to a different boat. 409 entry unavailable for correction or already has the requested amount. |
 | `POST /api/speak` | Caller holding a reply ID | `{"replyId":"f20ebf7c-f243-4c0e-badd-3c650648563e"}` | 200 `{audioBase64, mime}` | 400 missing or invalid identifier (use 1–80 ASCII letters, digits, underscores or hyphens). 404 unknown, expired or evicted reply, including an identifier in that syntax that was never issued. 502 language service failed or timed out. |
@@ -30,6 +31,14 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 Common errors are 400 for malformed paths, GET requests with bodies on API routes, or POST bodies that are empty, invalid JSON or a value other than an object. Unknown GET and POST paths return 404. A wrong method on a known API path returns 405 with `Allow`. Other methods on unknown paths return 405. POST bodies are capped at 12 MiB including base64 and JSON overhead (413), and have 40 seconds to arrive by default (408). Set `BODY_TIMEOUT_MS` to change that deadline. Each Sarvam request has its own 40-second deadline by default, configurable with `SARVAM_TIMEOUT_MS`. Unexpected server failures return 500. Names and registration numbers are plain text. Each successful log, report, boat, facility, operator or unload creation makes a new record. Corrections, reviews, facility status changes, voids and operator confirmations have the retry behavior described below.
 
 The inspector sign-in check returns only `ok`. Keep including `x-admin-pin` on inspector writes. The server also serves HTML for public GETs to `/`, `/crew`, `/dashboard`, `/operator`, and `/boat/:boatId`. The boat page fetches its record separately. `GET /static/:path` serves legacy public assets (for example, `/static/app.css` returns CSS). The Vite build serves generated files from `GET /assets/:file`. The current page embeds its favicon. `GET /favicon.svg` serves a file only if the build supplies one. `GET /uploads/:file` serves uploaded JPEG, PNG or WebP images. For example, `/uploads/<entry-id>.jpg` returns image bytes with `Content-Type: image/jpeg`. Missing files return 404 JSON.
+
+## Owner reminder calls
+
+The server calls the number configured in `REMINDER_CALL_TO`. It uses the boat's current sewage pump-out status and the first open collection point that accepts sewage. Calls can also be requested more than 14 days before the due date. Those responses set `notDueSoon:true`. For an English call, `message.local` equals `message.english`.
+
+A reminder request has up to 20 seconds for translation and call submission. The 60-second cooldown is shared across all boats and starts when the request finishes, including a provider failure. Requests in progress also block new calls. A 429 response includes `retryAfterSeconds` and a matching `Retry-After` header.
+
+HTTP 202 means Sarvam accepted the attempt. State exposes the last 20 accepted attempts, newest first, as `reminderCalls: [{boatId, at, attemptId, language, to}]`. The `at` timestamp marks submission, `to` is masked (for example, `+91••••••12`), and history resets when the server restarts. The health check exposes outbound configuration readiness as a boolean. Malayalam also requires `sarvamKey:true`.
 
 ## Records
 

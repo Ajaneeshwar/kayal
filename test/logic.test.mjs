@@ -2,9 +2,44 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   GENESIS_HASH, answerQuestion, boatStatus, checkChain, chooseReplyLanguage, classifyByKeywords, compass, distanceM, entryHash,
-  hasInvalidQuantity, normaliseExtraction, parseModelJson, projectEntries, replyFor, spokenDistance, verify,
+  hasInvalidQuantity, normaliseExtraction, parseModelJson, projectEntries, reminderMessage, replyFor, spokenDistance, verify,
 } from '../lib/logic.mjs';
 import { SPEECH_LANGUAGES } from '../lib/sarvam.mjs';
+
+test('reminders use the pump-out record, rule window and first open sewage plant', () => {
+  const now = new Date('2026-11-22T00:00:00Z');
+  const facilities = [
+    { name: 'Closed Plant', open: false, accepts: ['sewage'] },
+    { name: 'Oil Point', open: true, accepts: ['oil'] },
+    { name: 'First Plant', open: true, accepts: ['sewage'] },
+    { name: 'Second Plant', open: true, accepts: ['sewage'] },
+  ];
+  const build = (at, points = facilities, overdueDays = 90) => {
+    const entries = at ? [{
+      kind: 'sewage_pumpout', at, verification: { level: 'receipt', reason: null },
+    }] : [];
+    return reminderMessage('Punnamada Star', 'Ajay', boatStatus(entries, now, overdueDays), points, now);
+  };
+
+  const due = build('2026-09-03T00:00:00Z');
+  assert.match(due.english, /Punnamada Star's 90-day sewage pump-out record expires in 10 days \(2 December 2026\)/);
+  assert.match(due.english, /at First Plant or another approved plant/);
+  assert.equal(due.notDueSoon, false);
+
+  const late = build('2026-07-28T12:00:00Z');
+  assert.match(late.english, /is 27 days overdue/);
+  assert.equal(late.notDueSoon, false);
+
+  const noRecord = build(null, facilities.slice(0, 2));
+  assert.match(noRecord.english, /Punnamada Star has no sewage pump-out on record/);
+  assert.match(noRecord.english, /at an approved treatment plant/);
+  assert.equal(noRecord.notDueSoon, false);
+
+  const later = build('2026-09-17T00:00:00Z', facilities, 80);
+  assert.match(later.english, /80-day sewage pump-out record expires in 14 days/);
+  assert.equal(later.notDueSoon, false);
+  assert.equal(build('2026-09-17T00:00:01Z', facilities, 80).notDueSoon, true);
+});
 
 test('auto replies in the detected language when Bulbul supports it', () => {
   for (const language of SPEECH_LANGUAGES) {
