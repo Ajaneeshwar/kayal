@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   GENESIS_HASH, answerQuestion, boatStatus, checkChain, chooseReplyLanguage, classifyByKeywords, compass, distanceM, entryHash,
-  hasInvalidQuantity, hasWasteContext, normaliseExtraction, parseModelJson, projectEntries, replyFor, spokenDistance, verify,
+  hasInvalidQuantity, normaliseExtraction, parseModelJson, projectEntries, replyFor, spokenDistance, verify,
 } from '../lib/logic.mjs';
 import { SPEECH_LANGUAGES } from '../lib/sarvam.mjs';
 
@@ -119,7 +119,7 @@ test('truck pump-outs count toward sewage status at their earned level', () => {
     assert.equal(status.lastSewage.level, verification.level);
     assert.equal(status.lastSewage.facilityName, null);
     assert.match(replyFor({ kind, method, vehicleNumber: 'KL-04-AB-1234', verification }),
-      /^Saved\. Toilet tank emptied by suction truck KL-04-AB-1234\./);
+      /^This handover is now in the logbook\. Toilet tank emptied by suction truck KL-04-AB-1234\./);
   }
 });
 
@@ -144,21 +144,28 @@ test('boat status: overdue when the last pump-out is outside the window or missi
   assert.deepEqual([empty.state, empty.lastSewage, empty.lastSolid], ['overdue', null, null]);
 });
 
+test('boat status ignores voided entries for both sewage and solid waste', () => {
+  const voided = { ...sewage(1, 'receipt'), voided: true };
+  const entries = [voided, { ...voided, kind: 'solid_waste' }];
+  assert.deepEqual(boatStatus(entries, NOW, 90), boatStatus([], NOW, 90));
+  assert.equal(boatStatus([...entries, sewage(30, 'declared')], NOW, 90).state, 'declared');
+});
+
 test('replies name the plant, the distance or the missing location', () => {
   const at = verify({ kind: 'sewage_pumpout', location: { lat: 9.5965, lon: 76.4292 }, facilities: FACILITIES, hasReceipt: true });
   assert.equal(
     replyFor({ kind: 'sewage_pumpout', verification: at, hasPhoto: true }),
-    'Saved. Toilet tank emptying recorded at Kumarakom STP. Your location is confirmed. The receipt photo is saved.',
+    'This handover is now in the logbook. Toilet tank emptying recorded at Kumarakom STP. Your location is confirmed. The receipt photo is saved.',
   );
   const far = verify({ kind: 'sewage_pumpout', location: { lat: 9.5008, lon: 76.3441 }, facilities: FACILITIES, hasReceipt: false });
   assert.equal(
     replyFor({ kind: 'sewage_pumpout', verification: far, hasPhoto: true }),
-    'Saved, but not confirmed. You are 14.2 kilometres from the nearest sewage collection point, Kumarakom STP. The photo is saved.',
+    'This handover is in the logbook. We could not confirm it. You are 14.2 kilometres from the nearest sewage collection point, Kumarakom STP. The photo is saved.',
   );
   const none = verify({ kind: 'solid_waste', location: null, facilities: FACILITIES, hasReceipt: false });
   assert.equal(
     replyFor({ kind: 'solid_waste', verification: none, hasPhoto: false }),
-    'Saved, but not confirmed. Turn on location at the collection point next time.',
+    'This handover is in the logbook. We could not confirm it. Turn on location at the collection point next time.',
   );
 });
 
@@ -183,15 +190,6 @@ test('crew already at the dry-waste point get its name without a fictitious bear
   assert.equal(answerQuestion('Where do we take dry waste?', PUNNAMADA, FACILITIES),
     'You are at Punnamada point, a working waste collection point.');
   assert.equal(classifyByKeywords('We gave our dry waste to the collector.'), 'solid_waste');
-  assert.equal(hasWasteContext('We emptied the tank at Kumarakom.'), true);
-  assert.equal(hasWasteContext('We refilled the fuel tank.'), false);
-});
-
-test('waste context rejects unrelated questions and keeps collection questions', () => {
-  assert.equal(hasWasteContext('Hello, how are you?'), false);
-  assert.equal(hasWasteContext('Where did I put my keys?'), false);
-  assert.equal(hasWasteContext('Which plant is open today?'), true);
-  assert.equal(hasWasteContext('We emptied the toilet tank at Kumarakom.'), true);
 });
 
 test('invalid quantities include non-finite and negative amounts', () => {
@@ -220,10 +218,33 @@ test('handover extraction validates methods and caps optional strings', () => {
     assert.deepEqual([entry.method, entry.vehicleNumber, entry.handedTo], ['collection_point', null, null]);
   }
   const entry = normaliseExtraction({
-    method: 'suction_truck', vehicle_number: ` < ${'A'.repeat(50)} > `, handed_to: 'B'.repeat(110),
+    method: 'suction_truck', vehicle_number: ` < ${'A'.repeat(50)} > `, handed_to: 'Ravi ' + 'b'.repeat(110),
   }, 'Septic truck took 300 litres');
   assert.deepEqual([entry.method, entry.vehicleNumber, entry.handedTo],
-    ['suction_truck', 'A'.repeat(40), 'B'.repeat(100)]);
+    ['suction_truck', 'A'.repeat(40), 'Ravi ' + 'b'.repeat(95)]);
+});
+
+test('public handover summaries use emptying or handover wording', () => {
+  for (const verb of ['Dumped', 'Discharged', 'Thrown', 'Disposed of', 'Discarded']) {
+    const entry = normaliseExtraction({ kind: 'sewage_pumpout', summary_en: verb + ' the contents at Kumarakom.' }, '');
+    assert.equal(entry.summaryEn, 'Emptied the contents at Kumarakom.');
+  }
+  const fallback = normaliseExtraction(null, 'We threw away the plastic.');
+  assert.equal(fallback.summaryEn, 'We handed over the plastic.');
+  const bareVerb = normaliseExtraction({ kind: 'sewage_pumpout', summary_en: 'emptied' }, 'We dumped the tank contents at Kumarakom.');
+  assert.equal(bareVerb.summaryEn, 'We emptied the tank contents at Kumarakom.');
+  const named = normaliseExtraction({ kind: 'engine_oil', summary_en: 'Handed over oil to Ravi.' }, '');
+  assert.equal(named.summaryEn, 'Handed over oil to Ravi.');
+});
+
+test('handed-to only retains plausible recipient names', () => {
+  for (const handed_to of ['Al', 'TEST', 'TEST-1', 'KL-04-AB-1234', 'kl 04 Ab 1234',
+    '1234', '1,000', 'truck', 'boat', 'the driver', 'someone', 'suction truck']) {
+    assert.equal(normaliseExtraction({ handed_to }, '').handedTo, null, handed_to);
+  }
+  for (const handed_to of ['Ravi', 'Haritha Karma Sena', 'Ravi from HKS', 'രവി']) {
+    assert.equal(normaliseExtraction({ handed_to }, '').handedTo, handed_to);
+  }
 });
 
 test('hash chain detects an edited entry', () => {
@@ -265,6 +286,27 @@ test('quantity corrections are chained and project the latest amount without cha
   assert.deepEqual(entry.verification, original.verification);
   assert.deepEqual(checkChain(records), { ok: true, count: 3, brokenAt: null });
   assert.equal(checkChain([original, first, { ...last, quantity: '800 litres' }]).brokenAt, 2);
+});
+
+test('void records are chained and mark the original entry in public projections', () => {
+  const original = { ...sewage(1, 'location'), id: 'entry', boatId: 'boat', prevHash: GENESIS_HASH };
+  original.hash = entryHash(original.prevHash, original);
+  const marker = {
+    id: 'void-1', boatId: original.boatId, at: NOW.toISOString(),
+    voidsEntryId: original.id, reason: 'Test entry', prevHash: original.hash,
+  };
+  marker.hash = entryHash(marker.prevHash, marker);
+  const records = [original, marker];
+  assert.deepEqual(checkChain(records), { ok: true, count: 2, brokenAt: null });
+  for (const change of [{ reason: 'Edited' }, { voidsEntryId: 'another-entry' }]) {
+    assert.equal(checkChain([original, { ...marker, ...change }]).brokenAt, 1);
+  }
+  assert.equal(projectEntries([original])[0].voided, false);
+  const [entry, ...extra] = projectEntries(records);
+  assert.deepEqual(extra, []);
+  assert.deepEqual(entry, {
+    ...projectEntries([original])[0], voided: true, voidedAt: marker.at, voidReason: marker.reason,
+  });
 });
 
 test('new entries bind the named plant and receipt fields alongside legacy hashes', () => {

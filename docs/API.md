@@ -4,15 +4,15 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 
 ## Routes
 
-`/api/state` returns at most 100 recent entries. `weeklyEntryCount` counts all projected handovers from Monday midnight in the server's local timezone through now, regardless of that feed limit; corrections do not count as additional handovers.
+`/api/state` returns at most 100 recent entries. `weeklyEntryCount` counts all projected handovers from Monday midnight in the server's local timezone through now, regardless of that feed limit. Corrections, confirmations, void records and unloads are excluded from that count as separate events.
 
 | Method and path | Caller | Request body | Success | Errors |
 | --- | --- | --- | --- | --- |
 | `GET /api/health` | Anyone | None | 200 `{ok, sarvamKey}` | Common errors below |
-| `GET /api/state` | Anyone | None | 200 `{boats, facilities, entries, weeklyEntryCount, reports, chain, overdueDays, adminPinRequired}` | Common errors below |
+| `GET /api/state` | Anyone | None | 200 `{boats, facilities, operators, custody, entries, weeklyEntryCount, reports, chain, overdueDays, adminPinRequired}` | Common errors below |
 | **New** `GET /api/events` | Anyone | None | 200 `text/event-stream` with named events | 400 request body. 405 wrong method. |
 | `GET /api/boats/:boatId` | Anyone | None | 200 `{boat, entries, facilities}` | 404 unknown boat |
-| `POST /api/log` | Crew with a registered boat ID | See crew request below | 200 stored entry or an answer to a waste question | 400 missing or invalid input, media or position. 404 unknown boat. 413 body, recording, photo or text too large. 422 recording too short, no speech, invalid quantity or no waste handover found. 502 language service failed or timed out. |
+| `POST /api/log` | Crew with a registered boat ID | See crew request below | 200 stored entry or an answer to a waste question | 400 missing or invalid input, media or position. 404 unknown boat. 413 body, photo or text too large. 422 recording too short or too long, no speech, invalid quantity or no waste handover found. 502 language service failed or timed out. |
 | **New** `POST /api/log/:entryId/correction` | Crew holding the correction token issued for that entry | `{boatId, quantity, correctionToken}` | 200 `{entry, correction}` | 400 invalid fields or quantity. 403 wrong token. 404 entry missing or belongs to a different boat. 409 entry unavailable for correction or already has the requested amount. |
 | `POST /api/speak` | Caller holding a reply ID | `{"replyId":"f20ebf7c-f243-4c0e-badd-3c650648563e"}` | 200 `{audioBase64, mime}` | 400 missing or invalid identifier (use 1–80 ASCII letters, digits, underscores or hyphens). 404 unknown, expired or evicted reply, including an identifier in that syntax that was never issued. 502 language service failed or timed out. |
 | **New** `POST /api/signin` | Inspector | `{role:"inspector", pin:"…"}` | 200 `{"ok":true}` | 400 role other than inspector or PIN missing, non-string, or over 64 characters. 401 wrong PIN when enabled. |
@@ -21,24 +21,32 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 | `POST /api/boats` | Inspector | `{"name":"Example Boat","registration":"SAMPLE-0105"}` | 201 `{boat}` | 400 invalid JSON or missing/invalid name (80 chars) or registration (40 chars). 401 wrong/missing PIN when enabled. 413 body too large. |
 | `POST /api/facilities` | Inspector | `{"name":"Example Point","lat":9.5,"lon":76.4,"accepts":["oil"]}` | 201 `{facility}` | 400 invalid location, missing/invalid waste types or missing/invalid name (80 chars). 401 wrong/missing PIN when enabled. |
 | `POST /api/facilities/:facilityId/status` | Inspector | `{"open":false}` | 200 `{facility}` | 400 missing or non-boolean `open`. 401 wrong/missing PIN when enabled. 404 unknown collection point. |
+| `POST /api/operators` | Inspector | `{name, type, facilityId?, vehicleNumber?, code}` | 201 `{operator}` | 400 invalid fields, 401 wrong/missing PIN when enabled, 404 unknown facility |
+| `GET /api/operators/:operatorId/pending` | Operator | None | 200 `{operator, pending}` | 401 missing or wrong code, 404 unknown operator |
+| `GET /api/operators/:operatorId/handover/:code` | Operator | None | 200 `{entry}` | 400 invalid handover code, 401 missing or wrong sign-in code, 403 ineligible entry, 404 unknown operator or handover code |
+| `POST /api/log/:entryId/confirm` | Operator | `{decision, quantity?, note?}` | 200 `{entry, confirmation}` | 400 invalid fields, 401 missing or wrong code, 403 ineligible entry, 404 unknown operator or entry, 409 conflicting decision |
+| `POST /api/operators/:operatorId/unload` | Plant operator | `{vehicleNumber, quantity}` | 201 `{unload}` | 400 invalid fields, 401 missing or wrong code, 403 non-plant operator, 404 unknown operator or vehicle |
 
-Common errors are 400 for malformed paths, GET requests with bodies on API routes, or POST bodies that are empty, invalid JSON or a value other than an object. Unknown GET and POST paths return 404. A wrong method on a known API path returns 405 with `Allow`. Other methods on unknown paths return 405. POST bodies are capped at 12 MiB including base64 and JSON overhead (413), and have 15 seconds to arrive (408). Unexpected server failures return 500. Names and registration numbers are plain text. Each successful log, report, boat or facility creation makes a new record, even when the submission is identical. Only the correction, review and facility-status updates described below support retries without a second change.
+Common errors are 400 for malformed paths, GET requests with bodies on API routes, or POST bodies that are empty, invalid JSON or a value other than an object. Unknown GET and POST paths return 404. A wrong method on a known API path returns 405 with `Allow`. Other methods on unknown paths return 405. POST bodies are capped at 12 MiB including base64 and JSON overhead (413), and have 40 seconds to arrive by default (408). Set `BODY_TIMEOUT_MS` to change that deadline. Each Sarvam request has its own 40-second deadline by default, configurable with `SARVAM_TIMEOUT_MS`. Unexpected server failures return 500. Names and registration numbers are plain text. Each successful log, report, boat, facility, operator or unload creation makes a new record. Corrections, reviews, facility status changes, voids and operator confirmations have the retry behavior described below.
 
-The sign-in check returns only `ok`. Keep including `x-admin-pin` on inspector writes. The server also serves HTML for public GETs to `/`, `/crew`, `/dashboard`, and `/boat/:boatId`. The boat page fetches its record separately. `GET /static/:path` serves legacy public assets (for example, `/static/app.css` returns CSS). The Vite build serves generated files from `GET /assets/:file`. The current page embeds its favicon. `GET /favicon.svg` serves a file only if the build supplies one. `GET /uploads/:file` serves uploaded JPEG, PNG or WebP images. For example, `/uploads/<entry-id>.jpg` returns image bytes with `Content-Type: image/jpeg`. Missing files return 404 JSON.
+The inspector sign-in check returns only `ok`. Keep including `x-admin-pin` on inspector writes. The server also serves HTML for public GETs to `/`, `/crew`, `/dashboard`, `/operator`, and `/boat/:boatId`. The boat page fetches its record separately. `GET /static/:path` serves legacy public assets (for example, `/static/app.css` returns CSS). The Vite build serves generated files from `GET /assets/:file`. The current page embeds its favicon. `GET /favicon.svg` serves a file only if the build supplies one. `GET /uploads/:file` serves uploaded JPEG, PNG or WebP images. For example, `/uploads/<entry-id>.jpg` returns image bytes with `Content-Type: image/jpeg`. Missing files return 404 JSON.
 
 ## Records
 
 - **Boat** has string `id`, `name` and `registration`, and `status`. Server-created IDs begin with `b-`. Sample boats have readable IDs.
 - **Facility** has string `id`, `name`, nullable strings `operator` and `note`, `accepts` (array of `sewage`, `solid`, or `oil`), numeric `lat` and `lon`, numeric `radiusM`, and boolean `open`. Created facilities begin open with radius 400 m and null operator and note. Server-created IDs begin with `f-`.
-- **Entry** has string `id` (UUID), `boatId`, `at` (UTC ISO date), `kind` (`sewage_pumpout`, `solid_waste`, or `engine_oil`), `summaryEn`, nullable strings `quantity` (including units) and `facilityMentioned`, `heard`, nullable `location`, `verification`, nullable `photo`, `source` (`voice`, `text`, or `sample`), and SHA-256 hex strings `prevHash` and `hash`. `facilityMentioned` is what the crew said. `verification.facilityId` is the point matched to the phone.
+- **Operator** has strings `id` and `name`, `type` (`plant`, `suction_truck`, `mobile_pump`, or `waste_collector`), and nullable strings `facilityId` and `vehicleNumber`. Server-created IDs begin with `o-`. The sign-in code is accepted only as input.
+- **Entry** has string `id` (UUID), `boatId`, `at` (UTC ISO date), `kind` (`sewage_pumpout`, `solid_waste`, or `engine_oil`), `summaryEn`, nullable strings `quantity` (including units) and `facilityMentioned`, `heard`, nullable `location`, `verification`, nullable `photo`, `source` (`voice`, `text`, or `sample`), and SHA-256 hex strings `prevHash` and `hash`. `facilityMentioned` is what the crew said. `verification.facilityId` identifies the GPS match or the confirming plant.
 - **Handover** fields on each entry are `method` (`collection_point`, `suction_truck`, `mobile_pump`, `waste_collector`, or `waste_bin`), `vehicleNumber` (registration, up to 40 characters or null), and `handedTo` (recipient or operator name, up to 100 characters or null). These fields are extracted from text or speech. An absent or unrecognized extracted method falls back to `collection_point`. Older entries read as `collection_point` with both optional values null.
-- **Corrected entries** carry `corrected:true`, `correctionId` (UUID), `correctedAt` (UTC ISO date), and the latest `quantity`. An uncorrected entry has `corrected:false`, `correctionId:null`, and `correctedAt:null`. Proof, the recorded wording, and hashes still refer to the original event.
+- **Handover codes** are six characters from `23456789ABCDEFGHJKMNPQRSTUVWXYZ`. Legacy entries have `handoverCode:null`.
+- **Confirmation** on a projected entry is null or `{decision, at, operatorId, operatorName, operatorType, quantity, note}`. `at` is a UTC timestamp and `quantity` and `note` are nullable strings. `disputed` is true when the operator selects `not_received`, and false otherwise.
+- **Corrected entries** carry `corrected:true`, `correctionId` (UUID), `correctedAt` (UTC ISO date), and the latest `quantity`. An uncorrected entry has `corrected:false`, `correctionId:null`, and `correctedAt:null`. Corrections change only the projected quantity, with the wording and hash kept on the original event.
 - **Heard** has string `original`, `language` (locale such as `ml-IN`), and `english`. For English typed input, both text fields contain the input.
 - **Location** has numeric `lat` and `lon` and `accuracy` (rounded metres or null).
 - **Photo** has string `file`, boolean `isReceipt`, and nullable strings `issuer`, `date`, `amount`, and `caption`. Load it from `/uploads/${photo.file}`. A photo can be stored even when it does not add receipt proof.
 - **Verification** has `level`, nullable strings `facilityId` and `facilityName`, nullable number `distanceM` (rounded metres), and nullable string `reason`.
-- **Boat status** has `state` (`verified`, `declared`, or `overdue`), numeric `overdueDays`, and `lastSewage` and `lastSolid`. Each is null or `{at, daysAgo, level, facilityName}`. `daysAgo` is a whole number. `facilityName` is null if the entry was not verified. `lastSewage` picks the newest verified sewage entry within the window, then the newest declared sewage entry in that window, then the newest sewage entry overall. `lastSolid` is the newest solid waste entry regardless of age. The status is `verified` if there is a location or receipt sewage entry in the window, `declared` if there are only declared sewage entries in the window, and `overdue` otherwise. The default window is 90 days.
-- **Chain** has boolean `ok`, numeric `count` (all records in the chain), and `brokenAt` (zero-based insertion index, or null when intact). New entries hash the handover fields, named facility, and photo metadata. Older entries retain their original hashes. The chain does not hash the image bytes.
+- **Boat status** has `state` (`verified`, `declared`, or `overdue`), numeric `overdueDays`, and `lastSewage` and `lastSolid`. Each is null or `{at, daysAgo, level, facilityName}`. `daysAgo` is a whole number. `facilityName` is null if the entry was not verified. `lastSewage` picks the newest verified sewage entry within the window, then the newest declared sewage entry in that window, then the newest sewage entry overall. `lastSolid` is the newest solid waste entry regardless of age. The status is `verified` if there is a location, receipt or confirmed sewage entry in the window, `declared` if there are only declared sewage entries in the window, and `overdue` otherwise. The default window is 90 days. Both status fields skip voided and disputed entries.
+- **Chain** has boolean `ok`, numeric `count` (all records in the chain), and `brokenAt` (zero-based insertion index, or null when intact). New entries hash the handover fields, handover code, named facility, and photo metadata. Confirmations and unloads append to the same chain. Older entries retain their original hashes. The chain does not hash the image bytes.
 - **Reply** has string `id` (UUID), `english`, `local`, and `language`. Show `local` beside `english` when they differ.
 
 ## Proof
@@ -51,15 +59,17 @@ The sign-in check returns only `ok`. Keep including `x-admin-pin` on inspector w
 | `declared` | A `suction_truck`, `mobile_pump`, or `waste_collector` handover has no qualifying photo. | `no_fixed_point` |
 | `receipt` | A `suction_truck`, `mobile_pump`, or `waste_collector` photo shows a handover receipt, bill, token, certificate, operator slip, or legible registration plate. | `handover_slip` |
 | `declared` | Waste went into a public or communal bin. Photos can be saved at this level. | `waste_bin` |
+| `confirmed` | An eligible operator recorded receipt of the waste. | `operator_confirmed` |
+| `declared` | An eligible operator recorded that they did not receive the waste. | `operator_disputed` |
 
-For `collection_point`, proof follows the coordinates and accepted waste type. A different plant named in the text is preserved in `facilityMentioned` and does not override the location match. An open matching point in range wins over a closed point in range. A closed matching point in range wins over points outside their radii. Outside the radii, the nearest open eligible point is preferred, or the nearest eligible point if all are closed. `no_location` and `no_facility` leave the facility fields and distance null. For all other methods the facility fields and distance are null, and supplied GPS is stored in `entry.location`. Every sewage entry contributes to the 90-day status at its earned level.
+Levels rank `declared < location < receipt < confirmed`. Before confirmation, collection-point proof follows the coordinates and accepted waste type. The crew's wording is preserved in `facilityMentioned`. An open matching point in range wins over a closed point in range. A closed matching point in range wins over points outside their radii. Outside the radii, the nearest open eligible point is preferred, or the nearest eligible point if all are closed. `no_location` and `no_facility` leave the facility fields and distance null. For all other methods the facility fields and distance are null, and supplied GPS is stored in `entry.location`.
 
 ## Crew log and playback
 
 Send `POST /api/log` with `boatId` and one of these inputs:
 
 - Typed: `{"boatId":"kayal-rani","text":"Septic truck KL-04-AB-1234 took 300 litres.","lat":9.5965,"lon":76.4292,"accuracy":15,"replyLanguage":"en-IN"}`.
-- Recorded: replace `text` with `audioBase64` (standard base64, no data URI prefix) and `audioMime` (MediaRecorder MIME type such as `audio/webm;codecs=opus`, `audio/mp4`, or `audio/ogg;codecs=opus`). Also accepted are `audio/wav`, `audio/x-wav`, `audio/mpeg` and `audio/aac`. The default MIME is `audio/webm`. Audio has a 2,000-byte minimum and 6 MiB maximum after decoding. Text is capped at 600 trimmed characters.
+- Recorded: replace `text` with `audioBase64` (standard base64, no data URI prefix) and `audioMime` (MediaRecorder MIME type such as `audio/webm;codecs=opus`, `audio/mp4`, or `audio/ogg;codecs=opus`). Also accepted are `audio/wav`, `audio/x-wav`, `audio/mpeg` and `audio/aac`. The default MIME is `audio/webm`. Audio has a 2,000-byte minimum and a 768 KiB maximum after decoding. Record 30 seconds or less. The byte budget allows for Safari MP4/AAC. An over-budget recording or a recording rejected by speech recognition with HTTP 400 or 413 returns 422 with `{error, stored:false, reply}` and an English retry reply. Text is capped at 600 trimmed characters.
 - The position fields are optional and at the top level. Send `lat` (−90 to 90) and `lon` (−180 to 180) together as numbers and optional non-negative `accuracy` in metres. `photoBase64` is optional or null and carries raw base64 JPEG bytes up to 3 MiB decoded. The current crew UI resizes photos to a maximum side of 1280 px before converting to JPEG.
 - Optional `replyLanguage` controls both written and spoken replies. Accepted values are `auto` (the default), `bn-IN`, `en-IN`, `gu-IN`, `hi-IN`, `kn-IN`, `ml-IN`, `mr-IN`, `od-IN`, `pa-IN`, `ta-IN`, and `te-IN`. Other values return 400. In `auto`, the reply follows `heard.language` when Bulbul v3 supports it and uses `en-IN` otherwise. Typed Latin-script English replies in English by default. For any English reply, `reply.local` equals `reply.english` and reply translation is skipped. Input transcription or translation still follows the input language.
 
@@ -80,14 +90,17 @@ A saved result is `{stored:true, kind, heard, entry, status, reply, correctionTo
     "method": "suction_truck",
     "vehicleNumber": "KL-04-AB-1234",
     "handedTo": null,
+    "handoverCode": "K7MA2P",
+    "confirmation": null,
+    "disputed": false,
     "verification": {"level":"declared","facilityId":null,"facilityName":null,"distanceM":null,"reason":"no_fixed_point"}
   },
   "status": {"state":"declared","overdueDays":90},
   "correctionToken": "c19fe765-4638-44fa-ad84-5e114ac39e90",
   "reply": {
     "id": "f20ebf7c-f243-4c0e-badd-3c650648563e",
-    "english": "Saved. Toilet tank emptied by suction truck KL-04-AB-1234.",
-    "local": "Saved. Toilet tank emptied by suction truck KL-04-AB-1234.",
+    "english": "This handover is now in the logbook. Toilet tank emptied by suction truck KL-04-AB-1234.",
+    "local": "This handover is now in the logbook. Toilet tank emptied by suction truck KL-04-AB-1234.",
     "language": "en-IN"
   }
 }
@@ -98,15 +111,15 @@ With `replyLanguage` omitted and `heard.language` equal to `ta-IN`, a Tamil repl
 ```json
 {
   "id": "de63c530-1c4f-4625-95a4-8c22bba32b23",
-  "english": "Saved. Toilet tank emptied.",
-  "local": "சேமிக்கப்பட்டது. கழிப்பறைத் தொட்டி காலி செய்யப்பட்டது.",
+  "english": "This handover is now in the logbook. Toilet tank emptied.",
+  "local": "இந்த ஒப்படைப்பு இப்போது பதிவேட்டில் உள்ளது. கழிப்பறைத் தொட்டி காலி செய்யப்பட்டது.",
   "language": "ta-IN"
 }
 ```
 
-A question about waste returns 200 `{stored:false, kind:"question", heard, reply}` with open collection points and directions when location was supplied. Unrelated speech or text returns 422 `{error, stored:false, kind:"other", heard, reply}`. The reply asks the crew to describe what they emptied or handed over and where. Both use the same language selection as saved entries. Silence and other 422 errors may have only `error`. If extraction, translation or receipt reading fails or times out, the log returns 502 and saves no entry or receipt.
+A question about waste returns 200 `{stored:false, kind:"question", heard, reply}` with open collection points and directions when location was supplied. Unrelated speech or text returns 422 `{error, stored:false, kind:"other", heard, reply}`. The reply asks the crew to describe what they emptied or handed over and where. Both use the same language selection as saved entries. Silence and other 422 errors may have only `error`. Extraction uses keyword classification if the model fails or returns an unknown kind. Other language-service failures or timeouts return 502 and save no entry or receipt.
 
-Play the reply with `POST /api/speak` and `{"replyId":"…"}`. Bulbul v3 generates MP3 in `reply.language` from `reply.local`. A real response starts `{"audioBase64":"//PAxAAAAANIAAAA…","mime":"audio/mpeg"}` (audio truncated). Assign the audio element a URL like `data:${mime};base64,${audioBase64}`. Reply IDs are kept in memory for up to ten minutes, with a 200-reply cache. Audio is generated on demand and cached with the reply.
+Play the reply with `POST /api/speak` and `{"replyId":"…"}`. Bulbul v3 generates MP3 in `reply.language` from `reply.local`. The response contains one base64 string for the full MP3, including all audio chunks. A real response starts `{"audioBase64":"//PAxAAAAANIAAAA…","mime":"audio/mpeg"}` (audio truncated). Assign the audio element a URL like `data:${mime};base64,${audioBase64}`. Reply IDs are kept in memory for up to ten minutes, with a 200-reply cache. Audio is generated on demand and cached with the reply.
 
 ## Quantity correction (new)
 
@@ -132,6 +145,116 @@ Sandbox example, with the entry abbreviated:
     "quantity": "8000 litres",
     "prevHash": "c9cfa330b766047fbb9822bce5c17e1df68bf871cd2b3d2ad0b28e51d321ef5a",
     "hash": "60fa1c474fc05be8ca9f83381120dd19037f10ec17e47db2a996598ed2f2411e"
+  }
+}
+```
+
+## Operator confirmation
+
+Inspectors create operators with `POST /api/operators` and the `x-admin-pin` header. For example, send `{"name":"Kumarakom morning desk","type":"plant","facilityId":"kumarakom-stp","code":"desk-demo-96"}`. The name is plain text up to 80 characters. Plant operators require a registered `facilityId`. Suction trucks and mobile pump boats require a registration of up to 40 characters using letters, digits, spaces or hyphens. The code is a string of 1–64 printable ASCII characters without spaces or commas. The response contains the same public fields as `state.operators`.
+
+```json
+{"operator":{"id":"o-931c102b","name":"Kumarakom morning desk","type":"plant","facilityId":"kumarakom-stp","vehicleNumber":null}}
+```
+
+To sign in and list undecided handovers, request `GET /api/operators/:operatorId/pending` with `x-operator-code`. The pending list contains only eligible entries and is sorted by entry time, newest first.
+
+```json
+{
+  "operator":{"id":"vembanad-septic","name":"Vembanad Septic Services","type":"suction_truck","facilityId":null,"vehicleNumber":"KL-04-AB-1234"},
+  "pending":[{"id":"ee55e0fb-775e-4991-87a5-78b885fb1731","boatId":"kayal-rani","handoverCode":"K7MA2P","confirmation":null,"disputed":false}]
+}
+```
+
+The crew page will display `entry.handoverCode` from a saved log and a QR link to `/operator?entry=<id>`. Manual code entry uses `GET /api/operators/:operatorId/handover/:code` with the same sign-in header. For example, a successful lookup of `K7MA2P` returns `{"entry":{"id":"ee55e0fb-775e-4991-87a5-78b885fb1731","handoverCode":"K7MA2P"}}` with the full projected entry. Codes are case-insensitive on lookup.
+
+Both lookups and writes enforce the 72-hour limit from `entry.at` and exclude voided entries. A plant operator can decide collection-point handovers at its facility. An in-range GPS match identifies the facility. Without an in-range match, the crew can identify it by the registered name, ignoring case and surrounding whitespace. A suction truck or mobile pump boat can decide handovers for the same method and vehicle, ignoring spaces, hyphens and case. If the entry has no vehicle number, the decision supplies the operator's registered number on the projected entry. Waste collectors can decide `waste_collector` handovers.
+
+To decide an entry, send `POST /api/log/:entryId/confirm` with `x-operator-id` and `x-operator-code` and a body such as `{"decision":"received","quantity":"300 litres","note":"Received at the jetty"}`. The decision is `received` or `not_received`. An optional quantity uses the quantity correction format as a string. An optional plain-text note is at most 200 characters after trimming. An absent quantity or blank or absent note returns as null.
+
+The first decision appends one record. An eligible repeat of the same decision returns the original record with its original quantity and note. A different decision returns 409. State and boat detail retain a single projected handover. The response below abbreviates the entry and hash values.
+
+```json
+{
+  "entry":{
+    "id":"ee55e0fb-775e-4991-87a5-78b885fb1731",
+    "verification":{"level":"confirmed","reason":"operator_confirmed"},
+    "confirmation":{
+      "decision":"received","at":"2026-11-22T00:15:00.000Z","operatorId":"vembanad-septic",
+      "operatorName":"Vembanad Septic Services","operatorType":"suction_truck",
+      "quantity":"300 litres","note":"Received at the jetty"
+    },
+    "disputed":false
+  },
+  "confirmation":{
+    "id":"fbdcd596-e8b8-4f41-abb4-3347f5823978","boatId":"kayal-rani","at":"2026-11-22T00:15:00.000Z",
+    "confirmsEntryId":"ee55e0fb-775e-4991-87a5-78b885fb1731","operatorId":"vembanad-septic",
+    "decision":"received","quantity":"300 litres","note":"Received at the jetty","prevHash":"c9cfa330…","hash":"60fa1c47…"
+  }
+}
+```
+
+## Vehicle custody
+
+A registered plant operator records an unload with `POST /api/operators/:operatorId/unload` and `x-operator-code`. Send `{"vehicleNumber":"kl 04 ab 1234","quantity":"300 litres"}`. The vehicle must belong to a registered suction truck or mobile pump operator. Quantity uses the same format as a correction. Each successful request appends one unload. The response below abbreviates the hash values.
+
+```json
+{
+  "unload":{
+    "id":"ea6c4592-9812-4da6-b986-1f702853dbbb","type":"vehicle_unload","at":"2026-11-22T03:15:00.000Z",
+    "operatorId":"kumarakom-desk","facilityId":"kumarakom-stp","vehicleNumber":"KL-04-AB-1234",
+    "quantity":"300 litres","prevHash":"c9cfa330…","hash":"60fa1c47…"
+  }
+}
+```
+
+`GET /api/state` returns one `custody` row per registered truck or pump registration, including vehicles with no activity. Over the last 30 days, `pickedUpLitres` sums the litres recorded by vehicle operators on received confirmations for active handovers. `unloadedLitres` sums matching plant unloads. Missing amounts, missing units and unknown units contribute zero litres. `gapLitres` is the signed difference `pickedUpLitres - unloadedLitres`. The two activity timestamps are null until the vehicle has a qualifying event in the window.
+
+```json
+{
+  "custody":[{
+    "vehicleNumber":"KL-04-CD-5678","operatorName":"Kuttanad Septic Services",
+    "pickedUpLitres":950,"unloadedLitres":400,"gapLitres":550,
+    "lastPickupAt":"2026-11-21T03:00:00.000Z","lastUnloadAt":"2026-11-21T22:00:00.000Z"
+  }]
+}
+```
+
+## Void a log entry
+
+Send `POST /api/log/:entryId/void` with the inspector's `x-admin-pin` header and
+`{"reason":"Test entry"}`. The reason must be a string of 1–200 characters after trimming.
+The route returns 400 for an invalid reason, 404 for an unknown handover entry, and 401 for a
+missing or wrong PIN when an admin PIN is configured.
+
+The first successful request appends a void record and returns 200 `{entry, void}`. Repeating
+the request with a valid reason returns the original void record and preserves its timestamp and reason.
+State and boat detail continue to include the entry with `voided: true`, `voidedAt`, and
+`voidReason`. Other entries have `voided: false`. Boat status ignores voided entries.
+`chain.count` includes the original entry and its void record.
+
+The first void publishes an `entry` event with `{action: "voided", id, boatId}`, where `id`
+is the original entry ID. Retries produce no event.
+
+Example response with the entry and hash strings abbreviated.
+
+```json
+{
+  "entry": {
+    "id": "1269daa7-1cd2-4d05-9d3b-4bb0f8e043ba",
+    "boatId": "kayal-rani",
+    "voided": true,
+    "voidedAt": "2026-11-22T00:15:00.000Z",
+    "voidReason": "Test entry"
+  },
+  "void": {
+    "id": "fbdcd596-e8b8-4f41-abb4-3347f5823978",
+    "boatId": "kayal-rani",
+    "at": "2026-11-22T00:15:00.000Z",
+    "voidsEntryId": "1269daa7-1cd2-4d05-9d3b-4bb0f8e043ba",
+    "reason": "Test entry",
+    "prevHash": "c9cfa330…",
+    "hash": "60fa1c47…"
   }
 }
 ```
@@ -175,13 +298,13 @@ Connect with `new EventSource('/api/events')`. Listen for the named events below
 
 | Event | `action` | Other fields |
 | --- | --- | --- |
-| `entry` | `created` | `id` (entry ID), `boatId` |
+| `entry` | `created`, `voided`, `confirmed` or `disputed` | `id` (entry ID), `boatId` |
 | `correction` | `corrected` | `id` (correction ID), `entryId` (original entry ID), `boatId` |
 | `report` | `created` or `reviewed` | `id` (report ID), `boatId` (string or null) |
 | `boat` | `created` | `id` (boat ID) |
 | `facility` | `created` or `updated` | `id` (facility ID) |
 
-The stream starts with a `: connected` comment and sends a `: keep-alive` comment every 20 seconds. Events are sent after the write succeeds. Retrying an identical correction or review, setting a facility to its existing status, and asking a waste question produce no event.
+The server flushes the headers immediately, then sends a 2 KiB padding comment, a `: connected` comment, and a `: keep-alive` comment about every 15 seconds. Events are sent after the write succeeds. Retrying an identical correction, review or confirmation, setting a facility to its existing status, and asking a waste question produce no event.
 
 Sandbox event:
 
@@ -189,6 +312,10 @@ Sandbox event:
 event: boat
 data: {"action":"created","id":"b-544d787c"}
 ```
+
+## Resetting demo data
+
+Stop the server before running `npm run reseed` on the machine that holds the data. The script copies the database into a timestamped backup inside `DATA_DIR`, archives the sample photos there, and removes the live database. Start Kayal Log to load fresh sample data. On gon, `scripts/gon reseed` stops and restarts the main server around the reset and prints its health check. Reprint affected QR codes if boat IDs change.
 
 ## Other response examples
 

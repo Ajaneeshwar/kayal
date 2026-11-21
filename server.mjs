@@ -12,6 +12,7 @@ import { submitReport } from './lib/reports.mjs';
 import { createEvents } from './lib/events.mjs';
 import { HttpError, correctionQuantity, identifier, parseLocation, shortText } from './lib/input.mjs';
 import { boatStatus, checkChain, projectEntries } from './lib/logic.mjs';
+import { canConfirm, custodyTotals, HANDOVER_ALPHABET, isVehicleOperator, normaliseVehicle, OPERATOR_TYPES } from './lib/confirm.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 try {
@@ -27,14 +28,17 @@ const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 // The new frontend (web/, built to web/dist). Add a screen's path here when it moves over from public/.
 const WEB_DIST = path.join(ROOT, 'web', 'dist');
-const WEB_APP_PATHS = ['/', '/dashboard', '/boat/:boatId', '/boat/:boatId/sticker', '/crew'];
+const WEB_APP_PATHS = ['/', '/dashboard', '/boat/:boatId', '/boat/:boatId/sticker', '/crew', '/operator'];
 const webAppOwns = (pathname) =>
   WEB_APP_PATHS.some((p) => new RegExp(`^${p.replace(/:[\w]+/g, '[\\w-]+')}$`).test(pathname)) &&
   existsSync(path.join(WEB_DIST, 'index.html'));
 const OVERDUE_DAYS = Number(process.env.OVERDUE_DAYS || 90);
 const ADMIN_PIN = process.env.ADMIN_PIN || '';
 const MAX_BODY_BYTES = 12 * 1024 * 1024;
-const BODY_TIMEOUT_MS = 15_000;
+const configuredBodyTimeout = Number(process.env.BODY_TIMEOUT_MS);
+const BODY_TIMEOUT_MS = Number.isInteger(configuredBodyTimeout) && configuredBodyTimeout > 0 && configuredBodyTimeout <= 2_147_483_647
+  ? configuredBodyTimeout
+  : 40_000;
 const FEED_LIMIT = 100;
 
 const PAGES = { '/': 'index.html', '/crew': 'crew.html', '/dashboard': 'dashboard.html' };
@@ -123,6 +127,12 @@ function requireAdmin(req) {
   }
 }
 
+function readVehicleNumber(value) {
+  const number = shortText(value, 'Vehicle number', 40);
+  if (!/^[A-Z0-9]+$/.test(normaliseVehicle(number))) throw new HttpError(400, 'Enter a valid vehicle number.');
+  return number;
+}
+
 function requestPath(target) {
   const raw = target.split('?')[0];
   if (!raw.startsWith('/') || raw.startsWith('//')) throw new HttpError(400, 'The request path is invalid.');
@@ -140,8 +150,8 @@ function requestPath(target) {
 }
 
 function apiMethod(pathname) {
-  if (/^\/api\/(?:health|state|events|boats\/[\w-]+)$/.test(pathname)) return 'GET';
-  if (/^\/api\/(?:log(?:\/[\w-]+\/correction)?|speak|signin|boats|facilities(?:\/[\w-]+\/status)?|reports(?:\/[\w-]+\/review)?)$/.test(pathname)) return 'POST';
+  if (/^\/api\/(?:health|state|events|boats\/[\w-]+|operators\/[\w-]+\/(?:pending|handover\/[\w-]+))$/.test(pathname)) return 'GET';
+  if (/^\/api\/(?:log(?:\/[\w-]+\/(?:correction|void|confirm))?|speak|signin|boats|operators(?:\/[\w-]+\/unload)?|facilities(?:\/[\w-]+\/status)?|reports(?:\/[\w-]+\/review)?)$/.test(pathname)) return 'POST';
   return null;
 }
 
@@ -154,10 +164,13 @@ function stateView() {
   const weekStart = new Date(now);
   weekStart.setHours(0, 0, 0, 0);
   weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
-  const entries = projectEntries(store.entries);
+  const operators = store.operators;
+  const entries = projectEntries(store.entries, operators);
   return {
     boats: store.boats.map((b) => boatView(b, now)),
     facilities: store.facilities,
+    operators,
+    custody: custodyTotals(operators, store.entries, now),
     entries: entries.slice(-FEED_LIMIT).reverse(),
     weeklyEntryCount: entries.filter((entry) => {
       const at = new Date(entry.at);
@@ -186,6 +199,28 @@ async function route(req, res) {
     if (pathname === '/api/health') return sendJson(res, 200, { ok: true, sarvamKey: Boolean(process.env.SARVAM_API_KEY) });
     if (pathname === '/api/state') return sendJson(res, 200, stateView());
     if (pathname === '/api/events') return events.subscribe(res);
+
+    const operatorRead = pathname.match(/^\/api\/operators\/([\w-]+)\/(?:pending|handover\/([\w-]+))$/);
+    if (operatorRead) {
+      const [, id, code] = operatorRead;
+      const operator = store.authenticateOperator(id, req.headers['x-operator-code']);
+      const now = new Date();
+      const facility = store.facilities.find((item) => item.id === operator.facilityId);
+      const entries = projectEntries(store.entries, store.operators);
+      if (code !== undefined) {
+        const handoverCode = code.toUpperCase();
+        if (handoverCode.length !== 6 || [...handoverCode].some((char) => !HANDOVER_ALPHABET.includes(char))) {
+          throw new HttpError(400, 'Enter a valid six-character handover code.');
+        }
+        const entry = entries.find((item) => item.handoverCode === handoverCode);
+        if (!entry) throw new HttpError(404, 'This handover code was not found.');
+        if (!canConfirm(operator, entry, now, facility)) throw new HttpError(403, 'This operator cannot confirm this entry.');
+        return sendJson(res, 200, { entry });
+      }
+      const pending = entries.filter((entry) => !entry.confirmation && canConfirm(operator, entry, now, facility));
+      pending.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+      return sendJson(res, 200, { operator, pending });
+    }
 
     const boatApi = pathname.match(/^\/api\/boats\/([\w-]+)$/);
     if (boatApi) {
@@ -236,6 +271,49 @@ async function route(req, res) {
     }
     if (pathname === '/api/speak') return sendJson(res, 200, await pipeline.speak((await readJson(req)).replyId));
 
+    if (pathname === '/api/operators') {
+      requireAdmin(req);
+      const body = await readJson(req);
+      const { type, code } = body;
+      if (!OPERATOR_TYPES.includes(type)) throw new HttpError(400, 'Choose a valid operator type.');
+      if (typeof code !== 'string' || !/^[\x21-\x7e]{1,64}$/.test(code) || code.includes(',')) {
+        throw new HttpError(400, 'Enter a sign-in code of 1–64 printable ASCII characters without spaces or commas.');
+      }
+      const facilityId = type === 'plant' || body.facilityId != null ? identifier(body.facilityId, 'Facility ID') : null;
+      if (facilityId && !store.facilities.some((facility) => facility.id === facilityId)) {
+        throw new HttpError(404, 'This collection point does not exist.');
+      }
+      const vehicleNumber = isVehicleOperator(type) || body.vehicleNumber != null
+        ? readVehicleNumber(body.vehicleNumber) : null;
+      const operator = await store.addOperator({ name: shortText(body.name, 'Operator name'), type, facilityId, vehicleNumber, code });
+      return sendJson(res, 201, { operator });
+    }
+
+    const operatorUnload = pathname.match(/^\/api\/operators\/([\w-]+)\/unload$/);
+    if (operatorUnload) {
+      const operator = store.authenticateOperator(operatorUnload[1], req.headers['x-operator-code']);
+      const { vehicleNumber, quantity } = await readJson(req);
+      const unload = await store.addUnload({
+        operator, vehicleNumber: readVehicleNumber(vehicleNumber), quantity: correctionQuantity(quantity),
+      });
+      return sendJson(res, 201, { unload });
+    }
+
+    const logConfirm = pathname.match(/^\/api\/log\/([\w-]+)\/confirm$/);
+    if (logConfirm) {
+      const operator = store.authenticateOperator(identifier(req.headers['x-operator-id'], 'Operator ID'), req.headers['x-operator-code']);
+      const { decision, quantity, note } = await readJson(req);
+      if (decision !== 'received' && decision !== 'not_received') throw new HttpError(400, 'Choose received or not received.');
+      if (quantity != null && typeof quantity !== 'string') throw new HttpError(400, 'Send quantity as text.');
+      const { entry, confirmation, changed } = await store.confirmEntry({
+        entryId: logConfirm[1], operator, decision,
+        quantity: quantity == null ? null : correctionQuantity(quantity),
+        note: typeof note === 'string' && !note.trim() || note == null ? null : shortText(note, 'Note', 200),
+      });
+      if (changed) events.publish('entry', { action: entry.disputed ? 'disputed' : 'confirmed', id: entry.id, boatId: entry.boatId });
+      return sendJson(res, 200, { entry, confirmation });
+    }
+
     if (pathname === '/api/reports') {
       const report = await submitReport({ body: await readJson(req), sarvam, store, uploadsDir: UPLOADS_DIR });
       events.publish('report', { action: 'created', id: report.id, boatId: report.boatId });
@@ -265,6 +343,17 @@ async function route(req, res) {
         action: 'corrected', id: correction.id, entryId: entry.id, boatId: entry.boatId,
       });
       return sendJson(res, 200, { entry, correction });
+    }
+
+    const logVoid = pathname.match(/^\/api\/log\/([\w-]+)\/void$/);
+    if (logVoid) {
+      requireAdmin(req);
+      const body = await readJson(req);
+      const reason = typeof body.reason === 'string' ? body.reason.trim() : '';
+      if (!reason || [...reason].length > 200) throw new HttpError(400, 'Reason is required and must be at most 200 characters.');
+      const { entry, void: voidRecord, changed } = await store.voidEntry({ entryId: logVoid[1], reason });
+      if (changed) events.publish('entry', { action: 'voided', id: entry.id, boatId: entry.boatId });
+      return sendJson(res, 200, { entry, void: voidRecord });
     }
 
     if (pathname === '/api/signin') {
