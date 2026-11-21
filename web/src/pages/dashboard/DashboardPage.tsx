@@ -7,7 +7,8 @@ import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { usePick } from '../../i18n/language.ts';
 import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
-import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Entry, type Facility, type Report } from './api.ts';
+import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Entry, type Facility, type ReminderCall, type Report } from './api.ts';
+import { CallOwnerDialog } from './CallOwnerDialog.tsx';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
 import { KIND_LABELS, LEVEL_LABELS, shownLevel } from './format.ts';
 import { d } from './i18n.ts';
@@ -18,7 +19,7 @@ import { WithdrawDialog } from './WithdrawDialog.tsx';
 import { useDashboard, type Link } from './useDashboard.ts';
 import './dashboard.css';
 
-type Modal = { kind: 'qr'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'withdraw'; entry: Entry } | null;
+type Modal = { kind: 'qr'; boat: Boat } | { kind: 'call'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'withdraw'; entry: Entry } | null;
 type Tone = 'confirmed' | 'verified' | 'declared' | 'overdue' | 'plain';
 
 const TONE_TEXT: Record<Tone, string> = {
@@ -144,6 +145,12 @@ function InspectorDashboard() {
 
   const boats = useMemo(() => new Map((state?.boats ?? []).map((b) => [b.id, b])), [state]);
   const sorted = useMemo(() => sortByUrgency(state?.boats ?? []), [state]);
+  // The newest reminder call per boat. The server lists them newest first.
+  const calls = useMemo(() => {
+    const map = new Map<string, ReminderCall>();
+    for (const c of state?.reminderCalls ?? []) if (!map.has(c.boatId)) map.set(c.boatId, c);
+    return map;
+  }, [state]);
   // A withdrawn entry stays in the live log, struck through, but leaves the map.
   const mapEntries = useMemo(() => (state?.entries ?? []).filter((e) => !e.voided), [state]);
   const freshBoats = useMemo(() => new Set((state?.entries ?? []).filter((e) => fresh.has(e.id)).map((e) => e.boatId)), [state, fresh]);
@@ -335,7 +342,14 @@ function InspectorDashboard() {
 
         <div className="min-w-0">
           {state ? (
-            <BoatTable boats={sorted} window={state.overdueDays} onQr={(boat) => setModal({ kind: 'qr', boat })} freshBoats={freshBoats} />
+            <BoatTable
+              boats={sorted}
+              window={state.overdueDays}
+              onQr={(boat) => setModal({ kind: 'qr', boat })}
+              onCall={(boat) => setModal({ kind: 'call', boat })}
+              calls={calls}
+              freshBoats={freshBoats}
+            />
           ) : (
             <div className="h-80 animate-pulse rounded-card bg-line/50" />
           )}
@@ -355,6 +369,18 @@ function InspectorDashboard() {
       </footer>
 
       {modal?.kind === 'qr' && <QrDialog boat={modal.boat} onClose={() => setModal(null)} />}
+      {modal?.kind === 'call' && state && (
+        <CallOwnerDialog
+          boat={modal.boat}
+          facilities={state.facilities}
+          onClose={() => setModal(null)}
+          onCalled={(call) => {
+            // Shown in the boat's row at once; the next state load brings the server's own record.
+            setState((s) => s && { ...s, reminderCalls: [call, ...(s.reminderCalls ?? [])] });
+            refresh();
+          }}
+        />
+      )}
       {modal?.kind === 'withdraw' && (
         <WithdrawDialog
           entry={modal.entry}

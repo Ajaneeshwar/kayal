@@ -6,7 +6,8 @@ import type { Text } from '../../i18n/index.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
 import { t } from '../../i18n/index.ts';
 import { boatsCsv, filterBoats } from '../../lib/boatTools.ts';
-import type { Boat, Custody, Entry, Facility, Report } from './api.ts';
+import type { Boat, Custody, Entry, Facility, ReminderCall, Report } from './api.ts';
+import { PhoneIcon, callDue } from './CallOwnerDialog.tsx';
 import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, shownLevel, whereText, type LevelTone, type Shown } from './format.ts';
 import { fill, namedReceiver } from '../boat/data.ts';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
@@ -246,7 +247,22 @@ function LastPump({ boat, window }: { boat: Boat; window: number }) {
   );
 }
 
-export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; window: number; onQr: (b: Boat) => void; freshBoats: ReadonlySet<string> }) {
+export function BoatTable({
+  boats,
+  window,
+  onQr,
+  onCall,
+  calls,
+  freshBoats,
+}: {
+  boats: Boat[];
+  window: number;
+  onQr: (b: Boat) => void;
+  onCall: (b: Boat) => void;
+  /** The newest reminder call per boat. */
+  calls: ReadonlyMap<string, ReminderCall>;
+  freshBoats: ReadonlySet<string>;
+}) {
   const id = useId();
   const pick = usePick();
   const [query, setQuery] = useState('');
@@ -274,7 +290,7 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
         <p role="status" className="text-small text-ink-muted sm:col-span-full"><Bi text={{ en: count.en.replace('{count}', String(filtered.length)), ml: count.ml.replace('{count}', String(filtered.length)) }} /></p>
       </div>
       <div className="relative overflow-x-auto px-2 pb-2">
-        <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-small">
+        <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-small">
           <thead>
             <tr className="text-start text-caption font-semibold uppercase tracking-[0.06em] text-ink-muted">
               <th className="px-3 pb-2 text-start font-semibold">Boat</th>
@@ -303,6 +319,16 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
                 </td>
                 <td className="border-t border-line px-3 py-3 text-end">
                   <span className="inline-flex gap-1">
+                    {callDue(b) && (
+                      <button
+                        type="button"
+                        onClick={() => onCall(b)}
+                        className="inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap rounded-control border border-gold-edge px-3 text-caption font-semibold transition-[background-color,transform] duration-150 hover:bg-gold/15 active:scale-[0.96]"
+                      >
+                        <PhoneIcon />
+                        {pick(d('callOwner'))}
+                      </button>
+                    )}
                     <a
                       href={`/boat/${encodeURIComponent(b.id)}`}
                       className="inline-flex min-h-9 items-center rounded-control px-3 text-caption font-semibold text-gold-ink transition-colors duration-150 hover:bg-gold/15"
@@ -320,6 +346,13 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
                       QR
                     </button>
                   </span>
+                  {calls.get(b.id) && (
+                    <p className="mt-1 text-caption text-ink-muted">
+                      <time dateTime={calls.get(b.id)!.at} title={new Date(calls.get(b.id)!.at).toLocaleString()}>
+                        {pick(d('callAgo')).replace('{ago}', ago(calls.get(b.id)!.at))}
+                      </time>
+                    </p>
+                  )}
                 </td>
               </motion.tr>
             ))}

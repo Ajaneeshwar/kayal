@@ -258,5 +258,69 @@
   "cancel": {
     "en": "Cancel",
     "ml": "റദ്ദാക്കുക"
+  },
+  "callOwner": {
+    "en": "Call owner",
+    "ml": "ഉടമയെ വിളിക്കുക"
+  },
+  "callTitle": {
+    "en": "Call the owner of {boat}?",
+    "ml": "{boat} ഉടമയെ വിളിക്കണോ?"
+  },
+  "callBody": {
+    "en": "Kayal Log phones the owner and plays a recorded pump-out reminder. The phone rings as soon as you start the call.",
+    "ml": "കായൽ ലോഗ് ഉടമയെ ഫോൺ വിളിക്കുകയും റെക്കോർഡ് ചെയ്ത പമ്പ്-ഔട്ട് ഓർമ്മപ്പെടുത്തൽ പ്ലേ ചെയ്യുകയും ചെയ്യുന്നു. നിങ്ങൾ കോൾ ആരംഭിക്കുമ്പോൾ തന്നെ ഫോൺ ബെല്ലടിക്കുന്നു."
+  },
+  "callMessage": {
+    "en": "What the call says",
+    "ml": "കോൾ എന്താണ് പറയുന്നത്"
+  },
+  "callMessageNote": {
+    "en": "The owner’s name is added at the start. A Malayalam call says the same in Malayalam.",
+    "ml": "ഉടമയുടെ പേര് തുടക്കത്തിൽ ചേർക്കുന്നു. ഒരു മലയാളം കോൾ മലയാളത്തിൽ അതേപടി പറയുന്നു."
+  },
+  "callLanguage": {
+    "en": "Language of the call",
+    "ml": "കോളിന്റെ ഭാഷ"
+  },
+  "callMalayalam": {
+    "en": "Malayalam",
+    "ml": "മലയാളം"
+  },
+  "callEnglish": {
+    "en": "English",
+    "ml": "ഇംഗ്ലീഷ്"
+  },
+  "callStart": {
+    "en": "Start the call",
+    "ml": "കോൾ ആരംഭിക്കുക"
+  },
+  "callCalling": {
+    "en": "Calling {number}",
+    "ml": "{number} ലേക്ക് വിളിക്കുന്നു"
+  },
+  "callCallingBody": {
+    "en": "The phone service accepted the call. The owner’s phone should ring within a minute.",
+    "ml": "ഫോൺ സേവനം കോൾ സ്വീകരിച്ചു. ഉടമയുടെ ഫോൺ ഒരു മിനിറ്റിനുള്ളിൽ ബെല്ലടിക്കും."
+  },
+  "callDone": {
+    "en": "Done",
+    "ml": "ചെയ്തു"
+  },
+  "callAgo": {
+    "en": "Called {ago}",
+    "ml": "{ago} വിളിച്ചു"
+  },
+  "callWait": {
+    "en": "A call was placed a moment ago. Try again in {seconds} seconds.",
+    "ml": "ഒരു നിമിഷം മുമ്പ് ഒരു കോൾ വിളിച്ചു. {seconds} സെക്കൻഡുകൾക്കുള്ളിൽ വീണ്ടും ശ്രമിക്കുക."
+  },
+  "callNotSetUp": {
+    "en": "Calling is not set up on this server.",
+    "ml": "ഈ സെർവറിൽ കോളിംഗ് സജ്ജീകരിച്ചിട്ടില്ല."
+  },
+  "callFailed": {
+    "en": "The phone service did not take the call. Try again in a minute.",
+    "ml": "ഫോൺ സേവനം കോൾ എടുത്തില്ല. ഒരു മിനിറ്റിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക."
   }
 }

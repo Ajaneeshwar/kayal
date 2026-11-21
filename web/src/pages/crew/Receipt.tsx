@@ -1,6 +1,6 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ApiError, correctQuantity, formatDistance, type Entry, type Kind, type Level } from './api.ts';
+import { ApiError, attachPhoto, correctQuantity, formatDistance, shrinkPhoto, type Entry, type Kind, type Level, type Reply } from './api.ts';
 import { t } from './i18n.ts';
 import { usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
@@ -61,6 +61,23 @@ function parseQuantity(quantity: string | null, kind: Kind) {
   return { amount: Number(match[1]), unit: match[2].trim() || DEFAULT_UNIT[kind] };
 }
 
+/** The server takes a correction or a photo for 30 minutes after the entry was saved. */
+const EDIT_WINDOW_MS = 30 * 60 * 1000;
+
+/** True until 30 minutes after the entry was saved, then false, with no reload. */
+function useEditWindow(at: string) {
+  const deadline = Date.parse(at) + EDIT_WINDOW_MS;
+  const [open, setOpen] = useState(() => Date.now() < deadline);
+  useEffect(() => {
+    const left = deadline - Date.now();
+    if (left <= 0) return setOpen(false);
+    setOpen(true);
+    const id = window.setTimeout(() => setOpen(false), left);
+    return () => window.clearTimeout(id);
+  }, [deadline]);
+  return open;
+}
+
 const number = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
 
 /** Speech to text drops or adds zeros ("8000" heard as "8"), so offer the nearby powers of ten. */
@@ -84,10 +101,15 @@ export function Receipt({
   entry,
   token,
   onCorrected,
+  onPhotoAdded,
+  onBeforePhoto,
 }: {
   entry: Entry;
   token: string | null;
   onCorrected: (entry: Entry) => void;
+  onPhotoAdded: (entry: Entry, reply: Reply | null | undefined) => void;
+  /** Runs inside the tap on Add photo, so the spoken reply may play when the photo is read. */
+  onBeforePhoto?: () => void;
 }) {
   const pick = usePick();
   const [fixing, setFixing] = useState(false);
@@ -101,6 +123,45 @@ export function Receipt({
   const mobile = isMobileHandover(method);
   const place = method === 'collection_point' ? (entry.verification.facilityName ?? entry.facilityMentioned) : null;
   const time = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date(entry.at));
+  const windowOpen = useEditWindow(entry.at);
+  const fileInput = useRef<HTMLInputElement>(null);
+  // The photo on its way, shown at once from the phone, then kept so the thumbnail does not reload.
+  const [preview, setPreview] = useState<string | null>(null);
+  const [reading, setReading] = useState(false);
+  const [photoError, setPhotoError] = useState<{ title: CrewKey; detail: string | null } | null>(null);
+  // Nobody receives waste at a bin, and a Confirmed entry already has the strongest proof.
+  const canAddPhoto =
+    Boolean(token) && windowOpen && method !== 'waste_bin' && entry.verification.level !== 'confirmed' && !entry.voided && !reading;
+  const thumb = preview ?? (entry.photo ? `/uploads/${entry.photo.file}` : null);
+
+  function openCamera() {
+    onBeforePhoto?.();
+    fileInput.current?.click();
+  }
+
+  async function addPhoto(file: File | undefined) {
+    if (!file || !token) return;
+    setPhotoError(null);
+    let photo: { base64: string; previewUrl: string };
+    try {
+      photo = await shrinkPhoto(file);
+    } catch {
+      setPhotoError({ title: 'photoFailTitle', detail: pick(t('photoFailBody')) });
+      return;
+    }
+    setPreview(photo.previewUrl);
+    setReading(true);
+    try {
+      const { entry: next, reply } = await attachPhoto(entry.id, entry.boatId, token, photo.base64);
+      onPhotoAdded(next, reply);
+    } catch (err) {
+      // Nothing was saved, so the thumbnail goes back to the last saved photo, if any.
+      setPreview(null);
+      setPhotoError({ title: 'photoAddFailed', detail: err instanceof ApiError && err.status === 0 ? pick(t('offlineBody')) : (err as Error).message });
+    } finally {
+      setReading(false);
+    }
+  }
 
   async function save(quantity: string) {
     if (!token) return;
@@ -279,7 +340,77 @@ export function Receipt({
             )}
           </Row>
 
-          <Row label="proof">
+          <Row
+            label="proof"
+            below={
+              (thumb || canAddPhoto || photoError) && (
+                <div className="mt-3 flex flex-col items-start gap-3">
+                  {thumb && (
+                    <div className="flex w-full items-center gap-3 rounded-control bg-surface p-2.5">
+                      <span className="relative size-14 shrink-0">
+                        <img src={thumb} alt="" className="size-14 rounded-[0.5rem] object-cover outline outline-1 -outline-offset-1 outline-black/10" />
+                        {reading && (
+                          <span className="absolute inset-0 grid place-items-center rounded-[0.5rem] bg-teak-deep/45">
+                            <span className="size-5 animate-spin rounded-full border-2 border-kasavu border-r-transparent" />
+                          </span>
+                        )}
+                      </span>
+                      <div className="min-w-0 text-small">
+                        {reading || !entry.photo ? (
+                          <MlEn text={t('photoReading')} className="font-semibold" mlClassName="text-small" enClassName="!text-caption font-normal" />
+                        ) : (
+                          <>
+                            <MlEn
+                              text={t(mobile ? (entry.photo.isReceipt ? 'photoIsSlip' : 'photoNotSlip') : entry.photo.isReceipt ? 'photoIsReceipt' : 'photoNotReceipt')}
+                              enClassName="!text-caption text-ink-muted !opacity-100"
+                            />
+                            {entry.photo.issuer && <p className="truncate text-caption text-ink-muted">{entry.photo.issuer}</p>}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {canAddPhoto && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={openCamera}
+                        className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-field-border/60 bg-surface px-3.5 text-small font-semibold
+                          transition-[scale,background-color] duration-[var(--duration-press)] ease-[var(--ease-out)] active:scale-[0.96] hover:bg-kasavu"
+                      >
+                        <Icon.Camera size={18} />
+                        <MlEn text={t('addPhoto')} layout="inline" />
+                      </button>
+                      {mobile && entry.verification.level === 'declared' && (
+                        <MlEn text={t('slipTip')} className="-mt-1 text-small" mlClassName="text-small" enClassName="!text-caption text-ink-muted !opacity-100" />
+                      )}
+                      <input
+                        ref={fileInput}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="sr-only"
+                        tabIndex={-1}
+                        onChange={(e) => {
+                          addPhoto(e.target.files?.[0]);
+                          e.target.value = '';
+                        }}
+                      />
+                    </>
+                  )}
+                  {photoError && (
+                    <p role="alert" className="flex w-full items-start gap-2 text-small text-ink">
+                      <Icon.Alert size={18} className="mt-0.5 shrink-0 text-gold-ink" />
+                      <span className="min-w-0">
+                        <MlEn text={t(photoError.title)} layout="inline" className="font-semibold" mlClassName="text-small" />{' '}
+                        {photoError.detail}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              )
+            }
+          >
             <span className={`inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-small font-semibold ${level.className}`}>
               <LevelGlyph level={shown} />
               <MlEn text={t(level.key)} layout="inline" />
@@ -287,30 +418,6 @@ export function Receipt({
             <MlEn text={t(reasonKey(entry))} className="mt-2 text-small" mlClassName="text-small" enClassName="!text-caption text-ink-muted !opacity-100" />
           </Row>
         </div>
-
-        {mobile && entry.verification.level === 'declared' && (
-          <div className="mt-4 flex items-start gap-2.5 rounded-control bg-surface px-3 py-2.5">
-            <Icon.Camera size={18} className="mt-0.5 shrink-0 text-gold-ink" />
-            <MlEn text={t('slipTip')} className="min-w-0 text-small" mlClassName="text-small" enClassName="!text-caption text-ink-muted !opacity-100" />
-          </div>
-        )}
-
-        {entry.photo && (
-          <div className="mt-4 flex items-center gap-3 rounded-control bg-surface p-2.5">
-            <img
-              src={`/uploads/${entry.photo.file}`}
-              alt=""
-              className="size-14 rounded-[0.5rem] object-cover outline outline-1 -outline-offset-1 outline-black/10"
-            />
-            <div className="min-w-0 text-small">
-              <MlEn
-                text={t(mobile ? (entry.photo.isReceipt ? 'photoIsSlip' : 'photoNotSlip') : entry.photo.isReceipt ? 'photoIsReceipt' : 'photoNotReceipt')}
-                enClassName="!text-caption text-ink-muted !opacity-100"
-              />
-              {entry.photo.issuer && <p className="truncate text-caption text-ink-muted">{entry.photo.issuer}</p>}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

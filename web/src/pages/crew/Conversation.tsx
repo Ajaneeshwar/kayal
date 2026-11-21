@@ -46,14 +46,11 @@ export function KayalBubble({ children, label = true }: { children: ReactNode; l
 }
 
 /** The crew's side: warm wood, on the right. */
-export function CrewBubble({ children, photoUrl }: { children: ReactNode; photoUrl?: string }) {
+export function CrewBubble({ children }: { children: ReactNode }) {
   return (
     <motion.div {...enter} className="flex flex-col items-end ps-8">
       <Who k="you" align="end" />
       <div className="max-w-full rounded-card rounded-se-md bg-wood px-4 py-3 text-ink-inverse shadow-[var(--shadow-card)]">
-        {photoUrl && (
-          <img src={photoUrl} alt="" className="mb-2 h-28 w-auto max-w-full rounded-control object-cover outline outline-1 -outline-offset-1 outline-white/10" />
-        )}
         {children}
       </div>
     </motion.div>
@@ -97,19 +94,19 @@ export function Intro({ boat }: { boat: Boat }) {
   );
 }
 
-export function HeardBubble({ heard, photoUrl }: { heard: Heard; photoUrl?: string }) {
+export function HeardBubble({ heard }: { heard: Heard }) {
   return (
-    <CrewBubble photoUrl={photoUrl}>
+    <CrewBubble>
       <SpokenPair original={heard.original} english={heard.english} language={heard.language} tone="dark" />
     </CrewBubble>
   );
 }
 
 /** Shown while a recording is on its way, before the words come back. */
-export function VoiceNoteBubble({ seconds, photoUrl }: { seconds: number; photoUrl?: string }) {
+export function VoiceNoteBubble({ seconds }: { seconds: number }) {
   const heights = [0.35, 0.7, 0.5, 0.9, 0.6, 1, 0.45, 0.8, 0.55, 0.7, 0.4, 0.85, 0.5, 0.3];
   return (
-    <CrewBubble photoUrl={photoUrl}>
+    <CrewBubble>
       <div className="flex items-center gap-3">
         <Icon.Mic size={18} className="text-gold-bright" />
         <span aria-hidden="true" className="flex h-6 items-center gap-[3px]">
@@ -123,9 +120,9 @@ export function VoiceNoteBubble({ seconds, photoUrl }: { seconds: number; photoU
   );
 }
 
-export function TypedBubble({ text, photoUrl }: { text: string; photoUrl?: string }) {
+export function TypedBubble({ text }: { text: string }) {
   return (
-    <CrewBubble photoUrl={photoUrl}>
+    <CrewBubble>
       <p className="text-lead">{text}</p>
     </CrewBubble>
   );
@@ -172,10 +169,9 @@ export function Thinking() {
   );
 }
 
-export type NoticeKind = 'photo' | 'micDenied' | 'micMissing' | 'locDenied' | 'offline' | 'notUnderstood' | 'unusable' | 'service' | 'server';
+export type NoticeKind = 'micDenied' | 'micMissing' | 'locDenied' | 'offline' | 'notUnderstood' | 'unusable' | 'service' | 'server';
 
 const NOTICE: Record<NoticeKind, { title: CrewKey; body?: CrewKey; icon: typeof Icon.Alert }> = {
-  photo: { title: 'photoFailTitle', body: 'photoFailBody', icon: Icon.Camera },
   micDenied: { title: 'micDeniedTitle', body: 'micDeniedBody', icon: Icon.Mic },
   micMissing: { title: 'micMissingTitle', body: 'micMissingBody', icon: Icon.Mic },
   locDenied: { title: 'locDeniedTitle', body: 'locDeniedBody', icon: Icon.PinOff },

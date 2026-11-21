@@ -70,6 +70,22 @@ export const en = {
   withdrawnToast: 'Entry withdrawn',
   withdrawnToastBody: 'It no longer counts toward {boat}’s status.',
   cancel: 'Cancel',
+  callOwner: 'Call owner',
+  callTitle: 'Call the owner of {boat}?',
+  callBody: 'Kayal Log phones the owner and plays a recorded pump-out reminder. The phone rings as soon as you start the call.',
+  callMessage: 'What the call says',
+  callMessageNote: 'The owner’s name is added at the start. A Malayalam call says the same in Malayalam.',
+  callLanguage: 'Language of the call',
+  callMalayalam: 'Malayalam',
+  callEnglish: 'English',
+  callStart: 'Start the call',
+  callCalling: 'Calling {number}',
+  callCallingBody: 'The phone service accepted the call. The owner’s phone should ring within a minute.',
+  callDone: 'Done',
+  callAgo: 'Called {ago}',
+  callWait: 'A call was placed a moment ago. Try again in {seconds} seconds.',
+  callNotSetUp: 'Calling is not set up on this server.',
+  callFailed: 'The phone service did not take the call. Try again in a minute.',
 } as const;
 
 export type DashKey = keyof typeof en;

@@ -25,17 +25,16 @@ const SLOW_MS = 15_000;
  * The server's steps, timed from the end of the upload. They are estimates: speech to text,
  * then the place and receipt checks, then the reply. The last step holds until the answer comes.
  */
-function serverStep(input: 'voice' | 'text', photo: boolean, seconds: number): CrewKey {
-  const check: CrewKey = photo ? 'stageCheckingPhoto' : 'stageChecking';
+function serverStep(input: 'voice' | 'text', seconds: number): CrewKey {
   if (input === 'voice') {
     if (seconds < 4) return 'stageListening';
-    return seconds < (photo ? 10 : 7) ? check : 'stageReplying';
+    return seconds < 7 ? 'stageChecking' : 'stageReplying';
   }
-  return seconds < (photo ? 5 : 2.5) ? check : 'stageReplying';
+  return seconds < 2.5 ? 'stageChecking' : 'stageReplying';
 }
 
 /** The Kayal Log bubble shown while an entry is on its way: the current step and a short step bar. */
-export function SendProgress({ stage, input, photo }: { stage: SendStage; input: 'voice' | 'text'; photo: boolean }) {
+export function SendProgress({ stage, input }: { stage: SendStage; input: 'voice' | 'text' }) {
   const pick = usePick();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -45,15 +44,15 @@ export function SendProgress({ stage, input, photo }: { stage: SendStage; input:
 
   const steps: CrewKey[] =
     input === 'voice'
-      ? ['stageUploading', 'stageListening', photo ? 'stageCheckingPhoto' : 'stageChecking', 'stageReplying']
-      : [photo ? 'stageUploading' : 'stateSending', photo ? 'stageCheckingPhoto' : 'stageChecking', 'stageReplying'];
+      ? ['stageUploading', 'stageListening', 'stageChecking', 'stageReplying']
+      : ['stateSending', 'stageChecking', 'stageReplying'];
 
   const label: CrewKey =
     stage.phase === 'locating'
       ? 'stageLocating'
       : stage.phase === 'uploading'
         ? steps[0]
-        : serverStep(input, photo, (now - stage.since) / 1000);
+        : serverStep(input, (now - stage.since) / 1000);
   const index = stage.phase === 'locating' ? -1 : steps.indexOf(label);
   const slow = now - stage.started > SLOW_MS;
   // The slow-connection line grows the bubble after the last scroll, so bring it into view.

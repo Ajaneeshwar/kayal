@@ -40,8 +40,8 @@
     "ml": "സംസാരിക്കാൻ ടാപ്പ് ചെയ്യുക"
   },
   "stateListening": {
-    "en": "Listening. Tap to stop.",
-    "ml": "കേൾക്കുന്നു. നിർത്താൻ ടാപ്പ് ചെയ്യുക."
+    "en": "Tap to send",
+    "ml": "അയയ്ക്കാൻ ടാപ്പ് ചെയ്യുക"
   },
   "stateSending": {
     "en": "Sending",
@@ -56,8 +56,12 @@
     "ml": "റെക്കോർഡിംഗ് ആരംഭിക്കുക"
   },
   "recordStop": {
-    "en": "Stop recording",
-    "ml": "റെക്കോർഡിംഗ് നിർത്തുക"
+    "en": "Send recording",
+    "ml": "റെക്കോർഡിംഗ് അയയ്ക്കുക"
+  },
+  "recordCancel": {
+    "en": "Cancel recording",
+    "ml": "റെക്കോർഡിംഗ് റദ്ദാക്കുക"
   },
   "introTitle": {
     "en": "Say what you emptied, how much, and where or who took it",
@@ -103,10 +107,6 @@
     "en": "Speaking",
     "ml": "സംസാരിക്കുന്നു"
   },
-  "photo": {
-    "en": "Photo",
-    "ml": "ഫോട്ടോ"
-  },
   "type": {
     "en": "Type",
     "ml": "ടൈപ്പ് ചെയ്യുക"
@@ -123,14 +123,6 @@
     "en": "Send",
     "ml": "അയയ്ക്കുക"
   },
-  "photoReady": {
-    "en": "Receipt photo ready. It goes with your next entry.",
-    "ml": "രസീത് ഫോട്ടോ തയ്യാറാണ്. ഇത് നിങ്ങളുടെ അടുത്ത എൻട്രിയോടൊപ്പം പോകും."
-  },
-  "photoRemove": {
-    "en": "Remove photo",
-    "ml": "അറ്റാച്ച് ചെയ്ത ഫോട്ടോ നീക്കം ചെയ്യുക"
-  },
   "photoFailTitle": {
     "en": "That photo could not be read",
     "ml": "ആ ഫോട്ടോ വായിക്കാൻ കഴിഞ്ഞില്ല."
@@ -138,6 +130,18 @@
   "photoFailBody": {
     "en": "Take the photo again.",
     "ml": "ഫോട്ടോ വീണ്ടും എടുക്കുക."
+  },
+  "addPhoto": {
+    "en": "Add photo",
+    "ml": "ഫോട്ടോ ചേർക്കുക"
+  },
+  "photoReading": {
+    "en": "Reading the photo",
+    "ml": "ഫോട്ടോ വായിക്കുന്നു"
+  },
+  "photoAddFailed": {
+    "en": "Could not add the photo",
+    "ml": "ഫോട്ടോ ചേർക്കാൻ കഴിഞ്ഞില്ല"
   },
   "savedTitle": {
     "en": "Saved to the boat’s record",
@@ -304,8 +308,8 @@
     "ml": "പൊതു ചവറ്റുകുട്ടയിൽ ആരും മാലിന്യം സ്വീകരിക്കുന്നില്ല, അതിനാൽ ഈ എൻട്രി ഡിക്ലയേർഡ് ആയി തുടരുന്നു."
   },
   "slipTip": {
-    "en": "Add a photo of the operator’s slip or the number plate with your next entry to raise it to Receipt.",
-    "ml": "ഓപ്പറേറ്ററുടെ സ്ലിപ്പിന്റെയോ നമ്പർ പ്ലേറ്റിന്റെയോ ഫോട്ടോ നിങ്ങളുടെ അടുത്ത എൻട്രിയോടൊപ്പം ചേർത്ത് അത് രസീത് ആയി ഉയർത്തുക."
+    "en": "Add a photo of the operator’s slip or the number plate to raise this entry to Receipt.",
+    "ml": "ഈ എൻട്രിയെ രസീത് ആക്കാൻ ഓപ്പറേറ്ററുടെ സ്ലിപ്പിന്റെയോ നമ്പർ പ്ലേറ്റിന്റെയോ ഫോട്ടോ ചേർക്കുക."
   },
   "photoIsSlip": {
     "en": "Slip or number plate read",
@@ -366,10 +370,6 @@
   "stageChecking": {
     "en": "Checking where it went",
     "ml": "അത് എവിടെ പോയെന്ന് പരിശോധിക്കുന്നു"
-  },
-  "stageCheckingPhoto": {
-    "en": "Reading the photo and checking where it went",
-    "ml": "ഫോട്ടോ വായിച്ച് അത് എവിടെ പോയെന്ന് പരിശോധിക്കുന്നു"
   },
   "stageReplying": {
     "en": "Writing the reply",

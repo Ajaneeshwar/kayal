@@ -85,7 +85,7 @@ function Halo({ level, active }: { level: RefObject<number>; active: boolean }) 
 
 const ICONS: Record<MicState, typeof Icon.Mic> = {
   ready: Icon.Mic,
-  listening: Icon.Stop,
+  listening: Icon.Send,
   sending: Icon.Mic,
   answered: Icon.Check,
 };
@@ -133,7 +133,7 @@ export function RecordButton({
             transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             className="grid place-items-center"
           >
-            <Glyph size={state === 'listening' ? 34 : 42} strokeWidth={2.4} />
+            <Glyph size={state === 'listening' ? 38 : 42} strokeWidth={2.4} />
           </motion.span>
         </AnimatePresence>
       </button>

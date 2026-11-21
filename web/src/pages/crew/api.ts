@@ -73,6 +73,7 @@ export interface Entry {
   handoverCode?: string | null;
   confirmation?: { decision: 'received' | 'not_received'; operatorName: string; quantity: string | null } | null;
   disputed?: boolean;
+  voided?: boolean;
 }
 
 export interface LogResult {
@@ -93,7 +94,6 @@ export interface LogPayload {
   lat?: number;
   lon?: number;
   accuracy?: number;
-  photoBase64?: string | null;
   /** The reply's language. `auto`, the server default, answers in the language the crew spoke. */
   replyLanguage?: 'auto' | 'en-IN' | 'ml-IN';
 }
@@ -163,6 +163,10 @@ export const speak = (replyId: string) => request<{ audioBase64: string; mime: s
 
 export const correctQuantity = (entryId: string, boatId: string, quantity: string, correctionToken: string) =>
   request<{ entry: Entry }>(`/api/log/${encodeURIComponent(entryId)}/correction`, { boatId, quantity, correctionToken });
+
+/** Adds a proof photo to an entry saved in the last 30 minutes. `reply` is spoken like any other reply. */
+export const attachPhoto = (entryId: string, boatId: string, correctionToken: string, photoBase64: string) =>
+  request<{ entry: Entry; reply?: Reply | null }>(`/api/log/${encodeURIComponent(entryId)}/photo`, { boatId, correctionToken, photoBase64 });
 
 /** Straight-line distance in metres. */
 export function distanceM(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {

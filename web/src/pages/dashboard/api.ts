@@ -90,6 +90,27 @@ export interface State {
   reports?: Record<string, unknown>[];
   /** One row per registered truck or pump boat. Missing on a server without operators. */
   custody?: Custody[];
+  /** The last 20 accepted owner reminder calls, newest first. Missing on an older server. */
+  reminderCalls?: ReminderCall[];
+}
+
+export type CallLanguage = 'Malayalam' | 'English';
+
+/** A reminder call the phone service accepted. `to` is masked by the server, like +91••••••12. */
+export interface ReminderCall {
+  boatId: string;
+  at: string;
+  attemptId: string;
+  language: CallLanguage;
+  to: string;
+}
+
+export interface ReminderResult {
+  attemptId: string;
+  to: string;
+  language: CallLanguage;
+  message: { english: string; local: string };
+  notDueSoon: boolean;
 }
 
 /** A tourist report. The route is new, so the shape is read loosely. */
@@ -106,7 +127,12 @@ export interface Report {
 }
 
 export class ApiError extends Error {
-  constructor(message: string, readonly status: number) {
+  constructor(
+    message: string,
+    readonly status: number,
+    /** On a 429, how long to wait before the next try. */
+    readonly retryAfterSeconds: number | null = null,
+  ) {
     super(message);
   }
 }
@@ -127,8 +153,11 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   } catch {
     throw new ApiError('The server did not answer. Check the connection and try again.', 0);
   }
-  const data = (await res.json().catch(() => ({}))) as { error?: string };
-  if (!res.ok) throw new ApiError(data.error || `The request failed (${res.status}).`, res.status);
+  const data = (await res.json().catch(() => ({}))) as { error?: string; retryAfterSeconds?: unknown };
+  if (!res.ok) {
+    const wait = typeof data.retryAfterSeconds === 'number' ? data.retryAfterSeconds : Number(res.headers.get('Retry-After')) || null;
+    throw new ApiError(data.error || `The request failed (${res.status}).`, res.status, wait);
+  }
   return data as T;
 }
 
@@ -177,6 +206,10 @@ export function reportsOf(state: State): Report[] | null {
 /** Withdraws an entry. It stays in the chain, marked voided, and stops counting toward the boat's status. */
 export const voidEntry = (id: string, reason: string) =>
   request<{ entry: Entry }>(`/api/log/${encodeURIComponent(id)}/void`, { reason });
+
+/** Phones the boat owner with a spoken pump-out reminder. Each call rings a real phone. */
+export const callOwner = (boatId: string, language: CallLanguage) =>
+  request<ReminderResult>(`/api/boats/${encodeURIComponent(boatId)}/reminder-call`, { language });
 
 export const markReportReviewed = (id: string) =>
   request<unknown>(`/api/reports/${encodeURIComponent(id)}/review`, {});

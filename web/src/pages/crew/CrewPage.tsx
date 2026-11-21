@@ -13,7 +13,6 @@ import {
   formatDistance,
   getBoat,
   postLog,
-  shrinkPhoto,
   silentWavUrl,
   speak,
   type Boat,
@@ -21,6 +20,7 @@ import {
   type Facility,
   type LogPayload,
   type LogResult,
+  type Reply,
 } from './api.ts';
 import { HeardBubble, Intro, Notice, NoticeAction, ReplyBubble, TypedBubble, VoiceNoteBubble, type NoticeKind } from './Conversation.tsx';
 import { SendProgress, type SendStage } from './Progress.tsx';
@@ -38,16 +38,16 @@ import { PastEntries } from './PastEntries.tsx';
 const MAX_SECONDS = 25;
 /** A first GPS fix can take several seconds. A send waits this long for one, then goes without it. */
 const FIX_WAIT_MS = 8000;
+/** One centred column for the conversation and the bottom bar on wide screens. Full width on a phone. */
+const COLUMN = 'mx-auto w-full max-w-[42rem]';
 
 interface Exchange {
   id: string;
   input: 'voice' | 'text';
   typed?: string;
   seconds?: number;
-  photoUrl?: string;
   status: 'sending' | 'done' | 'failed';
   stage?: SendStage;
-  hasPhoto?: boolean;
   result?: Partial<LogResult>;
   entry?: Entry;
   token?: string | null;
@@ -89,8 +89,6 @@ function Crew({ boatId }: { boatId: string }) {
   const [mic, setMic] = useState<MicState>('ready');
   const [mode, setMode] = useState<'voice' | 'text'>('voice');
   const [typed, setTyped] = useState('');
-  const [photo, setPhoto] = useState<{ base64: string; previewUrl: string } | null>(null);
-  const [photoFailed, setPhotoFailed] = useState(false);
   const [micProblem, setMicProblem] = useState<'micDenied' | 'micMissing' | null>(null);
   const [locDismissed, setLocDismissed] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
@@ -100,7 +98,6 @@ function Crew({ boatId }: { boatId: string }) {
   const payloads = useRef(new Map<string, LogPayload>());
   const audio = useRef<HTMLAudioElement>(null);
   const silence = useMemo(() => silentWavUrl(), []);
-  const fileInput = useRef<HTMLInputElement>(null);
   const textArea = useRef<HTMLTextAreaElement>(null);
   const end = useRef<HTMLDivElement>(null);
 
@@ -173,7 +170,6 @@ function Crew({ boatId }: { boatId: string }) {
         update(id, { status: 'done', result, entry: result.entry, token: result.correctionToken ?? null });
         if (result.stored) {
           setPastRevision((n) => n + 1);
-          setPhoto(null);
           payloads.current.delete(id);
           if (result.status) setLoad((l) => (l.status === 'ready' ? { ...l, boat: { ...l.boat, status: result.status! } } : l));
         }
@@ -198,12 +194,11 @@ function Crew({ boatId }: { boatId: string }) {
         boatId,
         ...input,
         ...(pos ? { lat: pos.lat, lon: pos.lon, accuracy: pos.accuracy } : {}),
-        photoBase64: photo?.base64 ?? null,
       });
-      setExchanges((list) => [...list, { id, status: 'sending', photoUrl: photo?.previewUrl, hasPhoto: Boolean(photo), input: 'voice', ...extra }]);
+      setExchanges((list) => [...list, { id, status: 'sending', input: 'voice', ...extra }]);
       send(id);
     },
-    [boatId, location.position, photo, send],
+    [boatId, location.position, send],
   );
 
   const secondsLeftRef = useRef(MAX_SECONDS);
@@ -238,6 +233,22 @@ function Crew({ boatId }: { boatId: string }) {
     await recorder.start();
   }
 
+  /** Stops the recording and throws it away. Nothing is sent. */
+  function cancelRecord() {
+    recorder.cancel();
+    setMic('ready');
+  }
+
+  /** A photo added to a saved entry: show its new proof and speak the reply. */
+  const photoAdded = useCallback(
+    (id: string, entry: Entry, reply: Reply | null | undefined) => {
+      update(id, { entry });
+      setPastRevision((n) => n + 1);
+      if (reply) playReply(reply.id);
+    },
+    [playReply, update],
+  );
+
   function sendTyped(e: FormEvent) {
     e.preventDefault();
     const text = typed.trim();
@@ -246,23 +257,6 @@ function Crew({ boatId }: { boatId: string }) {
     location.start();
     setTyped('');
     submit({ text }, { input: 'text', typed: text });
-  }
-
-  /** A receipt photo is taken at the handover, so it is a good moment to ask for location too. */
-  function openCamera() {
-    location.start();
-    fileInput.current?.click();
-  }
-
-  async function pickPhoto(file: File | undefined) {
-    if (!file) return;
-    try {
-      setPhoto(await shrinkPhoto(file));
-      setPhotoFailed(false);
-    } catch {
-      setPhoto(null);
-      setPhotoFailed(true);
-    }
   }
 
   function switchToText() {
@@ -309,9 +303,9 @@ function Crew({ boatId }: { boatId: string }) {
   const busy = micState === 'sending';
 
   return (
-    <div className="mx-auto flex h-dvh w-full max-w-[36rem] flex-col bg-teak-deep text-ink-inverse">
+    <div className="flex h-dvh w-full flex-col bg-teak-deep text-ink-inverse">
       <header className="relative z-10 bg-teak pt-[env(safe-area-inset-top)] shadow-[0_12px_32px_-18px_var(--color-teak-deep)]">
-        <div className="mx-auto flex max-w-[36rem] items-start gap-1.5 px-2 pt-2">
+        <div className={`${COLUMN} flex items-start gap-1.5 px-2 pt-2`}>
           <Link
             to="/"
             aria-label={pick(t('back'), lang)}
@@ -329,7 +323,7 @@ function Crew({ boatId }: { boatId: string }) {
           </div>
           <LanguageSwitch compact className="me-1" />
         </div>
-        <div className="mx-auto max-w-[36rem] px-4 pb-3 pt-2.5">
+        <div className={`${COLUMN} px-4 pb-3 pt-2.5`}>
           <LocationStrip location={location} facilities={facilities} />
           <button type="button" onClick={() => setPastOpen(true)} className="mt-2 min-h-11 rounded-control border border-gold-edge px-3 text-small font-semibold text-gold-bright"><MlEn text={t('pastEntries')} /></button>
         </div>
@@ -338,7 +332,7 @@ function Crew({ boatId }: { boatId: string }) {
       {pastOpen && <PastEntries boatId={boatId} revision={pastRevision} onClose={() => setPastOpen(false)} />}
 
       <main id="main" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto flex max-w-[36rem] flex-col gap-4 px-4 pb-24 pt-5" aria-live="polite">
+        <div className={`${COLUMN} flex flex-col gap-4 px-4 pb-24 pt-5`} aria-live="polite">
           <Intro boat={boat} />
           {exchanges.map((x) => (
             <ExchangeView
@@ -349,14 +343,16 @@ function Crew({ boatId }: { boatId: string }) {
               onRetry={() => send(x.id)}
               onTypeInstead={switchToText}
               onCorrected={(entry) => update(x.id, { entry })}
+              onPhotoAdded={(entry, reply) => photoAdded(x.id, entry, reply)}
+              onBeforePhoto={unlockAudio}
             />
           ))}
           <div ref={end} className="h-1" />
         </div>
       </main>
 
-      <div className="relative z-10 rounded-t-[1.75rem] border-t border-gold-edge/25 bg-teak pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-14px_36px_-18px_var(--color-teak-deep)]">
-        <div className="mx-auto flex max-w-[36rem] flex-col gap-3 px-4 pt-2">
+      <div className={`${COLUMN} relative z-10 rounded-t-[1.75rem] border-t border-gold-edge/25 bg-teak pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-14px_36px_-18px_var(--color-teak-deep)]`}>
+        <div className="flex flex-col gap-3 px-4 pt-2">
           <AnimatePresence initial={false}>
             {micProblem && (
               <Notice
@@ -370,43 +366,7 @@ function Crew({ boatId }: { boatId: string }) {
             {location.status === 'denied' && !locDismissed && exchanges.length === 0 && (
               <Notice key="loc" compact kind="locDenied" onDismiss={() => setLocDismissed(true)} />
             )}
-            {photo && (
-              <motion.div
-                key="photo"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8, transition: { duration: 0.15 } }}
-                className="flex items-center gap-3 rounded-card bg-teak-raised p-2.5 pe-1.5"
-              >
-                <img src={photo.previewUrl} alt="" className="size-14 rounded-control object-cover outline outline-1 -outline-offset-1 outline-white/10" />
-                <MlEn text={t('photoReady')} className="min-w-0 flex-1 text-small" mlClassName="text-small" />
-                <button
-                  type="button"
-                  onClick={() => setPhoto(null)}
-                  aria-label={pick(t('photoRemove'), lang)}
-                  className="grid size-11 shrink-0 place-items-center rounded-full text-ink-inverse-muted hover:bg-teak active:scale-[0.96]"
-                >
-                  <Icon.Close size={18} />
-                </button>
-              </motion.div>
-            )}
-            {photoFailed && !photo && (
-              <Notice key="photoFail" compact kind="photo" onDismiss={() => setPhotoFailed(false)} />
-            )}
           </AnimatePresence>
-
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            tabIndex={-1}
-            onChange={(e) => {
-              pickPhoto(e.target.files?.[0]);
-              e.target.value = '';
-            }}
-          />
 
           {mode === 'voice' ? (
             <div className="flex flex-col items-center">
@@ -419,7 +379,22 @@ function Crew({ boatId }: { boatId: string }) {
                 )}
               </div>
               <div className="flex w-full items-center justify-between">
-                <SideButton icon={<Icon.Camera size={24} />} k="photo" active={Boolean(photo)} disabled={micState === 'listening'} onClick={openCamera} />
+                {/* While recording, Cancel sits left of the send button. Otherwise the slot stays empty so the button stays centred. */}
+                <div className="w-[5.5rem]">
+                  <AnimatePresence initial={false}>
+                    {micState === 'listening' && (
+                      <motion.div
+                        key="cancel"
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.12 } }}
+                        transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
+                      >
+                        <SideButton icon={<Icon.Close size={22} />} k="cancel" aria="recordCancel" onClick={cancelRecord} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 <RecordButton state={micState} level={recorder.level} label={pick(t(micState === 'listening' ? 'recordStop' : 'recordStart'), lang)} onPress={pressRecord} />
                 <SideButton icon={<Icon.Keyboard size={24} />} k="type" disabled={micState === 'listening'} onClick={switchToText} />
               </div>
@@ -469,16 +444,6 @@ function Crew({ boatId }: { boatId: string }) {
                   <Icon.Mic size={22} />
                 </button>
                 <button
-                  type="button"
-                  onClick={openCamera}
-                  aria-label={pick(t('photo'), lang)}
-                  className={`grid size-12 shrink-0 place-items-center rounded-full border bg-teak-raised transition-[scale] duration-[var(--duration-press)] active:scale-[0.96] ${
-                    photo ? 'border-gold text-gold-bright' : 'border-gold-edge/40 text-gold'
-                  }`}
-                >
-                  <Icon.Camera size={22} />
-                </button>
-                <button
                   type="submit"
                   disabled={!typed.trim() || busy}
                   aria-busy={busy || undefined}
@@ -504,7 +469,7 @@ function Crew({ boatId }: { boatId: string }) {
   );
 }
 
-function SideButton({ icon, k, onClick, active = false, disabled = false }: { icon: ReactNode; k: CrewKey; onClick: () => void; active?: boolean; disabled?: boolean }) {
+function SideButton({ icon, k, aria, onClick, disabled = false }: { icon: ReactNode; k: CrewKey; aria?: CrewKey; onClick: () => void; disabled?: boolean }) {
   const lang = useLang();
   const label = t(k);
   return (
@@ -512,16 +477,13 @@ function SideButton({ icon, k, onClick, active = false, disabled = false }: { ic
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={pick(label, lang)}
+      aria-label={pick(t(aria ?? k), lang)}
       className="group flex w-[5.5rem] flex-col items-center gap-1.5 disabled:opacity-40"
     >
       <span
-        className={`relative grid size-14 place-items-center rounded-full border bg-teak-raised transition-[scale,border-color] duration-[var(--duration-press)] ease-[var(--ease-out)] group-enabled:group-active:scale-[0.96] ${
-          active ? 'border-gold text-gold-bright' : 'border-gold-edge/35 text-gold'
-        }`}
+        className="relative grid size-14 place-items-center rounded-full border border-gold-edge/35 bg-teak-raised text-gold transition-[scale] duration-[var(--duration-press)] ease-[var(--ease-out)] group-enabled:group-active:scale-[0.96]"
       >
         {icon}
-        {active && <span className="absolute -end-0.5 -top-0.5 size-3.5 rounded-full border-2 border-teak bg-gold-bright" />}
       </span>
       <span aria-hidden="true" className="flex flex-col items-center text-center leading-tight">
         {lang === 'both' && label.ml ? (
@@ -597,6 +559,8 @@ function ExchangeView({
   onRetry,
   onTypeInstead,
   onCorrected,
+  onPhotoAdded,
+  onBeforePhoto,
 }: {
   x: Exchange;
   speakingId: string | null;
@@ -604,21 +568,23 @@ function ExchangeView({
   onRetry: () => void;
   onTypeInstead: () => void;
   onCorrected: (entry: Entry) => void;
+  onPhotoAdded: (entry: Entry, reply: Reply | null | undefined) => void;
+  onBeforePhoto: () => void;
 }) {
   const heard = x.result?.heard;
   const reply = x.result?.reply;
   return (
     <>
       {heard ? (
-        <HeardBubble heard={heard} photoUrl={x.photoUrl} />
+        <HeardBubble heard={heard} />
       ) : x.input === 'text' ? (
-        <TypedBubble text={x.typed ?? ''} photoUrl={x.photoUrl} />
+        <TypedBubble text={x.typed ?? ''} />
       ) : (
-        <VoiceNoteBubble seconds={x.seconds ?? 1} photoUrl={x.photoUrl} />
+        <VoiceNoteBubble seconds={x.seconds ?? 1} />
       )}
-      {x.status === 'sending' && x.stage && <SendProgress stage={x.stage} input={x.input} photo={Boolean(x.hasPhoto)} />}
+      {x.status === 'sending' && x.stage && <SendProgress stage={x.stage} input={x.input} />}
       {reply && <ReplyBubble reply={reply} speaking={speakingId === reply.id} onPlay={() => onPlay(reply.id)} />}
-      {x.entry && <Receipt entry={x.entry} token={x.token ?? null} onCorrected={onCorrected} />}
+      {x.entry && <Receipt entry={x.entry} token={x.token ?? null} onCorrected={onCorrected} onPhotoAdded={onPhotoAdded} onBeforePhoto={onBeforePhoto} />}
       {/* Nobody receives waste at a public bin, so there is no one to show the code to. */}
       {x.entry?.handoverCode && !x.entry.confirmation && methodOf(x.entry) !== 'waste_bin' && (
         <HandoverCard entry={{ ...x.entry, handoverCode: x.entry.handoverCode }} />

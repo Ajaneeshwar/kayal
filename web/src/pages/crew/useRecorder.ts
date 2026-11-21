@@ -11,7 +11,8 @@ interface Options {
 const MIME_TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
 
 /**
- * Records one utterance with MediaRecorder. `level` holds the live microphone level from 0 to 1,
+ * Records one utterance with MediaRecorder. `stop` ends it and hands the recording to `onDone`;
+ * `cancel` ends it and throws it away. `level` holds the live microphone level from 0 to 1,
  * read straight from an AnalyserNode every frame, for the sound wave.
  */
 export function useRecorder({ maxSeconds, onDone, onFail }: Options) {
@@ -19,6 +20,8 @@ export function useRecorder({ maxSeconds, onDone, onFail }: Options) {
   const [secondsLeft, setSecondsLeft] = useState(maxSeconds);
   const level = useRef(0);
   const stopRef = useRef<() => void>(() => {});
+  /** Set by cancel, so the stop that follows throws the recording away instead of sending it. */
+  const discard = useRef(false);
   const callbacks = useRef({ onDone, onFail });
   callbacks.current = { onDone, onFail };
 
@@ -77,10 +80,12 @@ export function useRecorder({ maxSeconds, onDone, onFail }: Options) {
       stream.getTracks().forEach((track) => track.stop());
       level.current = 0;
       setRecording(false);
+      if (discard.current) return;
       callbacks.current.onDone(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }));
     });
 
     stopRef.current = () => recorder.state !== 'inactive' && recorder.stop();
+    discard.current = false;
     recorder.start();
     setSecondsLeft(maxSeconds);
     setRecording(true);
@@ -88,9 +93,13 @@ export function useRecorder({ maxSeconds, onDone, onFail }: Options) {
   }, [maxSeconds]);
 
   const stop = useCallback(() => stopRef.current(), []);
+  const cancel = useCallback(() => {
+    discard.current = true;
+    stopRef.current();
+  }, []);
 
   // Release the microphone if the page goes away mid-recording.
   useEffect(() => () => stopRef.current(), []);
 
-  return { recording, secondsLeft, level, start, stop };
+  return { recording, secondsLeft, level, start, stop, cancel };
 }
