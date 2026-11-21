@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   GENESIS_HASH, answerQuestion, boatStatus, checkChain, classifyByKeywords, compass, distanceM, entryHash,
-  normaliseExtraction, parseModelJson, replyFor, spokenDistance, verify,
+  hasInvalidQuantity, hasWasteContext, normaliseExtraction, parseModelJson, projectEntries, replyFor, spokenDistance, verify,
 } from '../lib/logic.mjs';
 
 const DAY_MS = 86_400_000;
@@ -128,6 +128,20 @@ test('keyword fallback sorts common phrases', () => {
   assert.equal(classifyByKeywords('Good morning everyone'), 'other');
 });
 
+test('waste context rejects unrelated questions and keeps collection questions', () => {
+  assert.equal(hasWasteContext('Hello, how are you?'), false);
+  assert.equal(hasWasteContext('Where did I put my keys?'), false);
+  assert.equal(hasWasteContext('Which plant is open today?'), true);
+  assert.equal(hasWasteContext('We emptied the toilet tank at Kumarakom.'), true);
+});
+
+test('invalid quantities include non-finite and negative amounts', () => {
+  assert.equal(hasInvalidQuantity('We emptied -8 litres.'), true);
+  assert.equal(hasInvalidQuantity('We emptied −൮ litres.'), true);
+  assert.equal(hasInvalidQuantity('NaN litres'), true);
+  assert.equal(hasInvalidQuantity('800 litres'), false);
+});
+
 test('model JSON is read through code fences and bad kinds fall back', () => {
   const raw = parseModelJson('```json\n{"kind":"sewage_pumpout","quantity":"800 litres","facility_mentioned":null,"summary_en":"Emptied tank."}\n```');
   assert.deepEqual(normaliseExtraction(raw, 'x'), {
@@ -149,4 +163,31 @@ test('hash chain detects an edited entry', () => {
   assert.deepEqual(checkChain(entries), { ok: true, count: 3, brokenAt: null });
   entries[1].verification = { ...entries[1].verification, level: 'receipt' };
   assert.deepEqual(checkChain(entries), { ok: false, count: 3, brokenAt: 1 });
+});
+
+test('quantity corrections are chained and project the latest amount without changing proof', () => {
+  const original = {
+    ...sewage(1, 'location'), id: 'entry', boatId: 'boat', quantity: '8 litres',
+    correctionTokenHash: 'private', prevHash: GENESIS_HASH,
+  };
+  original.hash = entryHash(original.prevHash, original);
+  const first = {
+    id: 'correction-1', boatId: original.boatId, correctsEntryId: original.id,
+    at: NOW.toISOString(), quantity: '80 litres', prevHash: original.hash,
+  };
+  first.hash = entryHash(first.prevHash, first);
+  const last = { ...first, id: 'correction-2', quantity: '8000 litres', prevHash: first.hash };
+  last.hash = entryHash(last.prevHash, last);
+  const records = [original, first, last];
+
+  const [entry, ...extra] = projectEntries(records);
+  assert.deepEqual(extra, []);
+  assert.equal(entry.quantity, '8000 litres');
+  assert.equal(entry.corrected, true);
+  assert.equal(entry.correctionId, last.id);
+  assert.equal(entry.correctionTokenHash, undefined);
+  assert.equal(original.quantity, '8 litres');
+  assert.deepEqual(entry.verification, original.verification);
+  assert.deepEqual(checkChain(records), { ok: true, count: 3, brokenAt: null });
+  assert.equal(checkChain([original, first, { ...last, quantity: '800 litres' }]).brokenAt, 2);
 });

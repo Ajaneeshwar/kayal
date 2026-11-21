@@ -1,37 +1,65 @@
 #!/usr/bin/env bash
-# Copy the working tree to gon, build the web app there, and restart the server.
-# Usage: scripts/gon [deploy|status|logs [lines]|stop]
+# Copy the working tree to gon and run it there.
+#   scripts/gon deploy    copy, build web/, restart the main server (port 3000)
+#   scripts/gon api       copy, restart the main server without building web/
+#   scripts/gon sandbox   copy, start a second server on port 3100 with fresh sample data
+#   scripts/gon sync      copy only
+#   scripts/gon status | logs [kayal|kayal-sandbox] [lines] | stop
 set -euo pipefail
 
 HOST=gon
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MODE="${1:-deploy}"
 
-case "${1:-deploy}" in
-  deploy)
-    rsync -az --delete \
-      --exclude /.git --exclude node_modules --exclude /data --exclude /.env \
-      --exclude /.firecrawl --exclude /.agents --exclude dist --exclude /server.log \
-      "$ROOT/" "$HOST:hackathoni/"
-    ssh "$HOST" 'bash -s' <<'REMOTE'
+sync_tree() {
+  rsync -az --delete \
+    --exclude /.git --exclude node_modules --exclude /data --exclude /.env \
+    --exclude /.firecrawl --exclude /.agents --exclude dist --exclude '/*.log' \
+    "$ROOT/" "$HOST:hackathoni/"
+}
+
+case "$MODE" in
+  sync) sync_tree ;;
+  deploy | api | sandbox)
+    sync_tree
+    ssh "$HOST" 'bash -s' -- "$MODE" <<'REMOTE'
 set -euo pipefail
 cd ~/hackathoni
-if [ -f web/package.json ]; then
-  (cd web && npm install --no-audit --no-fund --loglevel=error && npm run build)
-fi
+# One deploy at a time: several agents share this machine.
+exec 9>/tmp/kayal-deploy.lock
+flock 9
 NODE="$(command -v node)"
-tmux kill-session -t kayal 2>/dev/null || true
-tmux new-session -d -s kayal "$NODE server.mjs >> server.log 2>&1"
-for _ in $(seq 1 20); do
-  if curl -fsS http://127.0.0.1:3000/api/health; then echo; exit 0; fi
-  sleep 0.5
-done
-echo 'The server did not answer. Last log lines:' >&2
-tail -n 30 server.log >&2
-exit 1
+
+start() {
+  local session="$1" port="$2" data="$3"
+  tmux kill-session -t "$session" 2>/dev/null || true
+  tmux new-session -d -s "$session" "PORT=$port DATA_DIR=$data $NODE server.mjs >> $session.log 2>&1"
+  for _ in $(seq 1 20); do
+    if curl -fsS "http://127.0.0.1:$port/api/health"; then echo; return 0; fi
+    sleep 0.5
+  done
+  echo "The server on port $port did not answer. Last log lines:" >&2
+  tail -n 30 "$session.log" >&2
+  return 1
+}
+
+case "$1" in
+  deploy)
+    if [ -f web/package.json ]; then
+      (cd web && npm install --no-audit --no-fund --loglevel=error && npm run build)
+    fi
+    start kayal 3000 "$HOME/hackathoni/data"
+    ;;
+  api) start kayal 3000 "$HOME/hackathoni/data" ;;
+  sandbox)
+    rm -rf /tmp/kayal-sandbox
+    start kayal-sandbox 3100 /tmp/kayal-sandbox
+    ;;
+esac
 REMOTE
     ;;
   status) ssh "$HOST" 'curl -fsS http://127.0.0.1:3000/api/health; echo; tmux ls 2>&1' ;;
-  logs) ssh "$HOST" "tail -n ${2:-60} ~/hackathoni/server.log" ;;
-  stop) ssh "$HOST" 'tmux kill-session -t kayal' ;;
-  *) echo 'usage: scripts/gon [deploy|status|logs [lines]|stop]' >&2; exit 2 ;;
+  logs) ssh "$HOST" "tail -n ${3:-60} ~/hackathoni/${2:-kayal}.log" ;;
+  stop) ssh "$HOST" 'tmux kill-session -t kayal; tmux kill-session -t kayal-sandbox 2>/dev/null || true' ;;
+  *) echo 'usage: scripts/gon [deploy|api|sandbox|sync|status|logs [session] [lines]|stop]' >&2; exit 2 ;;
 esac
