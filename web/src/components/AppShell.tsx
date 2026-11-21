@@ -50,7 +50,6 @@ export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', 
       <footer className="bg-teak-deep pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-8 text-small text-ink-inverse-muted">
         <div className="mx-auto flex max-w-[76rem] flex-col gap-2 px-4 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
           <p>Built at HackaThoni, Alappuzha, November 2026.</p>
-          <p>Malayalam is machine-translated and not yet checked by a native speaker.</p>
         </div>
       </footer>
     </div>
