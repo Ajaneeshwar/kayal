@@ -31,6 +31,10 @@
     "en": "Say what you emptied, how much, and where or who took it",
     "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞത്, എത്ര, എവിടെ അല്ലെങ്കിൽ ആരാണ് എടുത്തതെന്ന് പറയുക"
   },
+  "introAnyLanguage": {
+    "en": "Speak in Malayalam, Tamil, Hindi, Bengali or your own language.",
+    "ml": "മലയാളം, തമിഴ്, ഹിന്ദി, ബംഗാളി അല്ലെങ്കിൽ നിങ്ങളുടെ സ്വന്തം ഭാഷയിൽ സംസാരിക്കുക."
+  },
   "introExample": {
     "en": "We emptied 800 litres from the toilet tank at Kumarakom STP.",
     "ml": "ഞങ്ങൾ കുമരകം എസ്.ടി.പിയിലെ ടോയ്‌ലറ്റ് ടാങ്കിൽ നിന്ന് 800 ലിറ്റർ മലിനജലം ഒഴുക്കിക്കളഞ്ഞു."

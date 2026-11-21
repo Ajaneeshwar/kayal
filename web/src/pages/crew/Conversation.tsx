@@ -4,6 +4,7 @@ import type { Boat, Heard, Reply } from './api.ts';
 import { t } from './i18n.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
+import { nativeNames } from './spokenLanguage.ts';
 import { BoatMark, Icon, MlEn, SpokenPair } from './ui.tsx';
 
 const enter = {
@@ -59,6 +60,9 @@ export function CrewBubble({ children, photoUrl }: { children: ReactNode; photoU
   );
 }
 
+/** The likeliest migrant crews' languages, each named in its own script so its speakers spot it. */
+const INVITE = nativeNames(['ta', 'hi', 'bn', 'or']);
+
 export function Intro({ boat }: { boat: Boat }) {
   const lang = useLang();
   const pick = usePick();
@@ -67,6 +71,17 @@ export function Intro({ boat }: { boat: Boat }) {
   return (
     <KayalBubble>
       <MlEn text={t('introTitle')} className="font-semibold" mlClassName="text-body" enClassName="!text-small font-normal" />
+      <div className="mt-2 text-small text-ink-muted">
+        <MlEn text={t('introAnyLanguage')} mlClassName="text-small" enClassName="!text-[1em] !opacity-100" />
+        <p className="mt-0.5 flex flex-wrap gap-x-2">
+          {INVITE.map((n, i) => (
+            <span key={n.lang} className="inline-flex gap-x-2">
+              {i > 0 && <span aria-hidden="true" className="opacity-50">·</span>}
+              <span lang={n.lang}>{n.text}</span>
+            </span>
+          ))}
+        </p>
+      </div>
       <div className="mt-3 border-s-2 border-gold-edge ps-3">
         <MlEn text={t('forExample')} layout="inline" className="text-caption text-ink-muted" mlClassName="text-caption" />
         <MlEn text={t('introExample')} className="mt-0.5" mlClassName="text-body" enClassName="!text-small text-ink-muted !opacity-100" />
@@ -85,7 +100,7 @@ export function Intro({ boat }: { boat: Boat }) {
 export function HeardBubble({ heard, photoUrl }: { heard: Heard; photoUrl?: string }) {
   return (
     <CrewBubble photoUrl={photoUrl}>
-      <SpokenPair original={heard.original} english={heard.english} language={heard.language} />
+      <SpokenPair original={heard.original} english={heard.english} language={heard.language} tone="dark" />
     </CrewBubble>
   );
 }
@@ -119,7 +134,7 @@ export function TypedBubble({ text, photoUrl }: { text: string; photoUrl?: strin
 export function ReplyBubble({ reply, speaking, onPlay }: { reply: Reply; speaking: boolean; onPlay: () => void }) {
   return (
     <KayalBubble>
-      <SpokenPair original={reply.local} english={reply.english} language={reply.language} />
+      <SpokenPair original={reply.local} english={reply.english} language={reply.language} tone="light" />
       <button
         type="button"
         onClick={onPlay}

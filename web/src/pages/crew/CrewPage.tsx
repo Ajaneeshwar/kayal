@@ -3,7 +3,7 @@ import { Link, Navigate, useSearchParams } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
-import { pick, replyLanguage, useLang, usePick } from '../../i18n/language.ts';
+import { pick, useLang, usePick } from '../../i18n/language.ts';
 import { rememberCrewBoat } from '../../lib/api.ts';
 import {
   ApiError,
@@ -73,9 +73,6 @@ export default function CrewPage() {
 function Crew({ boatId }: { boatId: string }) {
   const [load, setLoad] = useState<Load>({ status: 'loading' });
   const lang = useLang();
-  // Read at send time, so a retry uses the setting in force when it is sent.
-  const langRef = useRef(lang);
-  langRef.current = lang;
   const [attempt, setAttempt] = useState(0);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [mic, setMic] = useState<MicState>('ready');
@@ -148,7 +145,8 @@ function Crew({ boatId }: { boatId: string }) {
       update(id, { status: 'sending', notice: undefined });
       setMic('sending');
       try {
-        const result = await postLog({ ...payload, replyLanguage: replyLanguage(langRef.current) });
+        // The reply follows the language the crew spoke, whatever the page language is.
+        const result = await postLog({ ...payload, replyLanguage: 'auto' });
         update(id, { status: 'done', result, entry: result.entry, token: result.correctionToken ?? null });
         if (result.stored) {
           setPhoto(null);

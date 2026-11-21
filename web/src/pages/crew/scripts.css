@@ -1,0 +1,63 @@
+/*
+  Fonts for the scripts migrant crews most often speak in Alappuzha: Tamil, Devanagari (Hindi,
+  Marathi), Bengali and Odia. Each is the Anek sibling of the bundled Anek Malayalam, so every
+  script on the crew page shares one design. Only the script subset is declared, so Latin stays in
+  Inter, and a browser downloads a file only when a reply in that script is on screen. Other
+  scripts (Telugu, Kannada, Gujarati, Punjabi) use the phone's own fonts.
+
+  These faces apply only to `.spoken` text, the crew's words and the replies. Short names
+  elsewhere, such as the intro's list of languages, stay in system fonts so that opening the page
+  does not download every script.
+*/
+@font-face {
+  font-family: 'Kayal Tamil';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/anek-tamil/files/anek-tamil-tamil-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0964-0965, U+0B82-0BFA, U+200C-200D, U+20B9, U+25CC;
+}
+
+@font-face {
+  font-family: 'Kayal Devanagari';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/anek-devanagari/files/anek-devanagari-devanagari-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF;
+}
+
+@font-face {
+  font-family: 'Kayal Bengali';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/anek-bangla/files/anek-bangla-bengali-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2,
+    U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+
+@font-face {
+  font-family: 'Kayal Odia';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/anek-odia/files/anek-odia-oriya-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0951-0952, U+0964-0965, U+0B01-0B77, U+1CDA, U+1CF2, U+200C-200D, U+20B9, U+25CC;
+}
+
+@layer base {
+  .spoken[lang='ta'] {
+    font-family: 'Inter Variable', 'Kayal Tamil', system-ui, sans-serif;
+  }
+  .spoken[lang='hi'],
+  .spoken[lang='mr'] {
+    font-family: 'Inter Variable', 'Kayal Devanagari', system-ui, sans-serif;
+  }
+  .spoken[lang='bn'] {
+    font-family: 'Inter Variable', 'Kayal Bengali', system-ui, sans-serif;
+  }
+  .spoken[lang='or'] {
+    font-family: 'Inter Variable', 'Kayal Odia', system-ui, sans-serif;
+  }
+}

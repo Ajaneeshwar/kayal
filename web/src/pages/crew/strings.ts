@@ -16,6 +16,7 @@ export const en = {
   recordStop: 'Stop recording',
 
   introTitle: 'Say what you emptied, how much, and where or who took it',
+  introAnyLanguage: 'Speak in Malayalam, Tamil, Hindi, Bengali or your own language.',
   introExample: 'We emptied 800 litres from the toilet tank at Kumarakom STP.',
   introExampleTruck: 'A septic truck, KL-04-AB-1234, took 300 litres.',
   forExample: 'For example',

@@ -1,6 +1,8 @@
 import type { ElementType, ReactNode, SVGProps } from 'react';
 import type { Pair } from './i18n.ts';
 import { useLang } from '../../i18n/language.ts';
+import { spokenLanguage, type Spoken } from './spokenLanguage.ts';
+import './scripts.css';
 
 /**
  * A crew string in the chosen language. In the mixed setting Malayalam leads, with its English
@@ -65,31 +67,70 @@ export function MlEn({
   );
 }
 
+/** The spoken language's name, in English and in its own script, as a small tag on a bubble. */
+function LanguageTag({ spoken, tone }: { spoken: Spoken; tone: 'light' | 'dark' }) {
+  if (!spoken.name) return null;
+  return (
+    <span
+      className={`inline-flex w-fit items-baseline gap-1.5 rounded-pill px-2.5 py-0.5 text-caption font-semibold whitespace-nowrap ${
+        tone === 'dark' ? 'bg-ink-inverse/12 text-ink-inverse' : 'bg-surface text-gold-ink ring-1 ring-line'
+      }`}
+    >
+      <span lang="en">{spoken.name}</span>
+      {spoken.native && (
+        <>
+          <span aria-hidden="true" className="opacity-50">
+            ·
+          </span>
+          <span lang={spoken.lang} className={`spoken font-normal ${spoken.lang === 'ml' ? 'font-ml' : ''}`}>
+            {spoken.native}
+          </span>
+        </>
+      )}
+    </span>
+  );
+}
+
 /**
- * A line of text the server sent: Malayalam (or whatever was spoken) with English under it.
- * English setting: the English only. Malayalam setting: the original only.
+ * A line the server sent: the crew's words or the reply. In any language other than English it
+ * shows in that language with a tag naming it and the English meaning under it, whatever the page
+ * language is, because the crew may read neither English nor Malayalam. English shows alone.
  */
-export function SpokenPair({ original, english, language, className = '' }: { original: string; english: string; language: string; className?: string }) {
-  const lang = useLang();
-  const isMl = language.startsWith('ml');
-  const same = original.trim() === english.trim() || !original.trim();
-  if (lang === 'en' && english.trim()) {
+export function SpokenPair({
+  original,
+  english,
+  language,
+  tone,
+  className = '',
+}: {
+  original: string;
+  english: string;
+  language: string;
+  tone: 'light' | 'dark';
+  className?: string;
+}) {
+  const spoken = spokenLanguage(language);
+  const text = original.trim();
+  const meaning = english.trim();
+  if (spoken.isEnglish || !text || text === meaning) {
     return (
-      <div className={`flex flex-col gap-1 ${className}`}>
-        <p lang="en" className="text-lead">
-          {english}
+      <div className={className}>
+        <p lang={!text || spoken.isEnglish ? 'en' : spoken.lang} className="text-lead">
+          {text || meaning}
         </p>
       </div>
     );
   }
+  const script = spoken.lang === 'ml' ? 'font-ml leading-snug' : 'spoken leading-normal';
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
-      <p lang={isMl ? 'ml' : language.slice(0, 2)} className={isMl ? 'font-ml text-lead leading-snug' : 'text-lead'}>
-        {original || english}
+    <div className={`flex flex-col items-start gap-1.5 ${className}`}>
+      <LanguageTag spoken={spoken} tone={tone} />
+      <p lang={spoken.lang} className={`text-lead ${script}`}>
+        {text}
       </p>
-      {!same && lang === 'both' && (
-        <p lang="en" className="text-small opacity-75">
-          {english}
+      {meaning && (
+        <p lang="en" className={`text-small ${tone === 'dark' ? 'text-ink-inverse-muted' : 'text-ink-muted'}`}>
+          {meaning}
         </p>
       )}
     </div>

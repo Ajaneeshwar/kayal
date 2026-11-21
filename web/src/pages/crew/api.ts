@@ -80,8 +80,8 @@ export interface LogPayload {
   lon?: number;
   accuracy?: number;
   photoBase64?: string | null;
-  /** The language of the spoken reply. The server defaults to ml-IN. */
-  replyLanguage?: 'en-IN' | 'ml-IN';
+  /** The reply's language. `auto`, the server default, answers in the language the crew spoke. */
+  replyLanguage?: 'auto' | 'en-IN' | 'ml-IN';
 }
 
 /** status 0 means the request never reached the server. `body` holds any reply the server sent with the error. */
