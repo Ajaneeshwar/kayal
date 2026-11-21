@@ -4,12 +4,14 @@ import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import { Card } from '../../components/Card.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
+import { Select } from '../../components/Select.tsx';
+import { usePick } from '../../i18n/language.ts';
 import { goTo, lastCrewBoat, rememberCrewBoat, saveAdminPin, signInInspector, type Boat } from '../../lib/api.ts';
 import { useBoats, type BoatsState } from '../../lib/useBoats.ts';
 import type { StringKey } from '../../i18n/index.ts';
 import { t } from '../../i18n/index.ts';
 import { filterBoats } from '../../lib/boatTools.ts';
-import { ArrowIcon, ChevronDownIcon, EyeIcon, OarIcon, ShieldIcon } from './icons.tsx';
+import { ArrowIcon, EyeIcon, OarIcon, ShieldIcon } from './icons.tsx';
 
 type BoatsProps = BoatsState & { retry: () => void };
 
@@ -39,6 +41,7 @@ function LoadError({ retry }: { retry: () => void }) {
 }
 
 function CrewDoor({ status, boats, retry }: BoatsProps) {
+  const pick = usePick();
   const [chosen, setChosen] = useState(lastCrewBoat);
   const selected: Boat | undefined = boats.find((b) => b.id === chosen) ?? boats[0];
   const selectId = useId();
@@ -64,23 +67,15 @@ function CrewDoor({ status, boats, retry }: BoatsProps) {
             <LoadError retry={retry} />
           </div>
         ) : (
-          <div className="relative mt-2">
-            <select
-              id={selectId}
-              value={selected?.id ?? ''}
-              onChange={(e) => setChosen(e.target.value)}
-              disabled={!boats.length}
-              className="h-12 w-full min-w-0 truncate appearance-none rounded-control border border-field-border bg-kasavu ps-4 pe-11 text-body font-medium text-ink disabled:text-ink-muted"
-            >
-              {!boats.length && <option value="">Loading boats…</option>}
-              {boats.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute end-3.5 top-1/2 size-5 -translate-y-1/2 text-ink-muted" />
-          </div>
+          <Select
+            id={selectId}
+            name="boat"
+            value={selected?.id ?? ''}
+            onChange={setChosen}
+            disabled={!boats.length}
+            className="mt-2 text-body font-medium"
+            options={boats.length ? boats.map((b) => ({ value: b.id, label: b.name, secondary: b.registration, lang: 'en' })) : [{ value: '', label: pick(t('loadingBoats')) }]}
+          />
         )}
         <Button type="submit" block className="mt-4 justify-between py-2.5" disabled={!selected}>
           <Bi k="openCrew" className="text-start leading-tight" mlClassName="mt-0.5 font-medium text-teak/75" />

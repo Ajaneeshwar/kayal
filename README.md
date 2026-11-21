@@ -6,10 +6,38 @@ Built solo at HackaThoni, Alappuzha, 21–22 November 2026.
 
 ## Screenshots
 
-| | |
-| --- | --- |
-| ![Landing page](docs/screens/landing.png) | ![Crew page](docs/screens/crew.png) |
-| ![Boat record](docs/screens/boat.png) | ![Inspector dashboard](docs/screens/dashboard.png) |
+<img src="docs/screens/landing-desktop.png" alt="Landing page with a live boat record above the fold" width="100%">
+
+Landing — a live boat record and the voice-first logbook.
+
+<table>
+  <tr>
+    <td valign="top" align="center">
+      <img src="docs/screens/crew-phone.png" alt="Kayal Rani crew page with the voice logging controls" width="260">
+      <p>Log waste by voice.</p>
+    </td>
+    <td valign="top" align="center">
+      <img src="docs/screens/boat-record-phone.png" alt="Kayal Rani public record with its verified seal" width="260">
+      <p>Public boat record.</p>
+    </td>
+    <td valign="top" align="center">
+      <img src="docs/screens/crew-past-entries-phone.png" alt="Crew history panel showing Kayal Rani’s past entries" width="260">
+      <p>Crew’s past entries.</p>
+    </td>
+  </tr>
+</table>
+
+<img src="docs/screens/overdue-record-desktop.png" alt="Punnamada Star public record with its overdue seal and last-entry proof" width="100%">
+
+Overdue record — the boat’s status, last-entry proof and intact record.
+
+<img src="docs/screens/dashboard-desktop.png" alt="Inspector dashboard with the map, weekly activity and live waste log" width="100%">
+
+Inspector dashboard — the live map, weekly activity and recent waste handovers.
+
+<img src="docs/screens/qr-sticker-desktop.png" alt="Printable Kayal Rani sticker with its seal and public-record QR code" width="100%">
+
+QR sticker — a printable link to Kayal Rani’s public waste record.
 
 ## The problem
 

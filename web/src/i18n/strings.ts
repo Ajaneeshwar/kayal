@@ -39,6 +39,7 @@ export const en = {
   loggedDayAgo: 'Logged 1 day ago',
 
   yourBoat: 'Your boat',
+  loadingBoats: 'Loading boats…',
   openCrew: 'Open the crew page',
   pinLabel: 'Inspector PIN',
   signIn: 'Sign in',
