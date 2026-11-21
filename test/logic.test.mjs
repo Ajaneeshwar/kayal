@@ -128,6 +128,14 @@ test('keyword fallback sorts common phrases', () => {
   assert.equal(classifyByKeywords('Good morning everyone'), 'other');
 });
 
+test('crew already at the dry-waste point get its name without a fictitious bearing', () => {
+  assert.equal(answerQuestion('Where do we take dry waste?', PUNNAMADA, FACILITIES),
+    'You are at Punnamada point, a working waste collection point.');
+  assert.equal(classifyByKeywords('We gave our dry waste to the collector.'), 'solid_waste');
+  assert.equal(hasWasteContext('We emptied the tank at Kumarakom.'), true);
+  assert.equal(hasWasteContext('We refilled the fuel tank.'), false);
+});
+
 test('waste context rejects unrelated questions and keeps collection questions', () => {
   assert.equal(hasWasteContext('Hello, how are you?'), false);
   assert.equal(hasWasteContext('Where did I put my keys?'), false);
@@ -137,6 +145,8 @@ test('waste context rejects unrelated questions and keeps collection questions',
 
 test('invalid quantities include non-finite and negative amounts', () => {
   assert.equal(hasInvalidQuantity('We emptied -8 litres.'), true);
+  assert.equal(hasInvalidQuantity('We emptied -.5 litres.'), true);
+  assert.equal(hasInvalidQuantity('We emptied 0.5 litres.'), false);
   assert.equal(hasInvalidQuantity('We emptied −൮ litres.'), true);
   assert.equal(hasInvalidQuantity('NaN litres'), true);
   assert.equal(hasInvalidQuantity('800 litres'), false);
@@ -190,4 +200,19 @@ test('quantity corrections are chained and project the latest amount without cha
   assert.deepEqual(entry.verification, original.verification);
   assert.deepEqual(checkChain(records), { ok: true, count: 3, brokenAt: null });
   assert.equal(checkChain([original, first, { ...last, quantity: '800 litres' }]).brokenAt, 2);
+});
+
+test('new entries bind the named plant and receipt fields alongside legacy hashes', () => {
+  const legacy = { id: 'old', boatId: 'boat', prevHash: GENESIS_HASH };
+  // Digest produced by the original writer, before versioned hashes.
+  legacy.hash = '56b07de3fd48f40772866f3bec3d077a349ad3c45fc370a4f0745179f164fa40';
+  const entry = {
+    id: 'new', boatId: 'boat', hashVersion: 2, prevHash: legacy.hash,
+    facilityMentioned: 'Kumarakom STP', photo: { file: 'test.jpg', isReceipt: true },
+  };
+  entry.hash = entryHash(entry.prevHash, entry);
+  assert.equal(checkChain([legacy, entry]).ok, true);
+  assert.equal(checkChain([legacy, { ...entry, facilityMentioned: 'Another plant' }]).brokenAt, 1);
+  assert.equal(checkChain([legacy, { ...entry, photo: { ...entry.photo, isReceipt: false } }]).brokenAt, 1);
+  assert.equal(Object.hasOwn(projectEntries([entry])[0], 'hashVersion'), false);
 });
