@@ -29,11 +29,11 @@
   },
   "introTitle": {
     "en": "Say what you emptied, how much, and where",
-    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്ന് പറയുക, എത്രയാണെന്നും എവിടെയാണെന്നും പറയുക"
+    "ml": "നിങ്ങൾ ഒഴിഞ്ഞ മാലിന്യത്തിന്റെ തരവും അളവും, അത് ഒഴിഞ്ഞ സ്ഥലവും പറയുക"
   },
   "introExample": {
     "en": "We emptied 800 litres from the toilet tank at Kumarakom STP.",
-    "ml": "ഞങ്ങൾ കുമരകം എസ്.ടി.പിയിലെ ടോയ്‌ലറ്റ് ടാങ്കിൽ നിന്ന് 800 ലിറ്റർ ഒഴിഞ്ഞു."
+    "ml": "ഞങ്ങൾ കുമരകം എസ്.ടി.പിയിലെ ടോയ്‌ലറ്റ് ടാങ്കിൽ നിന്ന് 800 ലിറ്റർ മലിനജലം ഒഴുക്കിക്കളഞ്ഞു."
   },
   "forExample": {
     "en": "For example",
@@ -73,11 +73,11 @@
   },
   "speak": {
     "en": "Speak",
-    "ml": "സംസാരിക്കുക"
+    "ml": "മൈക്രോഫോണിൽ സംസാരിക്കുക"
   },
   "typeLabel": {
     "en": "Type what you emptied and where",
-    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എവിടെയാണെന്നും ടൈപ്പ് ചെയ്യുക"
+    "ml": "നിങ്ങൾ ഏത് തരത്തിലുള്ള മാലിന്യമാണ് ഒഴുക്കിക്കളഞ്ഞതെന്നും എവിടെയാണ് ഒഴുക്കിക്കളഞ്ഞതെന്നും ടൈപ്പ് ചെയ്യുക"
   },
   "send": {
     "en": "Send",
@@ -89,7 +89,7 @@
   },
   "photoRemove": {
     "en": "Remove photo",
-    "ml": "ഫോട്ടോ നീക്കം ചെയ്യുക"
+    "ml": "അറ്റാച്ച് ചെയ്ത ഫോട്ടോ നീക്കം ചെയ്യുക"
   },
   "photoFailTitle": {
     "en": "That photo could not be read",
@@ -97,7 +97,7 @@
   },
   "photoFailBody": {
     "en": "Take the photo again.",
-    "ml": "വീണ്ടും ഫോട്ടോ എടുക്കുക."
+    "ml": "ഫോട്ടോ വീണ്ടും എടുക്കുക."
   },
   "savedTitle": {
     "en": "Saved to the boat’s record",
@@ -105,11 +105,11 @@
   },
   "waste": {
     "en": "Waste",
-    "ml": "മാലിന്യം"
+    "ml": "മാലിന്യ വസ്തു"
   },
   "quantity": {
     "en": "Quantity",
-    "ml": "എണ്ണം"
+    "ml": "മാലിന്യത്തിന്റെ അളവ്"
   },
   "place": {
     "en": "Place",
@@ -137,7 +137,7 @@
   },
   "fixSave": {
     "en": "Save amount",
-    "ml": "തുക സംരക്ഷിക്കുക"
+    "ml": "മാലിന്യത്തിന്റെ അളവ് സേവ് ചെയ്യുക"
   },
   "cancel": {
     "en": "Cancel",
@@ -161,11 +161,11 @@
   },
   "levelDeclared": {
     "en": "Declared",
-    "ml": "പ്രഖ്യാപിച്ചു"
+    "ml": "ക്രൂവിന്റെ പ്രഖ്യാപനം"
   },
   "levelLocation": {
     "en": "Location",
-    "ml": "സ്ഥലം"
+    "ml": "ലൊക്കേഷനിൽ നിന്നുള്ള തെളിവ്"
   },
   "levelReceipt": {
     "en": "Receipt",
@@ -173,27 +173,27 @@
   },
   "reasonLocation": {
     "en": "The phone was at an open collection point that takes this waste.",
-    "ml": "ഈ മാലിന്യം സ്വീകരിക്കുന്ന തുറന്ന ശേഖരണ കേന്ദ്രത്തിലായിരുന്നു ഫോൺ."
+    "ml": "ഫോൺ ഒരു മാലിന്യ ശേഖരണ കേന്ദ്രത്തിലായിരുന്നു. കേന്ദ്രം തുറന്നിട്ടുണ്ട്, ഈ മാലിന്യം സ്വീകരിക്കുന്നു."
   },
   "reasonReceipt": {
     "en": "The phone was at the collection point, and the photo was read as a receipt.",
-    "ml": "ഫോൺ ശേഖരണ കേന്ദ്രത്തിലുണ്ടായിരുന്നു, ഫോട്ടോ ഒരു രസീതായി വായിച്ചു."
+    "ml": "ഫോൺ മാലിന്യ ശേഖരണ കേന്ദ്രത്തിലായിരുന്നു, ഫോട്ടോ ഒരു രസീതായി വായിച്ചു."
   },
   "reasonNoLocation": {
     "en": "The phone’s location was not known, so only your word backs this entry.",
-    "ml": "ഫോണിന്റെ സ്ഥാനം അറിവായിരുന്നില്ല, അതിനാൽ നിങ്ങളുടെ വാക്ക് മാത്രമേ ഈ എൻട്രിയെ പിന്തുണയ്ക്കുകയുള്ളൂ."
+    "ml": "ഫോൺ ലൊക്കേഷൻ അജ്ഞാതമായിരുന്നു, അതിനാൽ ഈ എൻട്രിക്കുള്ള ഏക തെളിവ് ക്രൂവിന്റെ പ്രഖ്യാപനമാണ്."
   },
   "reasonNoFacility": {
     "en": "No collection point takes this kind of waste.",
-    "ml": "ഇത്തരത്തിലുള്ള മാലിന്യം ശേഖരിക്കുന്ന സ്ഥലങ്ങളില്ല."
+    "ml": "ഈ തരത്തിലുള്ള മാലിന്യം സ്വീകരിക്കുന്ന മാലിന്യ ശേഖരണ കേന്ദ്രം ലഭ്യമല്ല."
   },
   "reasonTooFar": {
     "en": "The phone was too far from the collection point.",
-    "ml": "ഫോൺ ശേഖരിക്കുന്ന സ്ഥലത്ത് നിന്ന് വളരെ അകലെയായിരുന്നു."
+    "ml": "ഫോൺ മാലിന്യ ശേഖരണ കേന്ദ്രത്തിൽ നിന്ന് വളരെ അകലെയായിരുന്നു."
   },
   "reasonClosed": {
     "en": "This collection point is marked closed.",
-    "ml": "ഈ ശേഖരണ കേന്ദ്രം അടച്ചിരിക്കുന്നു എന്ന് രേഖപ്പെടുത്തിയിരിക്കുന്നു."
+    "ml": "ഈ മാലിന്യ ശേഖരണ കേന്ദ്രം അടച്ചിരിക്കുന്നു എന്ന് രേഖപ്പെടുത്തിയിരിക്കുന്നു."
   },
   "photoIsReceipt": {
     "en": "Receipt photo read",
@@ -205,19 +205,19 @@
   },
   "locFinding": {
     "en": "Finding location",
-    "ml": "സ്ഥലം കണ്ടെത്തുന്നു."
+    "ml": "ഫോണിന്റെ ലൊക്കേഷൻ തിരയുന്നു..."
   },
   "locReady": {
     "en": "Location known",
-    "ml": "സ്ഥലം അറിയാം."
+    "ml": "ഫോൺ ലൊക്കേഷൻ കണ്ടെത്തി"
   },
   "locOff": {
     "en": "Location off",
-    "ml": "സ്ഥലം ഓഫാണ്."
+    "ml": "ഫോൺ ലൊക്കേഷൻ ഓഫാണ്"
   },
   "nearestOpen": {
     "en": "Nearest open point",
-    "ml": "ഏറ്റവും അടുത്തുള്ള തുറന്ന സ്ഥലം."
+    "ml": "അടുത്തുള്ള തുറന്ന മാലിന്യ ശേഖരണ കേന്ദ്രം"
   },
   "micDeniedTitle": {
     "en": "The microphone is blocked",
@@ -233,15 +233,15 @@
   },
   "micMissingBody": {
     "en": "Type what you emptied and where instead.",
-    "ml": "പകരം നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എവിടെയാണെന്നും ടൈപ്പ് ചെയ്യുക."
+    "ml": "പകരം, നിങ്ങൾ ഒഴിഞ്ഞ മാലിന്യത്തിന്റെ തരം, എവിടെ നിന്ന് ഒഴിഞ്ഞു എന്ന് ടൈപ്പ് ചെയ്യുക."
   },
   "locDeniedTitle": {
     "en": "Location is off",
-    "ml": "സ്ഥലം ഓഫാണ്."
+    "ml": "ഫോൺ ലൊക്കേഷൻ ഓഫാണ്"
   },
   "locDeniedBody": {
     "en": "Entries will be saved as Declared. Turn on location for this site to prove where you were.",
-    "ml": "എൻട്രികൾ ഡിക്ലയേർഡ് ആയി സേവ് ചെയ്യും. നിങ്ങൾ എവിടെയായിരുന്നുവെന്ന് തെളിയിക്കാൻ ഈ സൈറ്റിനായി ലൊക്കേഷൻ ഓൺ ചെയ്യുക."
+    "ml": "എൻട്രികൾ ക്രൂവിന്റെ പ്രഖ്യാപനങ്ങളായി സംരക്ഷിക്കപ്പെടും. നിങ്ങൾ എവിടെയായിരുന്നു എന്ന് തെളിയിക്കാൻ ഈ സൈറ്റിനായി ഫോൺ ലൊക്കേഷൻ ഓൺ ചെയ്യുക."
   },
   "offlineTitle": {
     "en": "No network",
@@ -257,7 +257,7 @@
   },
   "notUnderstoodBody": {
     "en": "Say what you emptied, how much, and where.",
-    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എത്രയാണെന്നും എവിടെയാണെന്നും പറയുക."
+    "ml": "നിങ്ങൾ ഒഴിഞ്ഞ മാലിന്യത്തിന്റെ തരവും അളവും, അത് ഒഴിഞ്ഞ സ്ഥലവും പറയുക."
   },
   "unusableTitle": {
     "en": "That recording could not be used",
@@ -277,7 +277,7 @@
   },
   "fixFailed": {
     "en": "Could not change the amount",
-    "ml": "തുക മാറ്റാൻ കഴിഞ്ഞില്ല."
+    "ml": "മാലിന്യത്തിന്റെ അളവ് മാറ്റാൻ കഴിഞ്ഞില്ല"
   },
   "tryAgain": {
     "en": "Try again",
@@ -289,7 +289,7 @@
   },
   "dismiss": {
     "en": "Dismiss",
-    "ml": "പുറന്തള്ളുക."
+    "ml": "ഈ അറിയിപ്പ് അടയ്ക്കുക"
   },
   "boatMissingTitle": {
     "en": "This boat is not registered",

@@ -13,23 +13,23 @@
   },
   "sealDeclared": {
     "en": "Declared only",
-    "ml": "പ്രഖ്യാപിച്ചത് മാത്രം"
+    "ml": "ക്രൂവിന്റെ പ്രഖ്യാപനം മാത്രം"
   },
   "sealOverdue": {
     "en": "Overdue",
-    "ml": "വൈകിയത്"
+    "ml": "സമയപരിധി കഴിഞ്ഞു"
   },
   "sentenceVerified": {
     "en": "This boat emptied its sewage tank at a treatment plant, and the crew’s phone was there when they logged it.",
-    "ml": "ഈ ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒരു ട്രീറ്റ്മെന്റ് പ്ലാന്റിൽ ഒഴിഞ്ഞു, ജീവനക്കാർ അത് ലോഗ് ചെയ്തപ്പോൾ അവരുടെ ഫോൺ അവിടെ ഉണ്ടായിരുന്നു."
+    "ml": "ഈ ബോട്ട് ഒരു ശുദ്ധീകരണ പ്ലാന്റിൽ അതിന്റെ മലിനജല ടാങ്ക് ഒഴിഞ്ഞു. ലോഗ് എൻട്രി സമർപ്പിച്ച സമയത്ത് ജീവനക്കാരുടെ ഫോൺ അവിടെ ഉണ്ടായിരുന്നു."
   },
   "sentenceDeclared": {
     "en": "The crew says they emptied the sewage tank, but nothing confirms where the waste went.",
-    "ml": "ജീവനക്കാർ മലിനജല ടാങ്ക് ഒഴിഞ്ഞുവെന്ന് പറയുന്നു, പക്ഷേ മാലിന്യം എവിടെ പോയെന്ന് ഒന്നും സ്ഥിരീകരിക്കുന്നില്ല."
+    "ml": "ജീവനക്കാർ പറയുന്നു, \"ഞങ്ങൾ മലിനജല ടാങ്ക് ഒഴിഞ്ഞു.\" മാലിന്യം എവിടെ പോയെന്ന് സ്ഥിരീകരിക്കുന്നില്ല."
   },
   "sentenceOverdue": {
     "en": "This boat has not logged emptying its sewage tank in the last 90 days.",
-    "ml": "കഴിഞ്ഞ 90 ദിവസത്തിനുള്ളിൽ ഈ ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒഴിഞ്ഞതായി രേഖപ്പെടുത്തിയിട്ടില്ല."
+    "ml": "കഴിഞ്ഞ 90 ദിവസത്തിനുള്ളിൽ, ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒഴിഞ്ഞതിനെക്കുറിച്ച് ലോഗ് എൻട്രി ചെയ്തിട്ടില്ല."
   },
   "lastEmptied": {
     "en": "Sewage last emptied",
@@ -45,7 +45,7 @@
   },
   "daysLeft": {
     "en": "Days left before overdue",
-    "ml": "വൈകാൻ എത്ര ദിവസമുണ്ട്"
+    "ml": "സമയപരിധി അവസാനിക്കാൻ ദിവസങ്ങൾ ബാക്കി"
   },
   "logTitle": {
     "en": "Waste log",
@@ -69,15 +69,15 @@
   },
   "levelLocation": {
     "en": "Location",
-    "ml": "സ്ഥലം"
+    "ml": "ലൊക്കേഷനിൽ നിന്നുള്ള തെളിവ്"
   },
   "levelDeclared": {
     "en": "Declared",
-    "ml": "പ്രഖ്യാപിച്ചത്"
+    "ml": "ക്രൂവിന്റെ പ്രഖ്യാപനം"
   },
   "corrected": {
     "en": "Quantity corrected",
-    "ml": "എത്ര അളവ് തിരുത്തി"
+    "ml": "മാലിന്യത്തിന്റെ അളവ് തിരുത്തിയിട്ടുണ്ട്"
   },
   "receiptPhoto": {
     "en": "Receipt photo",
@@ -93,7 +93,7 @@
   },
   "reportTitle": {
     "en": "Report dumping",
-    "ml": "ഡമ്പിംഗ് റിപ്പോർട്ട് ചെയ്തു"
+    "ml": "വെള്ളത്തിലേക്ക് മാലിന്യം തള്ളിയതിനെക്കുറിച്ച് റിപ്പോർട്ട് ചെയ്യുക"
   },
   "reportPrompt": {
     "en": "Did you see waste going into the water?",

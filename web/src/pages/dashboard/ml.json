@@ -5,15 +5,15 @@
   },
   "statVerified": {
     "en": "Boats verified",
-    "ml": "പരിശോധിച്ച ബോട്ടുകൾ"
+    "ml": "സ്ഥിരീകരിച്ച ബോട്ടുകൾ"
   },
   "statDeclared": {
     "en": "Declared only",
-    "ml": "പ്രഖ്യാപിച്ചത് മാത്രം"
+    "ml": "ക്രൂവിന്റെ പ്രഖ്യാപനം മാത്രം"
   },
   "statOverdue": {
     "en": "Boats overdue",
-    "ml": "ബോട്ടുകൾ വൈകി"
+    "ml": "സമയപരിധി കഴിഞ്ഞ ബോട്ടുകൾ"
   },
   "statToday": {
     "en": "Entries today",
@@ -21,15 +21,15 @@
   },
   "statReports": {
     "en": "Open reports",
-    "ml": "തുറന്ന റിപ്പോർട്ടുകൾ"
+    "ml": "അവലോകനത്തിനായി കാത്തിരിക്കുന്ന റിപ്പോർട്ടുകൾ"
   },
   "mapTitle": {
     "en": "Collection points and recent entries",
-    "ml": "ശേഖരണ പോയിന്റുകളും സമീപകാല എൻട്രികളും"
+    "ml": "മാലിന്യ ശേഖരണ കേന്ദ്രങ്ങളും സമീപകാല ലോഗ് എൻട്രികളും"
   },
   "boatsTitle": {
     "en": "Boats, longest wait first",
-    "ml": "ഏറ്റവും കൂടുതൽ കാത്തിരിക്കുന്ന ബോട്ടുകൾ ആദ്യം"
+    "ml": "ഏറ്റവും കൂടുതൽ കാലം മുൻപ് മലിനജല ടാങ്ക് ഒഴിഞ്ഞ ബോട്ടുകൾ ആദ്യം ദൃശ്യമാകും"
   },
   "feedTitle": {
     "en": "Live log",
@@ -37,7 +37,7 @@
   },
   "pointsTitle": {
     "en": "Collection points",
-    "ml": "ശേഖരണ പോയിന്റുകൾ"
+    "ml": "മാലിന്യ ശേഖരണ കേന്ദ്രങ്ങൾ"
   },
   "reportsTitle": {
     "en": "Tourist reports",
@@ -49,7 +49,7 @@
   },
   "addPoint": {
     "en": "Add collection point",
-    "ml": "ശേഖരണ പോയിന്റ് ചേർക്കുക"
+    "ml": "ഒരു മാലിന്യ ശേഖരണ കേന്ദ്രം ചേർക്കുക"
   },
   "qrCodes": {
     "en": "QR codes",
@@ -57,11 +57,11 @@
   },
   "open": {
     "en": "Open now",
-    "ml": "ഇപ്പോൾ തുറന്നു"
+    "ml": "നിലവിൽ പ്രവർത്തിക്കുന്നു"
   },
   "closed": {
     "en": "Closed now",
-    "ml": "ഇപ്പോൾ അടച്ചിരിക്കുന്നു"
+    "ml": "നിലവിൽ അടച്ചിരിക്കുന്നു"
   },
   "chainOk": {
     "en": "Chain intact",
