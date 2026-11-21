@@ -3,7 +3,7 @@
 .sticker-code path[stroke] { stroke: var(--color-ink); }
 
 @media print {
-  @page { size: A6; margin: 8mm; }
+  @page { size: 105mm 148mm; margin: 8mm; }
   html, body, #root { min-height: 0; background: var(--color-kasavu); }
   .sticker-page { min-height: 0; padding: 0; background: var(--color-kasavu); }
   .boat-sticker { width: 88mm; max-width: 100%; padding: 5mm; break-inside: avoid; box-shadow: none; }
