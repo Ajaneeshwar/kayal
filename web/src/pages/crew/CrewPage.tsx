@@ -30,6 +30,7 @@ import type { CrewKey } from './strings.ts';
 import { Icon, MlEn } from './ui.tsx';
 import { useLocation } from './useLocation.ts';
 import { useRecorder, type RecorderFailure } from './useRecorder.ts';
+import { PastEntries } from './PastEntries.tsx';
 
 const MAX_SECONDS = 25;
 
@@ -76,6 +77,8 @@ function Crew({ boatId }: { boatId: string }) {
   const lang = useLang();
   const [attempt, setAttempt] = useState(0);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
+  const [pastOpen, setPastOpen] = useState(false);
+  const [pastRevision, setPastRevision] = useState(0);
   const [mic, setMic] = useState<MicState>('ready');
   const [mode, setMode] = useState<'voice' | 'text'>('voice');
   const [typed, setTyped] = useState('');
@@ -150,6 +153,7 @@ function Crew({ boatId }: { boatId: string }) {
         const result = await postLog({ ...payload, replyLanguage: 'auto' });
         update(id, { status: 'done', result, entry: result.entry, token: result.correctionToken ?? null });
         if (result.stored) {
+          setPastRevision((n) => n + 1);
           setPhoto(null);
           payloads.current.delete(id);
           if (result.status) setLoad((l) => (l.status === 'ready' ? { ...l, boat: { ...l.boat, status: result.status! } } : l));
@@ -299,9 +303,11 @@ function Crew({ boatId }: { boatId: string }) {
         </div>
         <div className="mx-auto max-w-[36rem] px-4 pb-3 pt-2.5">
           <LocationStrip location={location} facilities={facilities} />
+          <button type="button" onClick={() => setPastOpen(true)} className="mt-2 min-h-11 rounded-control border border-gold-edge px-3 text-small font-semibold text-gold-bright"><MlEn text={t('pastEntries')} /></button>
         </div>
         <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,var(--color-gold-edge),transparent)] opacity-50" />
       </header>
+      {pastOpen && <PastEntries boatId={boatId} revision={pastRevision} onClose={() => setPastOpen(false)} />}
 
       <main id="main" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <div className="mx-auto flex max-w-[36rem] flex-col gap-4 px-4 pb-24 pt-5" aria-live="polite">

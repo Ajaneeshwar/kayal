@@ -6,6 +6,13 @@
   Never write Malayalam by hand. This file must stay plain data (Node strips the types).
 */
 export const en = {
+  pastEntries: 'My past entries',
+  pastLoading: 'Loading your entries…',
+  pastEmpty: 'No entries for this boat yet.',
+  pastError: 'Could not load your entries. Check your connection and try again.',
+  pastRetry: 'Try again',
+  pastClose: 'Close past entries',
+  pastNoPlace: 'No place named',
   back: 'Back to start',
   locAccurate: 'Accurate',
 
