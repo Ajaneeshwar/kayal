@@ -10,4 +10,5 @@ export const routes = [
   { path: '/boat/:boatId/sticker', Page: lazy(() => import('./pages/boat/StickerPage.tsx')) },
   { path: '/dashboard', Page: lazy(() => import('./pages/dashboard/DashboardPage.tsx')) },
   { path: '/crew', Page: lazy(() => import('./pages/crew/CrewPage.tsx')) },
+  { path: '/operator', Page: lazy(() => import('./pages/operator/OperatorPage.tsx')) },
 ];

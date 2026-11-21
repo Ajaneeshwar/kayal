@@ -1,0 +1,374 @@
+{
+  "signInTitle": {
+    "en": "Confirm the waste you received",
+    "ml": "നിങ്ങൾക്ക് ലഭിച്ച മാലിന്യം സ്ഥിരീകരിക്കുക"
+  },
+  "signInBody": {
+    "en": "For treatment plants, suction trucks, pump boats and waste collectors. Your confirmation is the strongest proof on a boat’s record.",
+    "ml": "ട്രീറ്റ്മെന്റ് പ്ലാന്റുകൾ, സക്ഷൻ ട്രക്കുകൾ, പമ്പ് ബോട്ടുകൾ, മാലിന്യം ശേഖരിക്കുന്നവർ എന്നിവർക്ക്. നിങ്ങളുടെ സ്ഥിരീകരണം ഒരു ബോട്ടിന്റെ രേഖയിലെ ഏറ്റവും ശക്തമായ തെളിവാണ്."
+  },
+  "scannedNote": {
+    "en": "Sign in to confirm the handover you scanned.",
+    "ml": "നിങ്ങൾ സ്കാൻ ചെയ്ത കൈമാറ്റം സ്ഥിരീകരിക്കാൻ സൈൻ ഇൻ ചെയ്യുക."
+  },
+  "whoAreYou": {
+    "en": "Who are you?",
+    "ml": "നിങ്ങൾ ആരാണ്?"
+  },
+  "codeLabel": {
+    "en": "Your code",
+    "ml": "നിങ്ങളുടെ കോഡ്"
+  },
+  "continue": {
+    "en": "Continue",
+    "ml": "തുടരുക"
+  },
+  "codeWrong": {
+    "en": "That code is wrong. Check it and try again.",
+    "ml": "ആ കോഡ് തെറ്റാണ്. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "codeEmpty": {
+    "en": "Enter your code first.",
+    "ml": "ആദ്യം നിങ്ങളുടെ കോഡ് നൽകുക."
+  },
+  "pickFirst": {
+    "en": "Pick your name first.",
+    "ml": "ആദ്യം നിങ്ങളുടെ പേര് തിരഞ്ഞെടുക്കുക."
+  },
+  "noOperators": {
+    "en": "No receivers are registered yet. Ask the inspector to add you.",
+    "ml": "ഇതുവരെ സ്വീകർത്താക്കൾ ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല. നിങ്ങളെ ചേർക്കാൻ ഇൻസ്പെക്ടറോട് ആവശ്യപ്പെടുക."
+  },
+  "loadFail": {
+    "en": "Could not reach Kayal Log. Check your connection and try again.",
+    "ml": "Kayal Log-ൽ എത്താൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
+  },
+  "tryAgain": {
+    "en": "Try again",
+    "ml": "വീണ്ടും ശ്രമിക്കുക"
+  },
+  "demoNote": {
+    "en": "This is a demo sign-in for HackaThoni, not a real account.",
+    "ml": "ഇതൊരു ഹാക്കത്തോണി ഡെമോ സൈൻ-ഇൻ ആണ്, ഒരു യഥാർത്ഥ അക്കൗണ്ടല്ല."
+  },
+  "signOut": {
+    "en": "Sign out",
+    "ml": "സൈൻ ഔട്ട് ചെയ്യുക"
+  },
+  "signedOut": {
+    "en": "Your code no longer works. Sign in again.",
+    "ml": "നിങ്ങളുടെ കോഡ് ഇനി പ്രവർത്തിക്കില്ല. വീണ്ടും സൈൻ ഇൻ ചെയ്യുക."
+  },
+  "groupPlant": {
+    "en": "Treatment plants",
+    "ml": "ട്രീറ്റ്മെന്റ് പ്ലാന്റുകൾ"
+  },
+  "groupTruck": {
+    "en": "Suction trucks",
+    "ml": "സക്ഷൻ ട്രക്കുകൾ"
+  },
+  "groupPump": {
+    "en": "Mobile pump boats",
+    "ml": "മൊബൈൽ പമ്പ് ബോട്ടുകൾ"
+  },
+  "groupCollector": {
+    "en": "Waste collectors",
+    "ml": "മാലിന്യം ശേഖരിക്കുന്നവർ"
+  },
+  "typePlant": {
+    "en": "Treatment plant",
+    "ml": "ട്രീറ്റ്മെന്റ് പ്ലാന്റ്"
+  },
+  "typeTruck": {
+    "en": "Suction truck",
+    "ml": "സക്ഷൻ ട്രക്ക്"
+  },
+  "typePump": {
+    "en": "Mobile pump boat",
+    "ml": "മൊബൈൽ പമ്പ് ബോട്ട്"
+  },
+  "typeCollector": {
+    "en": "Waste collector",
+    "ml": "മാലിന്യം ശേഖരിക്കുന്നവർ"
+  },
+  "byCodeTitle": {
+    "en": "Have a handover code?",
+    "ml": "കൈമാറ്റ കോഡ് ഉണ്ടോ?"
+  },
+  "byCodeHelp": {
+    "en": "The crew’s phone shows a 6-character code after they log a handover.",
+    "ml": "ജീവനക്കാർ ഒരു കൈമാറ്റം രേഖപ്പെടുത്തിയ ശേഷം അവരുടെ ഫോണിൽ 6 അക്ഷര കോഡ് കാണിക്കുന്നു."
+  },
+  "byCodeLabel": {
+    "en": "Handover code",
+    "ml": "കൈമാറ്റ കോഡ്"
+  },
+  "find": {
+    "en": "Find",
+    "ml": "കണ്ടെത്തുക"
+  },
+  "codeFormat": {
+    "en": "A handover code has 6 letters and numbers, as shown on the crew’s phone.",
+    "ml": "ഒരു കൈമാറ്റ കോഡിന് 6 അക്ഷരങ്ങളും അക്കങ്ങളും ഉണ്ടായിരിക്കും, ജീവനക്കാരുടെ ഫോണിൽ കാണിച്ചിരിക്കുന്നത് പോലെ."
+  },
+  "codeNotFound": {
+    "en": "That code does not match any handover. Check the code on the crew’s phone.",
+    "ml": "ഈ കോഡ് ഒരു കൈമാറ്റവുമായി പൊരുത്തപ്പെടുന്നില്ല. ക്രൂവിന്റെ ഫോണിലെ കോഡ് പരിശോധിക്കുക."
+  },
+  "waitingTitle": {
+    "en": "Waiting for you",
+    "ml": "നിങ്ങൾക്കായി കാത്തിരിക്കുന്നു."
+  },
+  "waitingHelp": {
+    "en": "Handovers from the last 3 days that you can confirm. Newest first.",
+    "ml": "കഴിഞ്ഞ 3 ദിവസങ്ങളിൽ നിങ്ങൾ സ്ഥിരീകരിക്കാൻ കഴിയുന്ന കൈമാറ്റങ്ങൾ. ഏറ്റവും പുതിയത് ആദ്യം."
+  },
+  "refresh": {
+    "en": "Refresh",
+    "ml": "പുതുക്കുക"
+  },
+  "updated": {
+    "en": "Last updated",
+    "ml": "അവസാനം പുതുക്കിയത്"
+  },
+  "refreshFailed": {
+    "en": "Could not refresh. This is the last list we loaded.",
+    "ml": "പുതുക്കാൻ കഴിഞ്ഞില്ല. ഞങ്ങൾ അവസാനമായി ലോഡ് ചെയ്ത ലിസ്റ്റ് ഇതാണ്."
+  },
+  "emptyTitle": {
+    "en": "Nothing is waiting",
+    "ml": "ഒന്നും കാത്തിരിക്കുന്നില്ല"
+  },
+  "emptyBody": {
+    "en": "When a boat crew logs a handover to you, it appears here within seconds. You can also type the code from the crew’s phone.",
+    "ml": "ഒരു ബോട്ട് ജീവനക്കാരൻ നിങ്ങൾക്ക് ഒരു കൈമാറ്റം രേഖപ്പെടുത്തുമ്പോൾ, അത് നിമിഷങ്ങൾക്കുള്ളിൽ ഇവിടെ ദൃശ്യമാകും. ജീവനക്കാരുടെ ഫോണിൽ നിന്ന് നിങ്ങൾക്ക് കോഡ് ടൈപ്പ് ചെയ്യാനും കഴിയും."
+  },
+  "checkAndConfirm": {
+    "en": "Check and confirm",
+    "ml": "പരിശോധിച്ചുറപ്പിക്കുക"
+  },
+  "back": {
+    "en": "Back to the list",
+    "ml": "ലിസ്റ്റിലേക്ക് മടങ്ങുക"
+  },
+  "handoverFrom": {
+    "en": "Boat",
+    "ml": "ബോട്ട്"
+  },
+  "waste": {
+    "en": "Waste",
+    "ml": "മാലിന്യം"
+  },
+  "crewSaid": {
+    "en": "Crew said",
+    "ml": "ജീവനക്കാരൻ പറഞ്ഞത്"
+  },
+  "how": {
+    "en": "How",
+    "ml": "എങ്ങനെ"
+  },
+  "vehicle": {
+    "en": "Vehicle",
+    "ml": "വാഹനം"
+  },
+  "namedReceiver": {
+    "en": "Receiver named",
+    "ml": "സ്വീകർത്താവിൻ്റെ പേര്"
+  },
+  "when": {
+    "en": "When",
+    "ml": "എപ്പോൾ"
+  },
+  "proofNow": {
+    "en": "Proof now",
+    "ml": "തെളിവ് ഇപ്പോൾ"
+  },
+  "notSaid": {
+    "en": "Not said",
+    "ml": "പറഞ്ഞില്ല"
+  },
+  "kindSewage": {
+    "en": "Toilet tank waste",
+    "ml": "ടോയ്‌ലറ്റ് ടാങ്ക് മാലിന്യം"
+  },
+  "kindSolid": {
+    "en": "Dry waste",
+    "ml": "ഉണങ്ങിയ മാലിന്യം"
+  },
+  "kindOil": {
+    "en": "Used engine oil",
+    "ml": "ഉപയോഗിച്ച എഞ്ചിൻ ഓയിൽ"
+  },
+  "methodPoint": {
+    "en": "At a collection point",
+    "ml": "ഒരു ശേഖരണ സ്ഥലത്ത്"
+  },
+  "methodTruck": {
+    "en": "Suction truck",
+    "ml": "സക്ഷൻ ട്രക്ക്"
+  },
+  "methodPump": {
+    "en": "Mobile pump boat",
+    "ml": "മൊബൈൽ പമ്പ് ബോട്ട്"
+  },
+  "methodCollector": {
+    "en": "Waste collector",
+    "ml": "മാലിന്യം ശേഖരിക്കുന്നയാൾ"
+  },
+  "methodBin": {
+    "en": "Waste bin",
+    "ml": "മാലിന്യ ബിൻ"
+  },
+  "levelDeclared": {
+    "en": "Declared",
+    "ml": "പ്രഖ്യാപിച്ചു"
+  },
+  "levelLocation": {
+    "en": "Location",
+    "ml": "സ്ഥലം"
+  },
+  "levelReceipt": {
+    "en": "Receipt",
+    "ml": "രസീത്"
+  },
+  "levelConfirmed": {
+    "en": "Confirmed",
+    "ml": "സ്ഥിരീകരിച്ചു"
+  },
+  "qtyLabel": {
+    "en": "Quantity you received",
+    "ml": "നിങ്ങൾക്ക് ലഭിച്ച അളവ്"
+  },
+  "qtyHelp": {
+    "en": "Change it if you received a different amount.",
+    "ml": "നിങ്ങൾക്ക് വ്യത്യസ്ത അളവാണ് ലഭിച്ചതെങ്കിൽ മാറ്റുക."
+  },
+  "qtyInvalid": {
+    "en": "Enter the quantity as a number with its unit, such as 300 litres.",
+    "ml": "300 ലിറ്റർ പോലുള്ള യൂണിറ്റോടുകൂടിയ അളവ് ഒരു സംഖ്യയായി നൽകുക."
+  },
+  "noteLabel": {
+    "en": "Comments (optional)",
+    "ml": "അഭിപ്രായങ്ങൾ (ഓപ്ഷണൽ)"
+  },
+  "comments": {
+    "en": "Comments",
+    "ml": "അഭിപ്രായങ്ങൾ"
+  },
+  "received": {
+    "en": "Confirm received",
+    "ml": "ലഭിച്ചതായി സ്ഥിരീകരിക്കുക"
+  },
+  "notReceived": {
+    "en": "Not received",
+    "ml": "ലഭിച്ചില്ല"
+  },
+  "disputeTitle": {
+    "en": "Report this handover as not received?",
+    "ml": "ഈ കൈമാറ്റം ലഭിച്ചില്ലെന്ന് റിപ്പോർട്ട് ചെയ്യാമോ?"
+  },
+  "disputeBody": {
+    "en": "The boat’s public record will show that you did not receive this waste, and the entry stays at Declared. You cannot change this answer later.",
+    "ml": "ബോട്ടിന്റെ പൊതു രേഖയിൽ നിന്ന് ഈ മാലിന്യം നിങ്ങൾക്ക് ലഭിച്ചില്ലെന്ന് കാണിക്കും, രേഖ \"Declared\" എന്ന നിലയിൽ തുടരും. ഈ ഉത്തരം പിന്നീട് മാറ്റാൻ കഴിയില്ല."
+  },
+  "disputeNoteLabel": {
+    "en": "What happened? (optional)",
+    "ml": "എന്താണ് സംഭവിച്ചത്? (ഓപ്ഷണൽ)"
+  },
+  "disputeConfirm": {
+    "en": "Confirm not received",
+    "ml": "ലഭിച്ചില്ലെന്ന് സ്ഥിരീകരിക്കുക"
+  },
+  "cancel": {
+    "en": "Cancel",
+    "ml": "റദ്ദാക്കുക"
+  },
+  "doneTitle": {
+    "en": "Handover confirmed",
+    "ml": "കൈമാറ്റം സ്ഥിരീകരിച്ചു"
+  },
+  "doneBody": {
+    "en": "Your confirmation is now on the boat’s public record. Confirmed is the strongest proof level.",
+    "ml": "നിങ്ങളുടെ സ്ഥിരീകരണം ഇപ്പോൾ ബോട്ടിന്റെ പൊതു രേഖയിലുണ്ട്. സ്ഥിരീകരിച്ചു എന്നത് ഏറ്റവും ശക്തമായ തെളിവ് നിലയാണ്."
+  },
+  "doneReceived": {
+    "en": "You received",
+    "ml": "നിങ്ങൾക്ക് ലഭിച്ചു"
+  },
+  "disputedTitle": {
+    "en": "Recorded as not received",
+    "ml": "ലഭിച്ചില്ലെന്ന് രേഖപ്പെടുത്തി"
+  },
+  "disputedBody": {
+    "en": "The boat’s public record shows your answer. The entry stays at Declared.",
+    "ml": "ബോട്ടിന്റെ പൊതു രേഖ നിങ്ങളുടെ ഉത്തരം കാണിക്കുന്നു. രേഖ \"Declared\" എന്ന നിലയിൽ തുടരും."
+  },
+  "seeRecord": {
+    "en": "See the boat’s record",
+    "ml": "ബോട്ടിന്റെ രേഖ കാണുക"
+  },
+  "alreadyConfirmed": {
+    "en": "Already confirmed",
+    "ml": "ഇതിനകം സ്ഥിരീകരിച്ചു"
+  },
+  "alreadyConfirmedBody": {
+    "en": "{name} confirmed this handover.",
+    "ml": "{name} ഈ കൈമാറ്റം സ്ഥിരീകരിച്ചു."
+  },
+  "alreadyDisputed": {
+    "en": "Already reported as not received",
+    "ml": "ലഭിച്ചില്ലെന്ന് ഇതിനകം റിപ്പോർട്ട് ചെയ്തു"
+  },
+  "alreadyDisputedBody": {
+    "en": "{name} reported that this waste did not arrive.",
+    "ml": "{name} ഈ മാലിന്യം എത്തിയില്ലെന്ന് റിപ്പോർട്ട് ചെയ്തു."
+  },
+  "conflict": {
+    "en": "Another answer is already recorded for this handover.",
+    "ml": "ഈ കൈമാറ്റത്തിന് മറ്റൊരു ഉത്തരം ഇതിനകം രേഖപ്പെടുത്തിയിട്ടുണ്ട്."
+  },
+  "forbidden": {
+    "en": "You cannot confirm this handover. It names a different plant or vehicle, or it is more than 3 days old.",
+    "ml": "നിങ്ങൾക്ക് ഈ കൈമാറ്റം സ്ഥിരീകരിക്കാൻ കഴിയില്ല. ഇത് മറ്റൊരു പ്ലാന്റിനെയോ വാഹനത്തെയോ ആണ് സൂചിപ്പിക്കുന്നത്, അല്ലെങ്കിൽ ഇത് 3 ദിവസത്തിൽ കൂടുതൽ പഴക്കമുള്ളതാണ്."
+  },
+  "notFound": {
+    "en": "Could not find that handover. It may be more than 3 days old.",
+    "ml": "ആ കൈമാറ്റം കണ്ടെത്താനായില്ല. ഇത് 3 ദിവസത്തിൽ കൂടുതൽ പഴക്കമുള്ളതായിരിക്കാം."
+  },
+  "saveFailed": {
+    "en": "Could not save your answer. Check your connection and try again.",
+    "ml": "നിങ്ങളുടെ ഉത്തരം സംരക്ഷിക്കാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
+  },
+  "unloadTitle": {
+    "en": "Truck unloaded here",
+    "ml": "ഇവിടെ ട്രക്ക് ഇറക്കി."
+  },
+  "unloadHelp": {
+    "en": "Record a suction truck that emptied its tank at your plant.",
+    "ml": "നിങ്ങളുടെ പ്ലാന്റിൽ ടാങ്ക് കാലിയാക്കിയ ഒരു സക്ഷൻ ട്രക്ക് റെക്കോർഡ് ചെയ്യുക."
+  },
+  "unloadVehicle": {
+    "en": "Vehicle number",
+    "ml": "വാഹന നമ്പർ"
+  },
+  "unloadQty": {
+    "en": "Quantity unloaded",
+    "ml": "എത്ര അളവാണ് ഇറക്കിയത്"
+  },
+  "unloadSave": {
+    "en": "Save this unload",
+    "ml": "ഈ ഇറക്കൽ സംരക്ഷിക്കുക"
+  },
+  "unloadDone": {
+    "en": "Unload recorded",
+    "ml": "അൺലോഡ് റെക്കോർഡ് ചെയ്തു"
+  },
+  "unloadFailed": {
+    "en": "Could not record the unload. Check the vehicle number and quantity, then try again.",
+    "ml": "അൺലോഡ് റെക്കോർഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. വാഹന നമ്പറും എണ്ണവും പരിശോധിക്കുക, എന്നിട്ട് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "unloadUnknownVehicle": {
+    "en": "This vehicle is not registered with Kayal Log. Check the number plate.",
+    "ml": "ഈ വാഹനം കായൽ ലോഗിൽ രജിസ്റ്റർ ചെയ്തിട്ടില്ല. നമ്പർ പ്ലേറ്റ് പരിശോധിക്കുക."
+  }
+}

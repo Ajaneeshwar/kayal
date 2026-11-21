@@ -1,0 +1,115 @@
+/*
+  English source strings for the operator page (/operator), where a plant desk, a suction truck, a
+  pump boat or a waste collector confirms a handover. The Malayalam lives in ./ml.json and comes
+  from sarvam-translate:v1. After adding or changing a string, deploy, then on the laptop run:
+    ssh gon 'cd ~/hackathoni && node web/src/pages/operator/translate.mjs'
+    scp gon:hackathoni/web/src/pages/operator/ml.json web/src/pages/operator/
+  Never write Malayalam by hand. This file must stay plain data (Node strips the types).
+*/
+export const en = {
+  signInTitle: 'Confirm the waste you received',
+  signInBody: 'For treatment plants, suction trucks, pump boats and waste collectors. Your confirmation is the strongest proof on a boat’s record.',
+  scannedNote: 'Sign in to confirm the handover you scanned.',
+  whoAreYou: 'Who are you?',
+  codeLabel: 'Your code',
+  continue: 'Continue',
+  codeWrong: 'That code is wrong. Check it and try again.',
+  codeEmpty: 'Enter your code first.',
+  pickFirst: 'Pick your name first.',
+  noOperators: 'No receivers are registered yet. Ask the inspector to add you.',
+  loadFail: 'Could not reach Kayal Log. Check your connection and try again.',
+  tryAgain: 'Try again',
+  demoNote: 'This is a demo sign-in for HackaThoni, not a real account.',
+  signOut: 'Sign out',
+  signedOut: 'Your code no longer works. Sign in again.',
+
+  groupPlant: 'Treatment plants',
+  groupTruck: 'Suction trucks',
+  groupPump: 'Mobile pump boats',
+  groupCollector: 'Waste collectors',
+  typePlant: 'Treatment plant',
+  typeTruck: 'Suction truck',
+  typePump: 'Mobile pump boat',
+  typeCollector: 'Waste collector',
+
+  byCodeTitle: 'Have a handover code?',
+  byCodeHelp: 'The crew’s phone shows a 6-character code after they log a handover.',
+  byCodeLabel: 'Handover code',
+  find: 'Find',
+  codeFormat: 'A handover code has 6 letters and numbers, as shown on the crew’s phone.',
+  codeNotFound: 'That code does not match any handover. Check the code on the crew’s phone.',
+
+  waitingTitle: 'Waiting for you',
+  waitingHelp: 'Handovers from the last 3 days that you can confirm. Newest first.',
+  refresh: 'Refresh',
+  updated: 'Last updated',
+  refreshFailed: 'Could not refresh. This is the last list we loaded.',
+  emptyTitle: 'Nothing is waiting',
+  emptyBody: 'When a boat crew logs a handover to you, it appears here within seconds. You can also type the code from the crew’s phone.',
+  checkAndConfirm: 'Check and confirm',
+
+  back: 'Back to the list',
+  handoverFrom: 'Boat',
+  waste: 'Waste',
+  crewSaid: 'Crew said',
+  how: 'How',
+  vehicle: 'Vehicle',
+  namedReceiver: 'Receiver named',
+  when: 'When',
+  proofNow: 'Proof now',
+  notSaid: 'Not said',
+
+  kindSewage: 'Toilet tank waste',
+  kindSolid: 'Dry waste',
+  kindOil: 'Used engine oil',
+  methodPoint: 'At a collection point',
+  methodTruck: 'Suction truck',
+  methodPump: 'Mobile pump boat',
+  methodCollector: 'Waste collector',
+  methodBin: 'Waste bin',
+
+  levelDeclared: 'Declared',
+  levelLocation: 'Location',
+  levelReceipt: 'Receipt',
+  levelConfirmed: 'Confirmed',
+
+  qtyLabel: 'Quantity you received',
+  qtyHelp: 'Change it if you received a different amount.',
+  qtyInvalid: 'Enter the quantity as a number with its unit, such as 300 litres.',
+  noteLabel: 'Comments (optional)',
+  comments: 'Comments',
+  received: 'Confirm received',
+  notReceived: 'Not received',
+  disputeTitle: 'Report this handover as not received?',
+  disputeBody: 'The boat’s public record will show that you did not receive this waste, and the entry stays at Declared. You cannot change this answer later.',
+  disputeNoteLabel: 'What happened? (optional)',
+  disputeConfirm: 'Confirm not received',
+  cancel: 'Cancel',
+
+  doneTitle: 'Handover confirmed',
+  doneBody: 'Your confirmation is now on the boat’s public record. Confirmed is the strongest proof level.',
+  doneReceived: 'You received',
+  disputedTitle: 'Recorded as not received',
+  disputedBody: 'The boat’s public record shows your answer. The entry stays at Declared.',
+  seeRecord: 'See the boat’s record',
+
+  alreadyConfirmed: 'Already confirmed',
+  alreadyConfirmedBody: '{name} confirmed this handover.',
+  alreadyDisputed: 'Already reported as not received',
+  alreadyDisputedBody: '{name} reported that this waste did not arrive.',
+  conflict: 'Another answer is already recorded for this handover.',
+  forbidden: 'You cannot confirm this handover. It names a different plant or vehicle, or it is more than 3 days old.',
+  notFound: 'Could not find that handover. It may be more than 3 days old.',
+  saveFailed: 'Could not save your answer. Check your connection and try again.',
+
+  unloadTitle: 'Truck unloaded here',
+  unloadHelp: 'Record a suction truck that emptied its tank at your plant.',
+  unloadVehicle: 'Vehicle number',
+  unloadQty: 'Quantity unloaded',
+  unloadSave: 'Save this unload',
+  unloadDone: 'Unload recorded',
+  unloadFailed: 'Could not record the unload. Check the vehicle number and quantity, then try again.',
+  unloadUnknownVehicle: 'This vehicle is not registered with Kayal Log. Check the number plate.',
+} as const;
+
+export type OperatorKey = keyof typeof en;

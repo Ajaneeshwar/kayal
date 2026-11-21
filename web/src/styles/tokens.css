@@ -10,6 +10,7 @@
   - gold: coir and brass. Main buttons, highlights, the kasavu edge, focus.
   - gold-ink: accent text and selected states on light screens. Lagoon blue, not gold.
   - verified, declared, overdue: the three proof states. Status only, never decoration.
+  - confirmed: the fourth and strongest proof level, when the receiver confirms. Status only.
     The lagoon blue (hue 224-238) sits at least 74 degrees of OKLCH hue from verified green (150).
   - scene-*: the landing illustration only.
 
@@ -53,6 +54,10 @@
   --color-declared-soft: oklch(0.95 0.048 82);
   --color-overdue: oklch(0.5 0.17 28);
   --color-overdue-soft: oklch(0.945 0.024 22);
+  /* Confirmed: the receiver confirmed the handover. Violet, like office stamp ink, at hue 300:
+     62+ degrees from the lagoon blue, 150 from verified green. 7.2:1 on kasavu, 6.2:1 on its soft fill. */
+  --color-confirmed: oklch(0.47 0.15 300);
+  --color-confirmed-soft: oklch(0.945 0.028 300);
 
   /* Landing scene: blue hour on the backwaters */
   --color-scene-sky: oklch(0.27 0.05 233);
