@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion, type Variants } from 'motion/react';
 import { AppShell } from '../../components/AppShell.tsx';
 import { LanguagePage } from '../../components/LanguagePage.tsx';
@@ -132,6 +133,11 @@ function Steps() {
 export default function LandingPage() {
   const ready = useFontsReady();
   const chosen = useLangChosen();
+  useEffect(() => {
+    if (chosen && window.location.hash === '#doors') {
+      document.getElementById('doors')?.scrollIntoView();
+    }
+  }, [chosen]);
   if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
     <AppShell>
