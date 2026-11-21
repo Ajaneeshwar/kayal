@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+import { copyFile, mkdtemp, readFile, rename, unlink } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
+try {
+  process.loadEnvFile(path.join(root, '.env'));
+} catch (err) {
+  if (err.code !== 'ENOENT') throw err;
+}
+
+const dataDir = process.env.DATA_DIR || path.join(root, 'data');
+const dbFile = path.join(dataDir, 'db.json');
+const db = JSON.parse(await readFile(dbFile, 'utf8'));
+const sampleRecords = [
+  ...db.entries.filter((entry) => entry.source === 'sample'),
+  ...(db.reports ?? []).filter((report) => report.boatId === null && report.note?.startsWith('Sample report: ')),
+];
+const stamp = new Date().toISOString().replaceAll(':', '-');
+const backup = await mkdtemp(path.join(dataDir, 'backup-' + stamp + '-'));
+await copyFile(dbFile, path.join(backup, 'db.json'));
+console.log('Database backed up to ' + backup);
+
+for (const { photo } of sampleRecords) {
+  if (!/^[0-9a-f-]{36}\.png$/.test(photo?.file)) continue;
+  try {
+    await rename(path.join(dataDir, 'uploads', photo.file), path.join(backup, photo.file));
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+}
+
+await unlink(dbFile);
+console.log('Reset complete. Start Kayal Log to load fresh sample data.');

@@ -3,6 +3,7 @@
 #   scripts/gon deploy    copy, build web/, restart the main server (port 3000)
 #   scripts/gon api       copy, restart the main server without building web/
 #   scripts/gon sandbox   copy, start a second server on port 3100 with fresh sample data
+#   scripts/gon reseed    back up and reset the main data, then restart the server
 #   scripts/gon sync      copy only
 #   scripts/gon status | logs [kayal|kayal-sandbox] [lines] | stop
 set -euo pipefail
@@ -20,7 +21,7 @@ sync_tree() {
 
 case "$MODE" in
   sync) sync_tree ;;
-  deploy | api | sandbox)
+  deploy | api | sandbox | reseed)
     sync_tree
     ssh "$HOST" 'bash -s' -- "$MODE" <<'REMOTE'
 set -euo pipefail
@@ -51,6 +52,11 @@ case "$1" in
     start kayal 3000 "$HOME/hackathoni/data"
     ;;
   api) start kayal 3000 "$HOME/hackathoni/data" ;;
+  reseed)
+    tmux kill-session -t kayal 2>/dev/null || true
+    DATA_DIR="$HOME/hackathoni/data" "$NODE" scripts/reseed
+    start kayal 3000 "$HOME/hackathoni/data"
+    ;;
   sandbox)
     rm -rf /tmp/kayal-sandbox
     start kayal-sandbox 3100 /tmp/kayal-sandbox
@@ -61,5 +67,5 @@ REMOTE
   status) ssh "$HOST" 'curl -fsS http://127.0.0.1:3000/api/health; echo; tmux ls 2>&1' ;;
   logs) ssh "$HOST" "tail -n ${3:-60} ~/hackathoni/${2:-kayal}.log" ;;
   stop) ssh "$HOST" 'tmux kill-session -t kayal; tmux kill-session -t kayal-sandbox 2>/dev/null || true' ;;
-  *) echo 'usage: scripts/gon [deploy|api|sandbox|sync|status|logs [session] [lines]|stop]' >&2; exit 2 ;;
+  *) echo 'usage: scripts/gon [deploy|api|sandbox|reseed|sync|status|logs [session] [lines]|stop]' >&2; exit 2 ;;
 esac

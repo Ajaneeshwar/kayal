@@ -102,6 +102,8 @@ Environment variables, set in `.env` or the shell:
 | `PORT` | Port the server listens on. | `3000` |
 | `HOST` | Address the server listens on. | `127.0.0.1` |
 | `DATA_DIR` | Where the JSON data and uploaded photos are stored. | `data/` in the repository |
+| `SARVAM_TIMEOUT_MS` | Deadline for each Sarvam request, in milliseconds. | `40000` |
+| `BODY_TIMEOUT_MS` | Deadline for receiving a JSON body, in milliseconds. | `40000` |
 | `OVERDUE_DAYS` | Days after which a boat with no sewage entry counts as overdue. | `90` |
 
 Unit tests, which cover the proof rules in `lib/logic.mjs`:
