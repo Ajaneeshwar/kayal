@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Link, Navigate, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
+import { AccessNotice } from '../../components/AccessNotice.tsx';
 import { AnimatePresence, motion } from 'motion/react';
 import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
@@ -66,7 +67,7 @@ const STATE_LABEL: Record<MicState, CrewKey> = {
 export default function CrewPage() {
   const [params] = useSearchParams();
   const boatId = params.get('boat');
-  if (!boatId) return <Navigate to="/" replace />;
+  if (!boatId) return <AccessNotice role="crew" />;
   return <Crew key={boatId} boatId={boatId} />;
 }
 

@@ -10,6 +10,8 @@ export const en = {
   pageMissing: 'This page does not exist',
   chooseDoorHelp: 'Go back to the start and choose a door.',
   goHome: 'Go to the start',
+  pickBoatFirst: 'Pick your boat first',
+  inspectorFirst: 'Sign in as inspector',
 
   howTitle: 'How it works',
   sayTitle: 'Say it',

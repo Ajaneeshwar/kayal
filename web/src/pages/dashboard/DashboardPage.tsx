@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { AnimatePresence, motion } from 'motion/react';
 import { BrandMark } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
+import { AccessNotice } from '../../components/AccessNotice.tsx';
 import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { usePick } from '../../i18n/language.ts';
 import type { Text } from '../../i18n/index.ts';
@@ -118,11 +119,10 @@ interface Toast {
 }
 
 export default function DashboardPage() {
-  const signedIn = useRef(readAdminPin() !== null).current;
-  useEffect(() => {
-    if (!signedIn) window.location.replace('/');
-  }, [signedIn]);
+  return readAdminPin() ? <InspectorDashboard /> : <AccessNotice role="inspector" />;
+}
 
+function InspectorDashboard() {
   const { state, setState, reports, setReports, error, link, fresh, refresh } = useDashboard();
   const [modal, setModal] = useState<Modal>(null);
   const pick = usePick();
