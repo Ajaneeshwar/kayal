@@ -9,7 +9,7 @@ import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Facility, type Report } from './api.ts';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
-import { KIND_LABELS, LEVEL_LABELS, isToday } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS, isThisWeek } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
 import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
@@ -196,10 +196,8 @@ function InspectorDashboard() {
       refresh();
     });
 
-  if (!signedIn) return null;
-
   const count = (s: Boat['status']['state']) => state?.boats.filter((b) => b.status.state === s).length ?? 0;
-  const today = state?.entries.filter((e) => isToday(e.at)).length ?? 0;
+  const thisWeek = state?.entries.filter((e) => isThisWeek(e.at)).length ?? 0;
   const openReports = reports ? reports.filter((r) => !r.reviewed).length : reports === null ? '–' : 0;
   const total = state?.boats.length ?? 0;
   const dash = state ? null : '–';
@@ -239,7 +237,7 @@ function InspectorDashboard() {
           <Stat label={d('statVerified')} value={dash ?? count('verified')} tone="verified" note={`of ${total} boats`} />
           <Stat label={d('statDeclared')} value={dash ?? count('declared')} tone="declared" note="No location or receipt" />
           <Stat label={d('statOverdue')} value={dash ?? count('overdue')} tone="overdue" note={`${state?.overdueDays ?? 90}-day limit passed`} />
-          <Stat label={d('statToday')} value={dash ?? today} tone="plain" note={`${state?.entries.length ?? 0} in the recent log`} />
+          <Stat label={d('statWeek')} value={dash ?? thisWeek} tone="plain" note={`${state?.entries.length ?? 0} in the recent log`} />
           <Stat label={d('statReports')} value={dash ?? openReports} tone="plain" note={reports === null ? 'Not available yet' : 'From guests on board'} />
         </div>
       </header>

@@ -10,6 +10,8 @@ export const en = {
   statDeclared: 'Declared only',
   statOverdue: 'Boats overdue',
   statToday: 'Entries today',
+  statWeek: 'Entries this week',
+  unlinkedReport: 'Unlinked report',
   statReports: 'Open reports',
   mapTitle: 'Collection points and recent entries',
   boatsTitle: 'Boats, longest wait first',
