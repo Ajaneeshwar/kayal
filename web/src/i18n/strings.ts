@@ -6,6 +6,9 @@
   This file must stay plain data (Node strips the types when the script imports it).
 */
 export const en = {
+  boatSearch: 'Search boats by name or registration',
+  boatMatches: '{count} matching boats',
+  noBoatMatches: 'No boat matches',
   tagline: 'Proof of where houseboat waste went',
   pageMissing: 'This page does not exist',
   chooseDoorHelp: 'Go back to the start and choose a door.',

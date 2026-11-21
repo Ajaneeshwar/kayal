@@ -6,6 +6,13 @@
   Never write Malayalam by hand. This file must stay plain data (Node strips the types).
 */
 export const en = {
+  noPlaceNamed: 'No place named',
+  sticker: 'Printable sticker',
+  stickerScan: 'Scan to see this boat’s waste record',
+  stickerLoading: 'Preparing the sticker…',
+  stickerError: 'Could not prepare this sticker. Check the boat link and try again.',
+  print: 'Print',
+  retrySticker: 'Try again',
   recordLabel: 'Public waste record',
   registration: 'Registration',
 

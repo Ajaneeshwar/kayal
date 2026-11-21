@@ -1,6 +1,7 @@
 import { Bi } from '../../components/Bi.tsx';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
 import { useLang } from '../../i18n/language.ts';
+import { entryPlace } from './entryPlace.ts';
 import { bt, formatDate, formatTime, handoverReason, KIND, LEVEL, METHOD, reasonText, type Entry, type Level } from './data.ts';
 
 const CHIP: Record<'verified' | 'declared', string> = {
@@ -60,10 +61,10 @@ export function LevelChip({ level, stack = false }: { level: Level; stack?: bool
 }
 
 function EntryCard({ entry }: { entry: Entry }) {
-  const { level, facilityName } = entry.verification;
+  const { level } = entry.verification;
   const method = methodOf(entry);
   const handover = handoverReason(entry);
-  const place = facilityName ?? entry.facilityMentioned;
+  const place = entryPlace(entry);
   const lang = useLang();
   // The crew's own words. The English setting shows only the English summary.
   const translated = lang !== 'en' && entry.heard.original.trim() !== entry.heard.english.trim();
@@ -104,9 +105,7 @@ function EntryCard({ entry }: { entry: Entry }) {
           <MethodIcon method={method} size={17} className="mt-[3px] text-gold-ink" />
           <dd className="min-w-0">
             <Bi text={bt(METHOD[method])} className="font-semibold" mlClassName="text-small text-ink-muted" />
-            {method === 'collection_point' && (
-              <span className="mt-0.5 block [overflow-wrap:anywhere]">{place ?? <span className="text-ink-muted">No place named</span>}</span>
-            )}
+            <span className="mt-0.5 block [overflow-wrap:anywhere]">{place ?? <Bi text={bt('noPlaceNamed')} className="text-ink-muted" />}</span>
           </dd>
         </div>
         {entry.vehicleNumber && (

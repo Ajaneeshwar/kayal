@@ -7,6 +7,8 @@ import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { goTo, lastCrewBoat, rememberCrewBoat, saveAdminPin, signInInspector, type Boat } from '../../lib/api.ts';
 import { useBoats, type BoatsState } from '../../lib/useBoats.ts';
 import type { StringKey } from '../../i18n/index.ts';
+import { t } from '../../i18n/index.ts';
+import { filterBoats } from '../../lib/boatTools.ts';
 import { ArrowIcon, ChevronDownIcon, EyeIcon, OarIcon, ShieldIcon } from './icons.tsx';
 
 type BoatsProps = BoatsState & { retry: () => void };
@@ -171,12 +173,20 @@ function InspectorDoor() {
 
 function GuestDoor({ status, boats, retry }: BoatsProps) {
   const id = useId();
+  const [query, setQuery] = useState('');
+  const matching = filterBoats(boats, query);
+  const count = t('boatMatches');
   return (
     <Card as="article" className="flex h-full flex-col p-6 sm:p-7 lg:col-span-2" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<EyeIcon className="size-6" />} title="guestTitle" body="guestBody" />
       </div>
       <div className="mt-auto pt-6">
+        <label htmlFor={`${id}-search`} className="block text-small font-semibold text-ink"><Bi k="boatSearch" /></label>
+        <input id={`${id}-search`} type="search" value={query} onChange={(e) => setQuery(e.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-field-border bg-kasavu px-3 text-ink" />
+        <p role="status" aria-live="polite" className="my-3 text-small text-ink-muted">
+          {status === 'ready' && <Bi text={{ en: count.en.replace('{count}', String(matching.length)), ml: count.ml.replace('{count}', String(matching.length)) }} />}
+        </p>
         {status === 'error' && !boats.length ? (
           <LoadError retry={retry} />
         ) : (
@@ -185,14 +195,15 @@ function GuestDoor({ status, boats, retry }: BoatsProps) {
             aria-busy={status === 'loading' || undefined}
             className="grid gap-2 md:grid-cols-2 lg:grid-cols-3"
           >
-            {!boats.length &&
+            {status === 'loading' && !boats.length &&
               [0, 1, 2, 3].map((i) => (
                 <li key={i} className="flex h-14 items-center gap-3 rounded-control border border-line px-4" aria-hidden>
                   <span className="h-3 w-28 rounded-pill bg-line" />
                   <span className="ms-auto h-5 w-16 rounded-pill bg-line" />
                 </li>
               ))}
-            {boats.map((b) => (
+            {status === 'ready' && !matching.length && <li className="col-span-full py-4"><Bi k="noBoatMatches" /></li>}
+            {matching.map((b) => (
               <li key={b.id} className="min-w-0 rounded-control border border-line">
                 <a
                   href={`/boat/${encodeURIComponent(b.id)}`}
