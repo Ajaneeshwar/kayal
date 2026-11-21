@@ -264,8 +264,8 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
               </>
             )}
           </Fact>
-          <Fact label="proof">{lastSewage ? <LevelChip level={lastSewage.level} stack /> : '—'}</Fact>
-          <Fact label="daysLeft">
+          <Fact label="lastEntryProof">{lastSewage ? <LevelChip level={lastSewage.level} stack /> : '—'}</Fact>
+          <Fact label={state === 'overdue' ? 'overdueBy' : 'daysLeft'}>
             <DaysLeft state={state} left={left} overdueDays={overdueDays} hasSewage={!!lastSewage} daysSince={lastSewage?.daysAgo ?? null} />
           </Fact>
         </dl>
@@ -282,8 +282,8 @@ function DaysLeft({ state, left, overdueDays, hasSewage, daysSince }: { state: B
   if (state === 'overdue') {
     return (
       <>
-        <span className="block font-semibold text-overdue">{hasSewage && daysSince != null ? `${daysSince - overdueDays} days overdue` : 'Overdue'}</span>
-        <span className="block text-small text-ink-muted">Must empty every {overdueDays} days</span>
+        <Bi text={hasSewage && daysSince != null ? { en: bt('daysOverdue').en.replace('{days}', String(daysSince - overdueDays)), ml: bt('daysOverdue').ml.replace('{days}', String(daysSince - overdueDays)) } : bt('sealOverdue')} className="block font-semibold text-overdue" />
+        <Bi text={{ en: bt('emptyEvery').en.replace('{days}', String(overdueDays)), ml: bt('emptyEvery').ml.replace('{days}', String(overdueDays)) }} className="block text-small text-ink-muted" />
       </>
     );
   }

@@ -21,6 +21,10 @@ export const en = {
   where: 'Where',
   proof: 'Proof',
   daysLeft: 'Days left before overdue',
+  overdueBy: 'Overdue by',
+  lastEntryProof: 'Proof of last sewage entry',
+  daysOverdue: '{days} days overdue',
+  emptyEvery: 'Must empty every {days} days',
 
   logTitle: 'Waste log',
   kindSewage: 'Sewage tank emptied',
