@@ -298,7 +298,7 @@ export default function DashboardPage() {
             </ul>
         </section>
 
-        <div className="min-h-0 min-w-0 lg:h-[min(64vh,38rem)] [&>section]:h-full">
+        <div className="order-2 min-h-0 min-w-0 lg:order-none lg:h-[min(64vh,38rem)] [&>section]:h-full">
           {state ? (
             <Feed entries={state.entries} boats={boats} fresh={fresh} link={<LinkPill link={link} />} />
           ) : (
@@ -314,7 +314,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="flex min-w-0 flex-col gap-5">
+        <div className="order-3 flex min-w-0 flex-col gap-5 lg:order-none">
           {state && <Points facilities={state.facilities} busy={busy} onToggle={toggleFacility} onAdd={() => setModal({ kind: 'point' })} />}
           <Reports reports={reports} boats={boats} busy={busy} onReview={review} />
         </div>
