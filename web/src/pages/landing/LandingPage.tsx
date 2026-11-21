@@ -6,6 +6,8 @@ import { t } from '../../i18n/index.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { useFontsReady } from '../../lib/useFontsReady.ts';
+import { useBoats } from '../../lib/useBoats.ts';
+import { Seal } from '../boat/Seal.tsx';
 import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
 import { Doors } from './Doors.tsx';
@@ -21,6 +23,8 @@ const heroItem: Variants = {
 
 function Hero({ ready }: { ready: boolean }) {
   const pick = usePick();
+  const { boats, status } = useBoats();
+  const boat = status === 'ready' ? boats[0] : undefined;
   return (
     <section aria-labelledby="hero-title" className="relative isolate h-[47rem] overflow-hidden sm:h-[50rem] lg:h-[52rem]">
       <HouseboatScene className="absolute inset-0 -z-10 size-full" />
@@ -51,6 +55,23 @@ function Hero({ ready }: { ready: boolean }) {
             <ArrowIcon className="size-5 rotate-90 transition-transform duration-150 group-hover:translate-y-0.5" />
           </a>
         </motion.div>
+        {boat && (
+          <motion.div variants={heroItem} className="mt-5 max-w-sm [text-shadow:none]">
+            <Bi k="guestBody" as="p" className="mb-2 text-small text-ink-inverse" mlClassName="mt-1" />
+            <a
+              href={`/boat/${encodeURIComponent(boat.id)}`}
+              className="surface-light group flex items-center gap-3 rounded-card border border-gold-edge bg-kasavu p-3 text-ink shadow-raised"
+            >
+              <Seal state={boat.status.state} className="size-12 shrink-0" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{boat.name}</span>
+                <span className="mb-1 block break-words text-caption text-ink-muted">{boat.registration}</span>
+                <StatusBadge state={boat.status.state} bilingual={false} />
+              </span>
+              <ArrowIcon className="size-5 shrink-0 text-gold-ink transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );
