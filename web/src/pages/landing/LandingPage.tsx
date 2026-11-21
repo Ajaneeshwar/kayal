@@ -13,6 +13,7 @@ import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
 import { Doors } from './Doors.tsx';
 import { ArrowIcon } from './icons.tsx';
+import { en } from './strings.ts';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -117,11 +118,17 @@ function Steps() {
             </div>
             <Bi k={body} as="p" className="mt-3 text-body text-ink-inverse-muted" mlClassName="mt-2" />
             {n === '3' && (
-              <div className="mt-5 flex flex-wrap gap-2" aria-label="The three seals">
-                <StatusBadge state="verified" />
-                <StatusBadge state="declared" />
-                <StatusBadge state="overdue" />
-              </div>
+              <ul role="list" className="mt-5">
+                {(['verified', 'declared', 'overdue'] as const).map((state) => (
+                  <li key={state} className="flex items-center gap-3 border-t border-ink-inverse/15 py-3 first:border-t-0 first:pt-0 last:pb-0">
+                    <Seal state={state} stamp={false} className="size-10 shrink-0" />
+                    <div className="min-w-0">
+                      <Bi k={state} className="text-small font-semibold text-ink-inverse" />
+                      <Bi text={{ en: en[`${state}Meaning`], ml: '' }} className="mt-0.5 text-caption text-ink-inverse-muted" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </motion.li>
         ))}
