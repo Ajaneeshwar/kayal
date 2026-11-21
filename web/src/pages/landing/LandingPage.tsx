@@ -28,11 +28,12 @@ function Hero({ ready }: { ready: boolean }) {
   return (
     <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
       <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full lg:h-full" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-teak-deep/75 via-teak-deep/75 to-transparent lg:bg-gradient-to-r lg:from-teak-deep/75 lg:via-teak-deep/60 lg:via-35% lg:to-transparent lg:to-60%" />
       <motion.div
         initial="hidden"
         animate={ready ? 'show' : 'hidden'}
         variants={heroGroup}
-        className="mx-auto max-w-[76rem] px-5 pt-8 [text-shadow:0_1px_18px_color-mix(in_oklab,var(--color-teak-deep)_70%,transparent)] sm:px-6 lg:px-8 lg:pt-12"
+        className="mx-auto max-w-[76rem] px-5 pt-20 sm:px-6 lg:px-8 lg:pt-24"
       >
         <motion.p variants={heroItem} className="text-caption font-semibold text-gold">
           Kayal Log · Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
