@@ -1,11 +1,16 @@
 /*
-  Kayal Log theme: a Kerala houseboat. See "Look and feel" in PLAN.md.
+  Kayal Log theme: blue hour on the Kerala backwaters. See "Look and feel" in PLAN.md.
 
-  Use these tokens and nothing else. Each one names a job, not a hue:
-  - teak, wood: the kettuvallam hull. Dark teak for headers and the landing page.
-  - surface, kasavu, line, ink: cream screens and cards, like a kasavu sari.
+  Use these tokens and nothing else. The names are older than the palette, so read them by job:
+  - teak-deep, teak, teak-raised: the dark chrome, now deep lagoon blue. Headers, the landing
+    page, the crew screen, footers. Text on gold buttons.
+  - wood, wood-light: real teak, the kettuvallam hull. Accent only: the crew's chat bubble,
+    closed plants on the map, the boat in the landing scene.
+  - surface, kasavu, line, ink: kasavu cream and white screens and cards, lagoon-navy text.
   - gold: coir and brass. Main buttons, highlights, the kasavu edge, focus.
+  - gold-ink: accent text and selected states on light screens. Lagoon blue, not gold.
   - verified, declared, overdue: the three proof states. Status only, never decoration.
+    The lagoon blue (hue 224-238) sits at least 74 degrees of OKLCH hue from verified green (150).
   - scene-*: the landing illustration only.
 
   `static` keeps every variable in the CSS output, so other screens can use var(--…) freely.
@@ -13,56 +18,58 @@
 @theme static {
   --color-*: initial;
 
-  /* Wood */
-  --color-teak-deep: oklch(0.17 0.024 48);
-  --color-teak: oklch(0.22 0.032 50);
-  --color-teak-raised: oklch(0.28 0.038 52);
-  --color-wood: oklch(0.42 0.068 55);
-  --color-wood-light: oklch(0.64 0.07 65);
+  /* Lagoon: the dark chrome */
+  --color-teak-deep: oklch(0.215 0.045 236);
+  --color-teak: oklch(0.27 0.05 233);
+  --color-teak-raised: oklch(0.335 0.062 230);
 
-  /* Cream */
-  --color-surface: oklch(0.955 0.02 85);
-  --color-kasavu: oklch(0.985 0.013 88);
-  --color-line: oklch(0.86 0.032 80);
-  --color-field-border: oklch(0.6 0.04 65);
+  /* Teak wood: accent only */
+  --color-wood: oklch(0.44 0.075 52);
+  --color-wood-light: oklch(0.7 0.06 65);
+
+  /* Kasavu cream and white */
+  --color-surface: oklch(0.972 0.01 92);
+  --color-kasavu: oklch(0.993 0.006 95);
+  --color-line: oklch(0.895 0.022 88);
+  --color-field-border: oklch(0.58 0.035 228);
 
   /* Text */
-  --color-ink: oklch(0.25 0.035 50);
-  --color-ink-muted: oklch(0.45 0.035 55);
-  --color-ink-inverse: oklch(0.96 0.02 85);
-  --color-ink-inverse-muted: oklch(0.8 0.035 78);
+  --color-ink: oklch(0.26 0.045 238);
+  --color-ink-muted: oklch(0.47 0.04 232);
+  --color-ink-inverse: oklch(0.975 0.01 95);
+  --color-ink-inverse-muted: oklch(0.84 0.03 220);
 
-  /* Gold */
-  --color-gold: oklch(0.8 0.12 85);
-  --color-gold-bright: oklch(0.86 0.12 88);
-  --color-gold-edge: oklch(0.7 0.11 80);
-  --color-gold-ink: oklch(0.5 0.09 75);
-  --color-focus: oklch(0.64 0.14 78);
+  /* Coir and brass, and the lagoon accent text */
+  --color-gold: oklch(0.82 0.135 84);
+  --color-gold-bright: oklch(0.875 0.125 90);
+  --color-gold-edge: oklch(0.74 0.115 82);
+  --color-gold-ink: oklch(0.46 0.085 224);
+  --color-focus: oklch(0.63 0.13 75);
 
   /* Status */
-  --color-verified: oklch(0.48 0.1 158);
-  --color-verified-soft: oklch(0.93 0.045 158);
-  --color-declared: oklch(0.5 0.12 58);
-  --color-declared-soft: oklch(0.94 0.05 75);
-  --color-overdue: oklch(0.49 0.16 30);
-  --color-overdue-soft: oklch(0.93 0.04 30);
+  --color-verified: oklch(0.5 0.12 150);
+  --color-verified-soft: oklch(0.945 0.05 150);
+  --color-declared: oklch(0.53 0.115 62);
+  --color-declared-soft: oklch(0.95 0.048 82);
+  --color-overdue: oklch(0.5 0.17 28);
+  --color-overdue-soft: oklch(0.945 0.024 22);
 
-  /* Landing scene: dusk on the backwaters */
-  --color-scene-sky: oklch(0.22 0.032 50);
-  --color-scene-sky-mid: oklch(0.34 0.065 42);
-  --color-scene-sky-glow: oklch(0.68 0.12 68);
-  --color-scene-sun: oklch(0.92 0.1 90);
-  --color-scene-shore: oklch(0.3 0.05 40);
-  --color-scene-palm: oklch(0.14 0.022 45);
-  --color-scene-water: oklch(0.36 0.06 48);
-  --color-scene-water-deep: oklch(0.17 0.024 48);
-  --color-scene-hull: oklch(0.4 0.075 48);
-  --color-scene-hull-dark: oklch(0.2 0.035 45);
-  --color-scene-roof: oklch(0.56 0.09 68);
-  --color-scene-roof-dark: oklch(0.3 0.05 55);
-  --color-scene-roof-light: oklch(0.82 0.11 82);
-  --color-scene-cabin: oklch(0.13 0.02 45);
-  --color-scene-lamp: oklch(0.9 0.13 85);
+  /* Landing scene: blue hour on the backwaters */
+  --color-scene-sky: oklch(0.27 0.05 233);
+  --color-scene-sky-mid: oklch(0.46 0.075 250);
+  --color-scene-sky-glow: oklch(0.8 0.105 70);
+  --color-scene-sun: oklch(0.94 0.075 92);
+  --color-scene-shore: oklch(0.38 0.05 238);
+  --color-scene-palm: oklch(0.18 0.03 215);
+  --color-scene-water: oklch(0.45 0.075 218);
+  --color-scene-water-deep: oklch(0.215 0.045 236);
+  --color-scene-hull: oklch(0.44 0.085 50);
+  --color-scene-hull-dark: oklch(0.22 0.04 45);
+  --color-scene-roof: oklch(0.6 0.1 70);
+  --color-scene-roof-dark: oklch(0.33 0.055 58);
+  --color-scene-roof-light: oklch(0.84 0.11 84);
+  --color-scene-cabin: oklch(0.15 0.025 45);
+  --color-scene-lamp: oklch(0.89 0.12 86);
 
   /* Type */
   --font-display: 'Fraunces Variable', 'Anek Malayalam Variable', Georgia, serif;
@@ -91,9 +98,9 @@
   --radius-card: 1.5rem;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px oklch(0.17 0.024 48 / 0.18), 0 12px 32px -12px oklch(0.17 0.024 48 / 0.55);
-  --shadow-raised: 0 2px 4px oklch(0.17 0.024 48 / 0.2), 0 24px 56px -20px oklch(0.17 0.024 48 / 0.7);
-  --shadow-button: 0 1px 0 oklch(1 0 0 / 0.35) inset, 0 1px 2px oklch(0.17 0.024 48 / 0.3);
+  --shadow-card: 0 1px 2px oklch(0.215 0.045 236 / 0.18), 0 12px 32px -12px oklch(0.215 0.045 236 / 0.55);
+  --shadow-raised: 0 2px 4px oklch(0.215 0.045 236 / 0.2), 0 24px 56px -20px oklch(0.215 0.045 236 / 0.7);
+  --shadow-button: 0 1px 0 oklch(1 0 0 / 0.35) inset, 0 1px 2px oklch(0.215 0.045 236 / 0.3);
 
   /* Motion */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);

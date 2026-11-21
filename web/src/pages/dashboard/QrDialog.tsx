@@ -6,8 +6,8 @@ import type { Boat } from './api.ts';
 import { Dialog } from './Dialog.tsx';
 import { d } from './i18n.ts';
 
-const INK = '#2a1c12';
-const PAPER = '#fffdf6';
+const INK = '#0b2737'; // --color-ink
+const PAPER = '#fefdf8'; // --color-kasavu
 
 function useQrSvg(url: string) {
   const [svg, setSvg] = useState('');
@@ -20,7 +20,7 @@ function useQrSvg(url: string) {
 function Code({ url, label, note }: { url: string; label: ReturnType<typeof d>; note: string }) {
   const svg = useQrSvg(url);
   return (
-    <figure className="kl-qr flex flex-col items-center rounded-control border border-line bg-[#fffdf6] p-4 text-center">
+    <figure className="kl-qr flex flex-col items-center rounded-control border border-line bg-kasavu p-4 text-center">
       {/* The SVG comes from the qrcode package, not from user input. */}
       <div className="aspect-square w-full max-w-[13rem]" dangerouslySetInnerHTML={{ __html: svg }} />
       <figcaption className="mt-3">

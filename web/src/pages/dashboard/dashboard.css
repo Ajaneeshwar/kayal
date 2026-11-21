@@ -1,12 +1,12 @@
 /* Inspector dashboard: map markers, the live feed highlight and print rules. Tokens only. */
 
-/* Warm the OpenStreetMap tiles towards the wood and cream palette. */
+/* Soften the OpenStreetMap tiles so the markers lead. No colour cast: the palette is lagoon and cream. */
 .kl-map {
   background: var(--color-surface);
   font-family: var(--font-sans);
 }
 .kl-map .leaflet-tile-pane {
-  filter: sepia(0.28) saturate(0.85) contrast(0.96) brightness(1.02);
+  filter: saturate(0.8) contrast(0.96) brightness(1.02);
 }
 .kl-map .leaflet-control-zoom {
   border: 0;
@@ -23,7 +23,7 @@
   border-color: var(--color-line);
 }
 .kl-map .leaflet-control-attribution {
-  background: oklch(0.985 0.013 88 / 0.8);
+  background: color-mix(in oklab, var(--color-kasavu) 80%, transparent);
   color: var(--color-ink-muted);
   font-size: 0.6875rem;
 }
@@ -36,7 +36,7 @@
   color: var(--color-ink);
   border-radius: var(--radius-control);
   box-shadow: var(--shadow-raised);
-  border: 1px solid oklch(0.7 0.11 80 / 0.6);
+  border: 1px solid color-mix(in oklab, var(--color-gold-edge) 60%, transparent);
 }
 .kl-map .leaflet-popup-tip {
   background: var(--color-kasavu);
@@ -75,7 +75,7 @@
   background: var(--color-gold);
   color: var(--color-teak);
   border: 2px solid var(--color-kasavu);
-  box-shadow: 0 0 0 1.5px var(--color-gold-edge), 0 4px 10px -2px oklch(0.17 0.024 48 / 0.55);
+  box-shadow: 0 0 0 1.5px var(--color-gold-edge), 0 4px 10px -2px color-mix(in oklab, var(--color-teak-deep) 55%, transparent);
 }
 .kl-fac svg {
   width: 18px;
@@ -91,7 +91,7 @@
 .kl-fac.is-closed {
   background: var(--color-wood-light);
   color: var(--color-teak);
-  box-shadow: 0 0 0 1.5px var(--color-wood), 0 4px 10px -2px oklch(0.17 0.024 48 / 0.45);
+  box-shadow: 0 0 0 1.5px var(--color-wood), 0 4px 10px -2px color-mix(in oklab, var(--color-teak-deep) 45%, transparent);
   opacity: 0.9;
 }
 .kl-fac.is-closed svg path:first-child {
@@ -129,7 +129,7 @@
   height: 16px;
   border-radius: 999px;
   border: 2.5px solid var(--color-kasavu);
-  box-shadow: 0 1px 4px oklch(0.17 0.024 48 / 0.5);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--color-teak-deep) 50%, transparent);
 }
 .kl-entry.is-verified {
   background: var(--color-verified);
@@ -165,7 +165,7 @@
 }
 
 .kl-glass {
-  background: oklch(0.985 0.013 88 / 0.9);
+  background: color-mix(in oklab, var(--color-kasavu) 90%, transparent);
   color: var(--color-ink);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(8px);
@@ -189,11 +189,11 @@
   transition: background-color 1.6s var(--ease-out);
 }
 .kl-feed-item.is-fresh {
-  background: oklch(0.8 0.12 85 / 0.22);
+  background: color-mix(in oklab, var(--color-gold) 22%, transparent);
   box-shadow: inset 3px 0 0 var(--color-gold-edge);
 }
 .kl-row.is-fresh td {
-  background: oklch(0.8 0.12 85 / 0.16);
+  background: color-mix(in oklab, var(--color-gold) 16%, transparent);
 }
 
 .kl-scroll {
@@ -208,7 +208,7 @@
 
 /* Dialogs. */
 .kl-dialog::backdrop {
-  background: oklch(0.17 0.024 48 / 0.6);
+  background: color-mix(in oklab, var(--color-teak-deep) 60%, transparent);
   backdrop-filter: blur(2px);
 }
 .kl-dialog {
