@@ -4,7 +4,7 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 
 ## Routes
 
-`/api/state` returns at most 100 recent entries. `weeklyEntryCount` counts all projected handovers from Monday midnight in the server's local timezone through now, regardless of that feed limit. Corrections, confirmations, void records and unloads are excluded from that count as separate events.
+`/api/state` returns at most 100 recent entries. `weeklyEntryCount` counts all projected handovers from Monday midnight in the server's local timezone through now, regardless of that feed limit. Corrections, photo attachments, confirmations, void records and unloads are excluded from that count as separate events.
 
 | Method and path | Caller | Request body | Success | Errors |
 | --- | --- | --- | --- | --- |
@@ -15,6 +15,7 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 | `POST /api/boats/:boatId/reminder-call` | Inspector | `{"language":"Malayalam"}` or `{"language":"English"}`. Send `{}` for Malayalam. | 202 `{attemptId, to, language, message:{english, local}, notDueSoon}` | 400 invalid body or language. 401 wrong or missing PIN when enabled. 404 unknown boat. 429 cooldown. 502 Sarvam error or timeout. 503 missing or invalid configuration. |
 | `POST /api/log` | Crew with a registered boat ID | See crew request below | 200 stored entry or an answer to a waste question | 400 missing or invalid input, media or position. 404 unknown boat. 413 body, photo or text too large. 422 recording too short or too long, no speech, invalid quantity or no waste handover found. 502 language service failed or timed out. |
 | **New** `POST /api/log/:entryId/correction` | Crew holding the correction token issued for that entry | `{boatId, quantity, correctionToken}` | 200 `{entry, correction}` | 400 invalid fields or quantity. 403 wrong token. 404 entry missing or belongs to a different boat. 409 entry unavailable for correction or already has the requested amount. |
+| `POST /api/log/:entryId/photo` | Crew holding the correction token issued for that entry | `{boatId, correctionToken, photoBase64}` | 200 `{entry, reply}` | 400 invalid fields or JPEG. 401 wrong token. 404 entry missing or belongs to a different boat. 409 token unavailable or window expired. 413 photo or body too large. 422 voided entry. 502 language service failed. |
 | `POST /api/speak` | Caller holding a reply ID | `{"replyId":"f20ebf7c-f243-4c0e-badd-3c650648563e"}` | 200 `{audioBase64, mime}` | 400 missing or invalid identifier (use 1–80 ASCII letters, digits, underscores or hyphens). 404 unknown, expired or evicted reply, including an identifier in that syntax that was never issued. 502 language service failed or timed out. |
 | **New** `POST /api/signin` | Inspector | `{role:"inspector", pin:"…"}` | 200 `{"ok":true}` | 400 role other than inspector or PIN missing, non-string, or over 64 characters. 401 wrong PIN when enabled. |
 | **New** `POST /api/reports` | Anyone | `{photoDataUri, note?, location?, boatId?}` | 201 `{report}` | 400 missing/invalid photo, note, location, or boat ID. 404 unknown boat. 413 photo or request too large. 502 vision service failed or timed out. |
@@ -154,6 +155,35 @@ Sandbox example, with the entry abbreviated:
     "quantity": "8000 litres",
     "prevHash": "c9cfa330b766047fbb9822bce5c17e1df68bf871cd2b3d2ad0b28e51d321ef5a",
     "hash": "60fa1c474fc05be8ca9f83381120dd19037f10ec17e47db2a996598ed2f2411e"
+  }
+}
+```
+
+## Photo attachment
+
+For 30 minutes after saving a log, send `POST /api/log/:entryId/photo` with the private token from the log response. The photo uses raw base64 JPEG up to 3 MiB decoded.
+
+```json
+{"boatId":"kayal-rani","correctionToken":"c19fe765-4638-44fa-ad84-5e114ac39e90","photoBase64":"/9j/…"}
+```
+
+Each successful upload appends a chain record and displays the latest photo in state and boat detail. Any qualifying photo can raise proof under the existing rules. Replacements preserve earned proof and operator decisions. A photo-reading failure saves neither the file nor a record. The reply uses the language of the original reply. Entries saved before the original reply language was recorded use automatic language selection from the transcript. Play the reply with `POST /api/speak` using its ID.
+
+Example response with the entry abbreviated.
+
+```json
+{
+  "entry": {
+    "id": "e7d71e8c-c181-4836-be42-a82ded2e010a",
+    "boatId": "kayal-rani",
+    "verification": {"level":"receipt","reason":"handover_slip"},
+    "photo": {"file":"413137de-c01a-43b9-8bd3-51e2544a00ee.jpg","mime":"image/jpeg","isReceipt":true}
+  },
+  "reply": {
+    "id": "f20ebf7c-f243-4c0e-badd-3c650648563e",
+    "english": "Proof photo read and saved.",
+    "local": "Proof photo read and saved.",
+    "language": "en-IN"
   }
 }
 ```
@@ -307,7 +337,7 @@ Connect with `new EventSource('/api/events')`. Listen for the named events below
 
 | Event | `action` | Other fields |
 | --- | --- | --- |
-| `entry` | `created`, `voided`, `confirmed` or `disputed` | `id` (entry ID), `boatId` |
+| `entry` | `created`, `voided`, `confirmed`, `disputed` or `photo_attached` | `id` (entry ID), `boatId` |
 | `correction` | `corrected` | `id` (correction ID), `entryId` (original entry ID), `boatId` |
 | `report` | `created` or `reviewed` | `id` (report ID), `boatId` (string or null) |
 | `boat` | `created` | `id` (boat ID) |

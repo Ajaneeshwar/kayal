@@ -154,7 +154,7 @@ function requestPath(target) {
 function apiMethod(pathname) {
   if (reminderPath.test(pathname)) return 'POST';
   if (/^\/api\/(?:health|state|events|boats\/[\w-]+|operators\/[\w-]+\/(?:pending|handover\/[\w-]+))$/.test(pathname)) return 'GET';
-  if (/^\/api\/(?:log(?:\/[\w-]+\/(?:correction|void|confirm))?|speak|signin|boats|operators(?:\/[\w-]+\/unload)?|facilities(?:\/[\w-]+\/status)?|reports(?:\/[\w-]+\/review)?)$/.test(pathname)) return 'POST';
+  if (/^\/api\/(?:log(?:\/[\w-]+\/(?:correction|photo|void|confirm))?|speak|signin|boats|operators(?:\/[\w-]+\/unload)?|facilities(?:\/[\w-]+\/status)?|reports(?:\/[\w-]+\/review)?)$/.test(pathname)) return 'POST';
   return null;
 }
 
@@ -395,6 +395,13 @@ async function route(req, res) {
         action: 'corrected', id: correction.id, entryId: entry.id, boatId: entry.boatId,
       });
       return sendJson(res, 200, { entry, correction });
+    }
+
+    const logPhoto = pathname.match(/^\/api\/log\/([\w-]+)\/photo$/);
+    if (logPhoto) {
+      const result = await pipeline.attachPhoto(logPhoto[1], await readJson(req));
+      events.publish('entry', { action: 'photo_attached', id: result.entry.id, boatId: result.entry.boatId });
+      return sendJson(res, 200, result);
     }
 
     const logVoid = pathname.match(/^\/api\/log\/([\w-]+)\/void$/);

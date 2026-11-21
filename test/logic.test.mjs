@@ -323,6 +323,56 @@ test('quantity corrections are chained and project the latest amount without cha
   assert.equal(checkChain([original, first, { ...last, quantity: '800 litres' }]).brokenAt, 2);
 });
 
+test('photo attachments use the original location match and preserve earned proof on replacement', () => {
+  for (const [method, level, reason, expectedLevel, expectedReason] of [
+    ['collection_point', 'location', null, 'receipt', null],
+    ['collection_point', 'declared', 'closed', 'declared', 'closed'],
+    ['suction_truck', 'declared', 'no_fixed_point', 'receipt', 'handover_slip'],
+    ['mobile_pump', 'declared', 'no_fixed_point', 'receipt', 'handover_slip'],
+    ['waste_collector', 'declared', 'no_fixed_point', 'receipt', 'handover_slip'],
+    ['waste_bin', 'declared', 'waste_bin', 'declared', 'waste_bin'],
+  ]) {
+    const entry = { id: 'entry', method, verification: { level, reason, facilityId: 'original' } };
+    const receipt = { photoForEntryId: entry.id, photo: { file: 'receipt.jpg' }, reading: { isReceipt: true } };
+    const replacement = { ...receipt, photo: { file: 'other.jpg' }, reading: { isReceipt: false } };
+    assert.deepEqual(projectEntries([entry, replacement])[0].verification, entry.verification);
+    const [projected, ...extra] = projectEntries([entry, receipt, replacement]);
+    assert.deepEqual(extra, []);
+    assert.deepEqual(projected.photo, { file: 'other.jpg', isReceipt: false });
+    assert.deepEqual(projected.verification, { level: expectedLevel, reason: expectedReason, facilityId: 'original' });
+  }
+});
+
+test('photos preserve operator confirmation and dispute', () => {
+  const entry = { id: 'entry', verification: { level: 'location' } };
+  const operator = { id: 'operator', name: 'Desk', type: 'plant' };
+  const photo = { photoForEntryId: entry.id, photo: { file: 'receipt.jpg' }, reading: { isReceipt: true } };
+  for (const decision of ['received', 'not_received']) {
+    const confirmation = { confirmsEntryId: entry.id, operatorId: operator.id, decision };
+    const [before] = projectEntries([entry, confirmation], [operator]);
+    const [after] = projectEntries([entry, confirmation, photo], [operator]);
+    assert.deepEqual(after, { ...before, photo: { file: 'receipt.jpg', isReceipt: true } });
+  }
+});
+
+test('photo record hashes bind the target, file and reading without changing the original hash', () => {
+  const original = { id: 'old', boatId: 'boat', prevHash: GENESIS_HASH,
+    hash: '56b07de3fd48f40772866f3bec3d077a349ad3c45fc370a4f0745179f164fa40' };
+  const record = {
+    id: 'photo', boatId: original.boatId, at: NOW.toISOString(), photoForEntryId: original.id,
+    photo: { file: 'receipt.jpg', mime: 'image/jpeg' }, reading: { isReceipt: true }, prevHash: original.hash,
+  };
+  record.hash = entryHash(record.prevHash, record);
+  assert.deepEqual(checkChain([original, record]), { ok: true, count: 2, brokenAt: null });
+  for (const change of [
+    { photoForEntryId: 'other' },
+    { photo: { ...record.photo, file: 'other.jpg' } },
+    { reading: { isReceipt: false } },
+  ]) {
+    assert.equal(checkChain([original, { ...record, ...change }]).brokenAt, 1);
+  }
+});
+
 test('void records are chained and mark the original entry in public projections', () => {
   const original = { ...sewage(1, 'location'), id: 'entry', boatId: 'boat', prevHash: GENESIS_HASH };
   original.hash = entryHash(original.prevHash, original);
