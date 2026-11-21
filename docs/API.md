@@ -59,7 +59,7 @@ Send `POST /api/log` with `boatId` and one of these inputs:
 - Typed: `{"boatId":"kayal-rani","text":"Septic truck KL-04-AB-1234 took 300 litres.","lat":9.5965,"lon":76.4292,"accuracy":15,"replyLanguage":"en-IN"}`.
 - Recorded: replace `text` with `audioBase64` (standard base64, no data URI prefix) and `audioMime` (MediaRecorder MIME type such as `audio/webm;codecs=opus`, `audio/mp4`, or `audio/ogg;codecs=opus`). Also accepted are `audio/wav`, `audio/x-wav`, `audio/mpeg` and `audio/aac`. The default MIME is `audio/webm`. Audio has a 2,000-byte minimum and 6 MiB maximum after decoding. Text is capped at 600 trimmed characters.
 - The position fields are optional and at the top level. Send `lat` (−90 to 90) and `lon` (−180 to 180) together as numbers and optional non-negative `accuracy` in metres. `photoBase64` is optional or null and carries raw base64 JPEG bytes up to 3 MiB decoded. The current crew UI resizes photos to a maximum side of 1280 px before converting to JPEG.
-- Optional `replyLanguage` controls both written and spoken replies. Use `ml-IN` (default) or `en-IN`. Other values return 400. With `en-IN`, `reply.local` equals `reply.english` and reply translation is skipped. Input transcription or translation still follows the input language.
+- Optional `replyLanguage` controls both written and spoken replies. Accepted values are `auto` (the default), `bn-IN`, `en-IN`, `gu-IN`, `hi-IN`, `kn-IN`, `ml-IN`, `mr-IN`, `od-IN`, `pa-IN`, `ta-IN`, and `te-IN`. Other values return 400. In `auto`, the reply follows `heard.language` when Bulbul v3 supports it and uses `en-IN` otherwise. Typed Latin-script English replies in English by default. For any English reply, `reply.local` equals `reply.english` and reply translation is skipped. Input transcription or translation still follows the input language.
 
 A saved result is `{stored:true, kind, heard, entry, status, reply, correctionToken}`. Retain the private `correctionToken` locally to allow an edit of this specific entry. It is not available from state or boat detail. Example with the entry and status objects abbreviated:
 
@@ -91,7 +91,18 @@ A saved result is `{stored:true, kind, heard, entry, status, reply, correctionTo
 }
 ```
 
-A question about waste returns 200 `{stored:false, kind:"question", heard, reply}` with open collection points and directions when location was supplied. Unrelated speech or text returns 422 `{error, stored:false, kind:"other", heard, reply}`. The reply asks the crew to describe what they emptied or handed over and where. Silence and other 422 errors may have only `error`. If extraction, translation or receipt reading fails or times out, the log returns 502 and saves no entry or receipt.
+With `replyLanguage` omitted and `heard.language` equal to `ta-IN`, a Tamil reply can look like this.
+
+```json
+{
+  "id": "de63c530-1c4f-4625-95a4-8c22bba32b23",
+  "english": "Saved. Toilet tank emptied.",
+  "local": "சேமிக்கப்பட்டது. கழிப்பறைத் தொட்டி காலி செய்யப்பட்டது.",
+  "language": "ta-IN"
+}
+```
+
+A question about waste returns 200 `{stored:false, kind:"question", heard, reply}` with open collection points and directions when location was supplied. Unrelated speech or text returns 422 `{error, stored:false, kind:"other", heard, reply}`. The reply asks the crew to describe what they emptied or handed over and where. Both use the same language selection as saved entries. Silence and other 422 errors may have only `error`. If extraction, translation or receipt reading fails or times out, the log returns 502 and saves no entry or receipt.
 
 Play the reply with `POST /api/speak` and `{"replyId":"…"}`. Bulbul v3 generates MP3 in `reply.language` from `reply.local`. A real response starts `{"audioBase64":"//PAxAAAAANIAAAA…","mime":"audio/mpeg"}` (audio truncated). Assign the audio element a URL like `data:${mime};base64,${audioBase64}`. Reply IDs are kept in memory for up to ten minutes, with a 200-reply cache. Audio is generated on demand and cached with the reply.
 

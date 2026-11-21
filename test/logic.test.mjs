@@ -1,9 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  GENESIS_HASH, answerQuestion, boatStatus, checkChain, classifyByKeywords, compass, distanceM, entryHash,
+  GENESIS_HASH, answerQuestion, boatStatus, checkChain, chooseReplyLanguage, classifyByKeywords, compass, distanceM, entryHash,
   hasInvalidQuantity, hasWasteContext, normaliseExtraction, parseModelJson, projectEntries, replyFor, spokenDistance, verify,
 } from '../lib/logic.mjs';
+import { SPEECH_LANGUAGES } from '../lib/sarvam.mjs';
+
+test('auto replies in the detected language when Bulbul supports it', () => {
+  for (const language of SPEECH_LANGUAGES) {
+    assert.equal(chooseReplyLanguage('auto', language, SPEECH_LANGUAGES), language);
+  }
+});
+
+test('auto replies in English when detection is missing or unsupported', () => {
+  for (const detected of [null, undefined, 'as-IN']) {
+    assert.equal(chooseReplyLanguage('auto', detected, SPEECH_LANGUAGES), 'en-IN');
+  }
+});
+
+test('an explicit reply language overrides detection', () => {
+  for (const language of ['ml-IN', 'en-IN', 'ta-IN']) {
+    assert.equal(chooseReplyLanguage(language, 'hi-IN', SPEECH_LANGUAGES), language);
+  }
+});
 
 const DAY_MS = 86_400_000;
 const NOW = new Date('2026-11-21T12:00:00.000Z');
