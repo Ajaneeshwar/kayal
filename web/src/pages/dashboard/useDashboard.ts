@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type SetStateAction } from 'react';
 import { fetchState, reportsOf, type Report, type State } from './api.ts';
 
 export type Link = 'connecting' | 'live' | 'polling';
@@ -17,7 +17,14 @@ const EVENTS = ['entry', 'correction', 'facility', 'boat', 'report'] as const;
  * `fresh` holds the ids of entries that arrived since the page loaded, for a few seconds.
  */
 export function useDashboard() {
-  const [state, setState] = useState<State | null>(null);
+  const [state, setStoredState] = useState<State | null>(null);
+  // The last response as text. A poll that brings back the same data skips the re-render, which
+  // on a phone redraws the map, the table and the feed every 5 s for nothing.
+  const lastJson = useRef('');
+  const setState = useCallback((next: SetStateAction<State | null>) => {
+    lastJson.current = '';
+    setStoredState(next);
+  }, []);
   const [reports, setReports] = useState<Report[] | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [link, setLink] = useState<Link>('connecting');
@@ -29,6 +36,11 @@ export function useDashboard() {
   const load = useCallback(async () => {
     try {
       const next = await fetchState();
+      const json = JSON.stringify(next);
+      if (json === lastJson.current) {
+        setError(null);
+        return;
+      }
       const ids = new Set(next.entries.map((e) => e.id));
       if (known.current) {
         const added = next.entries.filter((e) => !known.current!.has(e.id)).map((e) => e.id);
@@ -44,7 +56,8 @@ export function useDashboard() {
         }
       }
       known.current = ids;
-      setState(next);
+      lastJson.current = json;
+      setStoredState(next);
       setReports(reportsOf(next));
       setError(null);
       setLink((l) => (l === 'connecting' ? 'polling' : l));

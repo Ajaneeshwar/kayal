@@ -1,5 +1,6 @@
 import { Bi } from '../../components/Bi.tsx';
 import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
+import { ShowMore, usePaged } from '../../components/ShowMore.tsx';
 import { DisputedIcon, StampIcon } from '../../components/StatusBadge.tsx';
 import { useLang } from '../../i18n/language.ts';
 import { entryPlace } from './entryPlace.ts';
@@ -275,6 +276,7 @@ function WithdrawnCard({ entry }: { entry: Entry }) {
 }
 
 export function Timeline({ entries }: { entries: Entry[] }) {
+  const { shown, hidden, more } = usePaged(entries);
   if (!entries.length) {
     return (
       <p className="rounded-card border border-dashed border-field-border/60 p-6 text-body text-ink-muted">
@@ -283,9 +285,10 @@ export function Timeline({ entries }: { entries: Entry[] }) {
     );
   }
   return (
+    <>
     <ol className="relative grid gap-4">
       <span aria-hidden="true" className="absolute inset-y-3 start-[0.6875rem] w-px bg-gold-edge/60" />
-      {entries.map((entry) => (
+      {shown.map((entry) => (
         <li key={entry.id} className="relative min-w-0 ps-9">
           <span
             aria-hidden="true"
@@ -297,5 +300,7 @@ export function Timeline({ entries }: { entries: Entry[] }) {
         </li>
       ))}
     </ol>
+    <ShowMore hidden={hidden} onMore={more} className="mt-4" />
+    </>
   );
 }

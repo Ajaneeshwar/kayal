@@ -34,6 +34,7 @@ import { Icon, MlEn } from './ui.tsx';
 import { useLocation } from './useLocation.ts';
 import { useRecorder, type RecorderFailure } from './useRecorder.ts';
 import { PastEntries } from './PastEntries.tsx';
+import { QrCodes } from './QrCodes.tsx';
 
 const MAX_SECONDS = 25;
 /** A first GPS fix can take several seconds. A send waits this long for one, then goes without it. */
@@ -85,6 +86,7 @@ function Crew({ boatId }: { boatId: string }) {
   const [attempt, setAttempt] = useState(0);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [pastOpen, setPastOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const [pastRevision, setPastRevision] = useState(0);
   const [mic, setMic] = useState<MicState>('ready');
   const [mode, setMode] = useState<'voice' | 'text'>('voice');
@@ -325,11 +327,15 @@ function Crew({ boatId }: { boatId: string }) {
         </div>
         <div className={`${COLUMN} px-4 pb-3 pt-2.5`}>
           <LocationStrip location={location} facilities={facilities} />
-          <button type="button" onClick={() => setPastOpen(true)} className="mt-2 min-h-11 rounded-control border border-gold-edge px-3 text-small font-semibold text-gold-bright"><MlEn text={t('pastEntries')} /></button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button type="button" onClick={() => setPastOpen(true)} className="min-h-11 rounded-control border border-gold-edge px-3 text-small font-semibold text-gold-bright"><MlEn text={t('pastEntries')} /></button>
+            <button type="button" onClick={() => setQrOpen(true)} className="min-h-11 rounded-control border border-gold-edge px-3 text-small font-semibold text-gold-bright"><MlEn text={t('qrOpen')} /></button>
+          </div>
         </div>
         <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,var(--color-gold-edge),transparent)] opacity-50" />
       </header>
       {pastOpen && <PastEntries boatId={boatId} revision={pastRevision} onClose={() => setPastOpen(false)} />}
+      {qrOpen && <QrCodes boatId={boatId} boatName={boat.name} onClose={() => setQrOpen(false)} />}
 
       <main id="main" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <div className={`${COLUMN} flex flex-col gap-4 px-4 pb-24 pt-5`} aria-live="polite">

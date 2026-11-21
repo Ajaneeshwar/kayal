@@ -8,6 +8,7 @@
 export const en = {
   boatSearch: 'Search boats by name or registration',
   boatMatches: '{count} matching boats',
+  showMore: 'Show {count} more',
   noBoatMatches: 'No boat matches',
   tagline: 'Proof of where houseboat waste went',
   pageMissing: 'This page does not exist',

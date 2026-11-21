@@ -27,6 +27,34 @@
     "en": "No place named",
     "ml": "സ്ഥലമൊന്നുമില്ല"
   },
+  "qrOpen": {
+    "en": "QR codes",
+    "ml": "QR കോഡുകൾ"
+  },
+  "qrTitle": {
+    "en": "QR codes for this boat",
+    "ml": "ഈ ബോട്ടിനായുള്ള QR കോഡുകൾ"
+  },
+  "qrClose": {
+    "en": "Close QR codes",
+    "ml": "QR കോഡുകൾ അടയ്ക്കുക"
+  },
+  "qrCrew": {
+    "en": "Crew link",
+    "ml": "ജീവനക്കാരുടെ ലിങ്ക്"
+  },
+  "qrCrewNote": {
+    "en": "For the crew. Keep it inside the cabin.",
+    "ml": "ജീവനക്കാർക്ക്. ഇത് കാബിനുള്ളിൽ സൂക്ഷിക്കുക."
+  },
+  "qrGuest": {
+    "en": "Public record",
+    "ml": "പൊതു രേഖ"
+  },
+  "qrGuestNote": {
+    "en": "For guests. Put it where they board.",
+    "ml": "അതിഥികൾക്ക്. അവർ ബോർഡിംഗ് ചെയ്യുന്നിടത്ത് വെക്കുക."
+  },
   "back": {
     "en": "Back to start",
     "ml": "തുടക്കത്തിലേക്ക് മടങ്ങുക"

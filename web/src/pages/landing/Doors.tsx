@@ -7,6 +7,7 @@ import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { Select } from '../../components/Select.tsx';
 import { usePick } from '../../i18n/language.ts';
 import { goTo, lastCrewBoat, rememberCrewBoat, saveAdminPin, signInInspector, type Boat } from '../../lib/api.ts';
+import { usePageRestore } from '../../lib/usePageRestore.ts';
 import type { BoatsState } from '../../lib/useBoats.ts';
 import type { StringKey } from '../../i18n/index.ts';
 import { t } from '../../i18n/index.ts';
@@ -93,6 +94,11 @@ export function InspectorDoor() {
   const inputRef = useRef<HTMLInputElement>(null);
   const id = useId();
   const failed = state === 'wrong' || state === 'error' || state === 'empty';
+  // Back from /dashboard restores this page mid sign-in: stop the spinner and clear the PIN.
+  usePageRestore(() => {
+    setState('idle');
+    setPin('');
+  });
 
   useEffect(() => {
     if (failed) inputRef.current?.select();

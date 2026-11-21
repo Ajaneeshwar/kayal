@@ -13,6 +13,13 @@ export const en = {
   pastRetry: 'Try again',
   pastClose: 'Close past entries',
   pastNoPlace: 'No place named',
+  qrOpen: 'QR codes',
+  qrTitle: 'QR codes for this boat',
+  qrClose: 'Close QR codes',
+  qrCrew: 'Crew link',
+  qrCrewNote: 'For the crew. Keep it inside the cabin.',
+  qrGuest: 'Public record',
+  qrGuestNote: 'For guests. Put it where they board.',
   back: 'Back to start',
   locAccurate: 'Accurate',
 

@@ -44,13 +44,20 @@ function useBoatRecord(id: string) {
   useEffect(() => {
     let live = true;
     let controller = new AbortController();
+    // The poll re-renders the record only when something changed.
+    let lastJson = '';
     const run = async (first: boolean) => {
       controller = new AbortController();
       const state = fetchState(controller.signal).catch(() => null);
       try {
         const { boat, entries } = await fetchBoat(id, controller.signal);
         const s = await state;
-        if (live) setLoad({ status: 'ready', boat, entries, chain: s?.chain ?? null });
+        const chain = s?.chain ?? null;
+        const json = JSON.stringify([boat, entries, chain]);
+        if (live && json !== lastJson) {
+          lastJson = json;
+          setLoad({ status: 'ready', boat, entries, chain });
+        }
       } catch (err) {
         if (!live || (err as Error).name === 'AbortError') return;
         if (err instanceof NotFoundError) {

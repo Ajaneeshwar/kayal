@@ -8,6 +8,7 @@ import { Select } from '../../components/Select.tsx';
 import { t, type StringKey } from '../../i18n/index.ts';
 import { usePick } from '../../i18n/language.ts';
 import { goTo } from '../../lib/api.ts';
+import { usePageRestore } from '../../lib/usePageRestore.ts';
 import { ApiError, getDirectory, getPending, saveSession, type Directory } from '../operator/api.ts';
 import { t as operatorText } from '../operator/i18n.ts';
 import { operatorDetail } from '../operator/SignIn.tsx';
@@ -67,6 +68,12 @@ export function ReceiverDoor({ className = '' }: { className?: string }) {
   const [problem, setProblem] = useState<Problem | null>(null);
   const [attempt, setAttempt] = useState(0);
   const codeRef = useRef<HTMLInputElement>(null);
+  // Back from /operator restores this page mid sign-in: stop the spinner and clear the code.
+  usePageRestore(() => {
+    setBusy(false);
+    setCode('');
+    setProblem(null);
+  });
 
   useEffect(() => {
     let active = true;

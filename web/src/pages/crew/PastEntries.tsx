@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Bi } from '../../components/Bi.tsx';
+import { ShowMore, usePaged } from '../../components/ShowMore.tsx';
 import { usePick } from '../../i18n/language.ts';
 import { methodOf } from '../../components/MethodIcon.tsx';
 import { bt, fetchBoat, formatDate, formatTime, KIND, METHOD, namedReceiver, shownLevel, type Entry } from '../boat/data.ts';
@@ -23,6 +24,7 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const { shown, hidden, more } = usePaged(entries ?? []);
   useEffect(() => {
     const el = dialog.current;
     el?.showModal();
@@ -49,7 +51,7 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
       {failed && <div role="alert"><Bi text={t('pastError')} /><button type="button" onClick={() => setAttempt((n) => n + 1)} className="mt-3 min-h-11 rounded-control bg-gold px-4 font-semibold text-teak"><Bi text={t('pastRetry')} /></button></div>}
       {entries?.length === 0 && <p><Bi text={t('pastEmpty')} /></p>}
       <ol className="space-y-3">
-        {entries?.map((entry) => {
+        {shown.map((entry) => {
           const method = methodOf(entry);
           const place = entryPlace(entry);
           const receiver = namedReceiver(entry);
@@ -81,6 +83,7 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
           );
         })}
       </ol>
+      <ShowMore hidden={hidden} onMore={more} className="mt-3" />
     </dialog>
   );
 }

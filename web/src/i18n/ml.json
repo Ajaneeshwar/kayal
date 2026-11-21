@@ -7,6 +7,10 @@
     "en": "{count} matching boats",
     "ml": "{count} അനുയോജ്യമായ ബോട്ടുകൾ"
   },
+  "showMore": {
+    "en": "Show {count} more",
+    "ml": "{count} എണ്ണം കൂടി കാണിക്കുക"
+  },
   "noBoatMatches": {
     "en": "No boat matches",
     "ml": "ഒറ്റ ബോട്ടും ലഭ്യമല്ല"

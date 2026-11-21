@@ -2,6 +2,7 @@ import { useId, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Bi } from '../../components/Bi.tsx';
 import { Select } from '../../components/Select.tsx';
+import { ShowMore, usePaged } from '../../components/ShowMore.tsx';
 import { DisputedIcon, StampIcon, StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
@@ -185,7 +186,7 @@ function FeedItem({ entry, boat, fresh, onWithdraw }: { entry: Entry; boat: Boat
           )}
           {entry.photo && !voided && (
             <a href={`/uploads/${entry.photo.file}`} target="_blank" rel="noopener" className="mt-2 flex items-center gap-2.5 text-caption text-ink-muted hover:text-ink">
-              <img src={`/uploads/${entry.photo.file}`} alt="" loading="eager" className="kl-img h-16 w-12 shrink-0 rounded-md bg-white object-contain" />
+              <img src={`/uploads/${entry.photo.file}`} alt="" loading="lazy" decoding="async" className="kl-img h-16 w-12 shrink-0 rounded-md bg-white object-contain" />
               <span className="line-clamp-2">
                 <span className="font-semibold text-ink">{entry.photo.isReceipt ? 'Receipt' : 'Photo'}</span>
                 {entry.photo.caption ? ` · ${entry.photo.caption}` : ''}
@@ -199,7 +200,7 @@ function FeedItem({ entry, boat, fresh, onWithdraw }: { entry: Entry; boat: Boat
 }
 
 export function Feed({ entries, boats, fresh, link, onWithdraw }: { entries: Entry[]; boats: Map<string, Boat>; fresh: ReadonlySet<string>; link: ReactNode; onWithdraw?: (e: Entry) => void }) {
-  const shown = entries.slice(0, 40);
+  const { shown, hidden, more } = usePaged(entries);
   return (
     <Panel className="flex min-h-0 flex-col">
       <PanelHead title={d('feedTitle')} meta={`${entries.length} recent entries, newest first`}>
@@ -214,6 +215,11 @@ export function Feed({ entries, boats, fresh, link, onWithdraw }: { entries: Ent
               <FeedItem key={e.id} entry={e} boat={boats.get(e.boatId)} fresh={fresh.has(e.id)} onWithdraw={onWithdraw} />
             ))}
           </AnimatePresence>
+          {hidden > 0 && (
+            <li className="px-2 pt-2">
+              <ShowMore hidden={hidden} onMore={more} />
+            </li>
+          )}
         </ol>
       )}
     </Panel>
