@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ApiError, correctQuantity, formatDistance, type Entry, type Kind, type Level } from './api.ts';
 import { t } from './i18n.ts';
+import { usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
 import { Icon, MlEn } from './ui.tsx';
 
@@ -64,6 +65,7 @@ export function Receipt({
   token: string | null;
   onCorrected: (entry: Entry) => void;
 }) {
+  const pick = usePick();
   const [fixing, setFixing] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export function Receipt({
       setFixing(false);
       setTyped('');
     } catch (err) {
-      setError(err instanceof ApiError && err.status === 0 ? t('offlineBody').en : (err as Error).message);
+      setError(err instanceof ApiError && err.status === 0 ? pick(t('offlineBody')) : (err as Error).message);
     } finally {
       setSaving(null);
     }
@@ -98,7 +100,7 @@ export function Receipt({
 
   return (
     <section
-      aria-label={t('savedTitle').en}
+      aria-label={pick(t('savedTitle'))}
       className="surface-light relative rounded-card border border-gold-edge/70 bg-kasavu p-5 text-ink shadow-[var(--shadow-card)]"
     >
       <span aria-hidden="true" className="pointer-events-none absolute inset-[5px] rounded-[calc(var(--radius-card)-5px)] border-[1.5px] border-gold-edge/50" />
@@ -171,7 +173,7 @@ export function Receipt({
                         disabled={saving !== null || !typed.trim()}
                         className="min-h-12 rounded-control bg-teak px-4 font-semibold text-ink-inverse transition-[scale,opacity] duration-[var(--duration-press)] ease-[var(--ease-out)] enabled:active:scale-[0.96] disabled:opacity-45"
                       >
-                        {t('fixSave').en}
+                        {pick(t('fixSave'))}
                       </button>
                     </form>
                     {error && (
@@ -180,7 +182,7 @@ export function Receipt({
                       </p>
                     )}
                     <button type="button" onClick={() => setFixing(false)} className="mt-2 min-h-11 text-small font-semibold text-ink-muted underline underline-offset-4">
-                      {t('cancel').en}
+                      {pick(t('cancel'))}
                     </button>
                   </div>
                 </motion.div>
@@ -190,7 +192,7 @@ export function Receipt({
             }
           >
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <span className="text-lead font-semibold tabular-nums">{entry.quantity ?? t('notSaid').en}</span>
+              <span className="text-lead font-semibold tabular-nums">{entry.quantity ?? pick(t('notSaid'))}</span>
               {entry.corrected && (
                 <span className="rounded-pill bg-surface px-2 py-0.5 text-caption font-semibold text-gold-ink">
                   <MlEn text={t('corrected')} layout="inline" />
@@ -212,7 +214,7 @@ export function Receipt({
           </Row>
 
           <Row label="place">
-            <p className="font-semibold">{place ?? t('notSaid').en}</p>
+            <p className="font-semibold">{place ?? pick(t('notSaid'))}</p>
             {entry.verification.distanceM != null && entry.verification.distanceM > 0 && (
               <p className="text-small tabular-nums text-ink-muted">{formatDistance(entry.verification.distanceM)}</p>
             )}

@@ -1,5 +1,8 @@
 import { motion, type Variants } from 'motion/react';
 import { AppShell } from '../../components/AppShell.tsx';
+import { LanguagePage } from '../../components/LanguagePage.tsx';
+import { useLangChosen, usePick } from '../../i18n/language.ts';
+import { t } from '../../i18n/index.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { useFontsReady } from '../../lib/useFontsReady.ts';
@@ -17,6 +20,7 @@ const heroItem: Variants = {
 };
 
 function Hero({ ready }: { ready: boolean }) {
+  const pick = usePick();
   return (
     <section aria-labelledby="hero-title" className="relative isolate h-[47rem] overflow-hidden sm:h-[50rem] lg:h-[52rem]">
       <HouseboatScene className="absolute inset-0 -z-10 size-full" />
@@ -24,7 +28,7 @@ function Hero({ ready }: { ready: boolean }) {
         initial="hidden"
         animate={ready ? 'show' : 'hidden'}
         variants={heroGroup}
-        className="mx-auto max-w-[76rem] px-5 pt-24 [text-shadow:0_1px_18px_oklch(0.17_0.024_48/0.7)] sm:px-6 sm:pt-32 lg:px-8 lg:pt-40"
+        className="mx-auto max-w-[76rem] px-5 pt-24 [text-shadow:0_1px_18px_color-mix(in_oklab,var(--color-teak-deep)_70%,transparent)] sm:px-6 sm:pt-32 lg:px-8 lg:pt-40"
       >
         <motion.p variants={heroItem} className="text-caption font-semibold uppercase tracking-[0.16em] text-gold">
           Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
@@ -49,7 +53,7 @@ function Hero({ ready }: { ready: boolean }) {
             href="#doors"
             className="group inline-flex min-h-12 items-center gap-2 rounded-pill bg-gold px-5 font-semibold text-teak shadow-[var(--shadow-button)] transition-[background-color,transform] duration-150 [text-shadow:none] hover:bg-gold-bright active:scale-[0.97]"
           >
-            Choose your door
+            {pick(t('signinTitle'))}
             <ArrowIcon className="size-5 rotate-90 transition-transform duration-150 group-hover:translate-y-0.5" />
           </a>
         </motion.div>
@@ -113,6 +117,9 @@ function Steps() {
 
 export default function LandingPage() {
   const ready = useFontsReady();
+  const chosen = useLangChosen();
+  const pick = usePick();
+  if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
     <AppShell
       headerEnd={
@@ -120,7 +127,7 @@ export default function LandingPage() {
           href="#doors"
           className="inline-flex min-h-11 items-center rounded-pill px-4 text-small font-semibold text-ink-inverse shadow-[inset_0_0_0_1px_oklch(1_0_0/0.25)] transition-colors duration-150 hover:bg-white/10"
         >
-          Sign in
+          {pick(t('signIn'))}
         </a>
       }
     >

@@ -1,4 +1,5 @@
 import { Bi } from '../../components/Bi.tsx';
+import { useLang } from '../../i18n/language.ts';
 import { bt, formatDate, formatTime, KIND, LEVEL, reasonText, type Entry, type Level } from './data.ts';
 
 const CHIP: Record<'verified' | 'declared', string> = {
@@ -37,7 +38,9 @@ function LevelIcon({ level }: { level: Level }) {
 /** The proof level as a chip: icon, English and Malayalam. `stack` puts the Malayalam under it for narrow spaces. */
 export function LevelChip({ level, stack = false }: { level: Level; stack?: boolean }) {
   const { key, tone } = LEVEL[level];
-  if (stack) {
+  const lang = useLang();
+  // Both languages on one line run past a 360 px screen, so the mixed setting always stacks.
+  if (stack || (lang === 'both' && bt(key).ml)) {
     return (
       <span className={`inline-flex items-start gap-1.5 rounded-control px-2.5 py-1.5 text-caption font-semibold ${CHIP[tone]}`}>
         <span className="mt-[3px]">
@@ -67,7 +70,9 @@ function PinIcon() {
 function EntryCard({ entry }: { entry: Entry }) {
   const { level, facilityName } = entry.verification;
   const place = facilityName ?? entry.facilityMentioned;
-  const translated = entry.heard.original.trim() !== entry.heard.english.trim();
+  const lang = useLang();
+  // The crew's own words. The English setting shows only the English summary.
+  const translated = lang !== 'en' && entry.heard.original.trim() !== entry.heard.english.trim();
   const photo = entry.photo;
   return (
     <article className="rounded-card border border-line bg-kasavu p-4 shadow-[var(--shadow-card)] sm:p-5">

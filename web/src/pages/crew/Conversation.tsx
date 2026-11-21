@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import type { Boat, Heard, Reply } from './api.ts';
 import { t } from './i18n.ts';
+import { useLang, usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
 import { BoatMark, Icon, MlEn, SpokenPair } from './ui.tsx';
 
@@ -59,8 +60,10 @@ export function CrewBubble({ children, photoUrl }: { children: ReactNode; photoU
 }
 
 export function Intro({ boat }: { boat: Boat }) {
+  const lang = useLang();
+  const pick = usePick();
   const last = boat.status.lastSewage;
-  const ago = last ? new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-last.daysAgo, 'day') : null;
+  const ago = last ? new Intl.RelativeTimeFormat(lang === 'ml' ? 'ml' : 'en', { numeric: 'auto' }).format(-last.daysAgo, 'day') : null;
   return (
     <KayalBubble>
       <MlEn text={t('introTitle')} className="font-semibold" mlClassName="text-body" enClassName="!text-small font-normal" />
@@ -71,7 +74,7 @@ export function Intro({ boat }: { boat: Boat }) {
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-line pt-3 text-small">
         <MlEn text={t('lastSewage')} layout="inline" className="text-ink-muted" mlClassName="text-small" />
         <span className="font-semibold tabular-nums">
-          {last && ago ? `${ago}${last.facilityName ? ` · ${last.facilityName}` : ''}` : t('notYet').en}
+          {last && ago ? `${ago}${last.facilityName ? ` · ${last.facilityName}` : ''}` : pick(t('notYet'))}
         </span>
       </div>
     </KayalBubble>
@@ -141,9 +144,10 @@ export function ReplyBubble({ reply, speaking, onPlay }: { reply: Reply; speakin
 }
 
 export function Thinking() {
+  const pick = usePick();
   return (
     <KayalBubble label={false}>
-      <span className="flex h-6 items-center gap-1.5" aria-label={t('stateSending').en}>
+      <span className="flex h-6 items-center gap-1.5" aria-label={pick(t('stateSending'))}>
         {[0, 1, 2].map((i) => (
           <span key={i} className="size-2 animate-pulse rounded-full bg-gold-edge" style={{ animationDelay: `${i * 180}ms` }} />
         ))}
@@ -180,6 +184,7 @@ export function Notice({
   onDismiss?: () => void;
   compact?: boolean;
 }) {
+  const pick = usePick();
   const n = NOTICE[kind];
   const Glyph = n.icon;
   return (
@@ -205,7 +210,7 @@ export function Notice({
         <button
           type="button"
           onClick={onDismiss}
-          aria-label={t('dismiss').en}
+          aria-label={pick(t('dismiss'))}
           className="-me-1.5 -mt-1.5 grid size-11 shrink-0 place-items-center rounded-full text-ink-inverse-muted hover:bg-teak active:scale-[0.96]"
         >
           <Icon.Close size={18} />

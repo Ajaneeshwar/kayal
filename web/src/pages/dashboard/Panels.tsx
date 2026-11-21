@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
+import { useLang } from '../../i18n/language.ts';
 import type { Boat, Entry, Facility, Report } from './api.ts';
 import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, WASTE_LABELS, ago, daysAgo, whereText } from './format.ts';
 import { d } from './i18n.ts';
@@ -48,7 +49,9 @@ const KIND_GLYPH: Record<Entry['kind'], string> = {
 };
 
 function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined; fresh: boolean }) {
-  const translated = entry.heard && entry.heard.original !== entry.heard.english;
+  const lang = useLang();
+  // The crew's own words. The English setting shows only the English summary.
+  const translated = lang !== 'en' && entry.heard && entry.heard.original !== entry.heard.english;
   return (
     <motion.li
       layout="position"

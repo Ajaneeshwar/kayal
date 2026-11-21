@@ -1,7 +1,11 @@
 import type { ElementType, ReactNode, SVGProps } from 'react';
 import type { Pair } from './i18n.ts';
+import { useLang } from '../../i18n/language.ts';
 
-/** Malayalam first, its English meaning under it. Crew screens lead with Malayalam. */
+/**
+ * A crew string in the chosen language. In the mixed setting Malayalam leads, with its English
+ * meaning under it. With one language, the single line takes the main (Malayalam) styling.
+ */
 export function MlEn({
   text,
   as: Tag = 'span',
@@ -17,6 +21,17 @@ export function MlEn({
   enClassName?: string;
   layout?: 'stack' | 'inline';
 }) {
+  const lang = useLang();
+  if (lang !== 'both' || !text.ml) {
+    const ml = lang === 'ml' && text.ml !== '';
+    return (
+      <Tag className={`${layout === 'inline' ? 'inline-flex' : 'flex flex-col'} ${className}`}>
+        <span lang={ml ? 'ml' : 'en'} className={`${ml ? 'font-ml' : ''} leading-snug ${mlClassName}`}>
+          {ml ? text.ml : text.en}
+        </span>
+      </Tag>
+    );
+  }
   if (layout === 'inline') {
     return (
       <Tag className={`inline-flex flex-wrap items-baseline gap-x-1.5 ${className}`}>
@@ -50,16 +65,29 @@ export function MlEn({
   );
 }
 
-/** A line of text the server sent: Malayalam (or whatever was spoken) with English under it. */
+/**
+ * A line of text the server sent: Malayalam (or whatever was spoken) with English under it.
+ * English setting: the English only. Malayalam setting: the original only.
+ */
 export function SpokenPair({ original, english, language, className = '' }: { original: string; english: string; language: string; className?: string }) {
+  const lang = useLang();
   const isMl = language.startsWith('ml');
-  const same = original.trim() === english.trim();
+  const same = original.trim() === english.trim() || !original.trim();
+  if (lang === 'en' && english.trim()) {
+    return (
+      <div className={`flex flex-col gap-1 ${className}`}>
+        <p lang="en" className="text-lead">
+          {english}
+        </p>
+      </div>
+    );
+  }
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       <p lang={isMl ? 'ml' : language.slice(0, 2)} className={isMl ? 'font-ml text-lead leading-snug' : 'text-lead'}>
-        {original}
+        {original || english}
       </p>
-      {!same && (
+      {!same && lang === 'both' && (
         <p lang="en" className="text-small opacity-75">
           {english}
         </p>

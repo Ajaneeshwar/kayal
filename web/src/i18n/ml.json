@@ -79,6 +79,30 @@
     "en": "That PIN is wrong. Check it and try again.",
     "ml": "ആ പിൻ നമ്പർ തെറ്റാണ്. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
   },
+  "language": {
+    "en": "Language",
+    "ml": "ഭാഷ"
+  },
+  "langTitle": {
+    "en": "Choose your language",
+    "ml": "നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക"
+  },
+  "langEnNote": {
+    "en": "Everything in English",
+    "ml": "എല്ലാം ഇംഗ്ലീഷിൽ"
+  },
+  "langMlNote": {
+    "en": "Everything in Malayalam",
+    "ml": "എല്ലാം മലയാളത്തിൽ"
+  },
+  "langBothNote": {
+    "en": "English, with Malayalam beside it",
+    "ml": "ഇംഗ്ലീഷ്, അതിനൊപ്പം മലയാളം"
+  },
+  "langLater": {
+    "en": "You can change this at the top of any page.",
+    "ml": "ഏത് പേജിന്റെ മുകളിലും ഇത് മാറ്റാൻ കഴിയും."
+  },
   "verified": {
     "en": "Verified",
     "ml": "സ്ഥിരീകരിച്ചു"

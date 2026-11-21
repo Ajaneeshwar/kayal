@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
+import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
+import { pick, replyLanguage, useLang, usePick } from '../../i18n/language.ts';
 import { rememberCrewBoat } from '../../lib/api.ts';
 import {
   ApiError,
@@ -70,6 +72,10 @@ export default function CrewPage() {
 
 function Crew({ boatId }: { boatId: string }) {
   const [load, setLoad] = useState<Load>({ status: 'loading' });
+  const lang = useLang();
+  // Read at send time, so a retry uses the setting in force when it is sent.
+  const langRef = useRef(lang);
+  langRef.current = lang;
   const [attempt, setAttempt] = useState(0);
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [mic, setMic] = useState<MicState>('ready');
@@ -142,7 +148,7 @@ function Crew({ boatId }: { boatId: string }) {
       update(id, { status: 'sending', notice: undefined });
       setMic('sending');
       try {
-        const result = await postLog(payload);
+        const result = await postLog({ ...payload, replyLanguage: replyLanguage(langRef.current) });
         update(id, { status: 'done', result, entry: result.entry, token: result.correctionToken ?? null });
         if (result.stored) {
           setPhoto(null);
@@ -277,7 +283,7 @@ function Crew({ boatId }: { boatId: string }) {
         <div className="mx-auto flex max-w-[36rem] items-center gap-1.5 px-2 pt-2">
           <Link
             to="/"
-            aria-label={t('back').en}
+            aria-label={pick(t('back'), lang)}
             className="grid size-11 shrink-0 place-items-center rounded-full text-ink-inverse-muted transition-[scale,background-color] duration-[var(--duration-press)] hover:bg-teak-raised active:scale-[0.96]"
           >
             <Icon.Back size={22} />
@@ -286,7 +292,8 @@ function Crew({ boatId }: { boatId: string }) {
             <h1 className="truncate font-display text-heading font-semibold tracking-[-0.01em]">{boat.name}</h1>
             <p className="truncate text-caption tabular-nums text-ink-inverse-muted">{boat.registration}</p>
           </div>
-          <StatusBadge state={boat.status.state} bilingual={false} className="me-2 shrink-0" />
+          <StatusBadge state={boat.status.state} bilingual={false} className="shrink-0" />
+          <LanguageSwitch compact className="me-1" />
         </div>
         <div className="mx-auto max-w-[36rem] px-4 pb-3 pt-2.5">
           <LocationStrip location={location} facilities={facilities} />
@@ -340,7 +347,7 @@ function Crew({ boatId }: { boatId: string }) {
                 <button
                   type="button"
                   onClick={() => setPhoto(null)}
-                  aria-label={t('photoRemove').en}
+                  aria-label={pick(t('photoRemove'), lang)}
                   className="grid size-11 shrink-0 place-items-center rounded-full text-ink-inverse-muted hover:bg-teak active:scale-[0.96]"
                 >
                   <Icon.Close size={18} />
@@ -377,7 +384,7 @@ function Crew({ boatId }: { boatId: string }) {
               </div>
               <div className="flex w-full items-center justify-between">
                 <SideButton icon={<Icon.Camera size={24} />} k="photo" active={Boolean(photo)} disabled={micState === 'listening'} onClick={() => fileInput.current?.click()} />
-                <RecordButton state={micState} level={recorder.level} label={t(micState === 'listening' ? 'recordStop' : 'recordStart').en} onPress={pressRecord} />
+                <RecordButton state={micState} level={recorder.level} label={pick(t(micState === 'listening' ? 'recordStop' : 'recordStart'), lang)} onPress={pressRecord} />
                 <SideButton icon={<Icon.Keyboard size={24} />} k="type" disabled={micState === 'listening'} onClick={switchToText} />
               </div>
               <div role="status" className="mt-1 grid min-h-[3rem] place-items-center text-center">
@@ -420,7 +427,7 @@ function Crew({ boatId }: { boatId: string }) {
                 <button
                   type="button"
                   onClick={() => setMode('voice')}
-                  aria-label={t('speak').en}
+                  aria-label={pick(t('speak'), lang)}
                   className="grid size-12 shrink-0 place-items-center rounded-full border border-gold-edge/40 bg-teak-raised text-gold transition-[scale] duration-[var(--duration-press)] active:scale-[0.96]"
                 >
                   <Icon.Mic size={22} />
@@ -428,7 +435,7 @@ function Crew({ boatId }: { boatId: string }) {
                 <button
                   type="button"
                   onClick={() => fileInput.current?.click()}
-                  aria-label={t('photo').en}
+                  aria-label={pick(t('photo'), lang)}
                   className={`grid size-12 shrink-0 place-items-center rounded-full border bg-teak-raised transition-[scale] duration-[var(--duration-press)] active:scale-[0.96] ${
                     photo ? 'border-gold text-gold-bright' : 'border-gold-edge/40 text-gold'
                   }`}
@@ -462,13 +469,14 @@ function Crew({ boatId }: { boatId: string }) {
 }
 
 function SideButton({ icon, k, onClick, active = false, disabled = false }: { icon: ReactNode; k: CrewKey; onClick: () => void; active?: boolean; disabled?: boolean }) {
+  const lang = useLang();
   const label = t(k);
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={label.en}
+      aria-label={pick(label, lang)}
       className="group flex w-[5.5rem] flex-col items-center gap-1.5 disabled:opacity-40"
     >
       <span
@@ -480,12 +488,18 @@ function SideButton({ icon, k, onClick, active = false, disabled = false }: { ic
         {active && <span className="absolute -end-0.5 -top-0.5 size-3.5 rounded-full border-2 border-teak bg-gold-bright" />}
       </span>
       <span aria-hidden="true" className="flex flex-col items-center text-center leading-tight">
-        {label.ml && (
-          <span lang="ml" className="whitespace-nowrap font-ml text-caption text-ink-inverse">
-            {label.ml}
+        {lang === 'both' && label.ml ? (
+          <>
+            <span lang="ml" className="whitespace-nowrap font-ml text-caption text-ink-inverse">
+              {label.ml}
+            </span>
+            <span lang="en" className="text-[0.75rem] text-ink-inverse-muted">{label.en}</span>
+          </>
+        ) : (
+          <span lang={lang === 'ml' && label.ml ? 'ml' : 'en'} className={`whitespace-nowrap text-caption text-ink-inverse ${lang === 'ml' && label.ml ? 'font-ml' : ''}`}>
+            {pick(label, lang)}
           </span>
         )}
-        <span className="text-[0.75rem] text-ink-inverse-muted">{label.en}</span>
       </span>
     </button>
   );
@@ -501,6 +515,7 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
       .sort((a, b) => a.d - b.d)[0] ?? null;
   }, [facilities, location.position]);
 
+  const pickText = usePick();
   const off = location.status === 'denied' || location.status === 'unavailable';
   const label: CrewKey = location.status === 'ready' ? 'locReady' : off ? 'locOff' : 'locFinding';
   const Glyph = off ? Icon.PinOff : Icon.Pin;
@@ -523,12 +538,12 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
         <span className="flex flex-wrap items-baseline gap-x-2">
           <MlEn text={t(label)} layout="inline" className="text-small font-semibold" mlClassName="text-small font-normal" />
           <span className="text-caption tabular-nums text-ink-inverse-muted">
-            {location.status === 'ready' ? `± ${location.position.accuracy} m` : off ? t('tryAgain').en : ''}
+            {location.status === 'ready' ? `± ${location.position.accuracy} m` : off ? pickText(t('tryAgain')) : ''}
           </span>
         </span>
         {nearest && (
           <span className="mt-0.5 block truncate text-caption text-ink-inverse-muted">
-            {t('nearestOpen').en}: <span className="font-semibold tabular-nums text-gold-bright">{formatDistance(nearest.d)}</span> · {nearest.f.name}
+            {pickText(t('nearestOpen'))}: <span className="font-semibold tabular-nums text-gold-bright">{formatDistance(nearest.d)}</span> · {nearest.f.name}
           </span>
         )}
       </span>

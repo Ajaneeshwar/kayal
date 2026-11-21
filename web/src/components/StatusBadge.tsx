@@ -1,5 +1,6 @@
 import type { BoatState } from '../lib/api.ts';
 import { t } from '../i18n/index.ts';
+import { useLang } from '../i18n/language.ts';
 
 const STYLES: Record<BoatState, string> = {
   verified: 'bg-verified-soft text-verified',
@@ -33,21 +34,32 @@ function StateIcon({ state }: { state: BoatState }) {
 
 interface StatusBadgeProps {
   state: BoatState;
-  /** Show the Malayalam label beside the English one. */
+  /** In the mixed language setting, show the Malayalam label beside the English one. */
   bilingual?: boolean;
   className?: string;
 }
 
 /** Green verified, amber declared only, laterite red overdue. Used for status and nothing else. */
 export function StatusBadge({ state, bilingual = true, className = '' }: StatusBadgeProps) {
+  const lang = useLang();
   const label = t(state);
+  const mlOnly = lang === 'ml' && label.ml !== '';
+  const both = lang === 'both' && bilingual && label.ml !== '';
   return (
     <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-pill px-2.5 py-1 text-caption font-semibold ${STYLES[state]} ${className}`}
+      className={`inline-flex max-w-full items-center gap-1.5 px-2.5 py-1 text-caption font-semibold ${
+        both ? 'flex-wrap gap-y-0 rounded-control' : 'whitespace-nowrap rounded-pill'
+      } ${STYLES[state]} ${className}`}
     >
       <StateIcon state={state} />
-      <span lang="en">{label.en}</span>
-      {bilingual && label.ml && (
+      {mlOnly ? (
+        <span lang="ml" className="font-ml">
+          {label.ml}
+        </span>
+      ) : (
+        <span lang="en">{label.en}</span>
+      )}
+      {both && (
         <span lang="ml" className="font-normal opacity-85">
           {label.ml}
         </span>

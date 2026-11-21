@@ -128,16 +128,16 @@
     "ml": "ശരിയാക്കുക"
   },
   "fixTitle": {
-    "en": "Pick the right amount",
+    "en": "Pick the right quantity",
     "ml": "ശരിയായ അളവ് തിരഞ്ഞെടുക്കുക"
   },
   "fixOther": {
-    "en": "Or type the amount",
+    "en": "Or type the quantity",
     "ml": "അല്ലെങ്കിൽ അളവ് ടൈപ്പ് ചെയ്യുക"
   },
   "fixSave": {
-    "en": "Save amount",
-    "ml": "മാലിന്യത്തിന്റെ അളവ് സേവ് ചെയ്യുക"
+    "en": "Save quantity",
+    "ml": "അളവ് സംരക്ഷിക്കുക"
   },
   "cancel": {
     "en": "Cancel",
@@ -276,8 +276,8 @@
     "ml": "സേവ് ചെയ്യാൻ കഴിഞ്ഞില്ല."
   },
   "fixFailed": {
-    "en": "Could not change the amount",
-    "ml": "മാലിന്യത്തിന്റെ അളവ് മാറ്റാൻ കഴിഞ്ഞില്ല"
+    "en": "Could not change the quantity",
+    "ml": "അളവ് മാറ്റാൻ കഴിഞ്ഞില്ല"
   },
   "tryAgain": {
     "en": "Try again",

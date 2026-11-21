@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { LanguageSwitch } from './LanguageSwitch.tsx';
 
 /** The Kayal Log mark: a kettuvallam in profile. */
 export function BrandMark({ className = '' }: { className?: string }) {
@@ -33,11 +34,14 @@ export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', 
       </a>
       <header className="absolute inset-x-0 top-0 z-30 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-16 max-w-[76rem] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="/" className="inline-flex items-center gap-2 rounded-md text-ink-inverse">
+          <a href="/" className="inline-flex shrink-0 items-center gap-2 rounded-md text-ink-inverse">
             <BrandMark className="size-7 text-gold" />
             <span className="font-display text-[1.125rem] font-semibold tracking-[-0.01em]">Kayal Log</span>
           </a>
-          {headerEnd}
+          <div className="flex min-w-0 items-center gap-2">
+            {headerEnd}
+            <LanguageSwitch />
+          </div>
         </div>
       </header>
       <main id="main" className="flex-1">

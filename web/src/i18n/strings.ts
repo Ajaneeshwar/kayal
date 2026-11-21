@@ -30,6 +30,13 @@ export const en = {
   signIn: 'Sign in',
   pinWrong: 'That PIN is wrong. Check it and try again.',
 
+  language: 'Language',
+  langTitle: 'Choose your language',
+  langEnNote: 'Everything in English',
+  langMlNote: 'Everything in Malayalam',
+  langBothNote: 'English, with Malayalam beside it',
+  langLater: 'You can change this at the top of any page.',
+
   verified: 'Verified',
   declared: 'Declared only',
   overdue: 'Overdue',

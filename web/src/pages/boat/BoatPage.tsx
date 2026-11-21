@@ -5,6 +5,7 @@ import { AppShell } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import { Card } from '../../components/Card.tsx';
+import { pick, useLang } from '../../i18n/language.ts';
 import { Seal } from './Seal.tsx';
 import { LevelChip, Timeline } from './Timeline.tsx';
 import { ReportSheet } from './ReportSheet.tsx';
@@ -155,6 +156,7 @@ function ChainLine({ chain }: { chain: Chain | null }) {
 }
 
 function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entry[]; chain: Chain | null }) {
+  const lang = useLang();
   const { state, overdueDays, lastSewage } = boat.status;
   const seal = SEAL[state];
   const word = bt(seal.word);
@@ -191,17 +193,30 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
       <div className="flex flex-col items-center text-center">
         <Seal state={state} stamp className="size-36 sm:size-40" />
         <motion.div {...enter(0.35)} className="mt-3">
-          <p className={`font-display text-[2rem] font-semibold leading-none tracking-[-0.015em] ${seal.tone}`}>
-            <span className="sr-only">Status: </span>
-            {word.en}
-          </p>
-          {word.ml && (
+          {lang === 'ml' && word.ml ? (
+            <p lang="ml" className={`font-ml text-[1.75rem] font-semibold leading-tight ${seal.tone}`}>
+              <span lang="en" className="sr-only">Status: </span>
+              {word.ml}
+            </p>
+          ) : (
+            <p lang="en" className={`font-display text-[2rem] font-semibold leading-none tracking-[-0.015em] ${seal.tone}`}>
+              <span className="sr-only">Status: </span>
+              {word.en}
+            </p>
+          )}
+          {lang === 'both' && word.ml && (
             <p lang="ml" className={`mt-1.5 text-lead font-semibold ${seal.tone}`}>
               {word.ml}
             </p>
           )}
-          <p className="mx-auto mt-3 max-w-[34ch] text-body text-ink">{sentenceText.en}</p>
-          {sentenceText.ml && (
+          {lang === 'ml' && sentenceText.ml ? (
+            <p lang="ml" className="mx-auto mt-3 max-w-[38ch] font-ml text-body text-ink">
+              {sentenceText.ml}
+            </p>
+          ) : (
+            <p lang="en" className="mx-auto mt-3 max-w-[34ch] text-body text-ink">{sentenceText.en}</p>
+          )}
+          {lang === 'both' && sentenceText.ml && (
             <p lang="ml" className="mx-auto mt-1.5 max-w-[38ch] text-small text-ink-muted">
               {sentenceText.ml}
             </p>
@@ -344,6 +359,7 @@ function HomeLink({ children }: { children: ReactNode }) {
 }
 
 function Missing({ id, boats }: { id: string; boats: BoatRecord[] }) {
+  const lang = useLang();
   return (
     <Card className="mx-auto w-full max-w-xl px-5 py-8 text-center sm:px-9">
       <Seal state="unknown" ring="Kayal Log · No record found · Alappuzha · " className="mx-auto size-28" />
@@ -368,7 +384,7 @@ function Missing({ id, boats }: { id: string; boats: BoatRecord[] }) {
                   <span className="block truncate font-semibold text-ink">{b.name}</span>
                   <span className="block text-caption tabular-nums text-ink-muted">{b.registration}</span>
                 </span>
-                <span className={`shrink-0 text-caption font-semibold ${SEAL[b.status.state].tone}`}>{bt(SEAL[b.status.state].word).en}</span>
+                <span className={`shrink-0 text-caption font-semibold ${SEAL[b.status.state].tone}`}>{pick(bt(SEAL[b.status.state].word), lang)}</span>
               </a>
             </li>
           ))}
@@ -404,6 +420,7 @@ function Skeleton() {
 export default function BoatPage() {
   const { boatId = '' } = useParams();
   const { load, retry } = useBoatRecord(boatId);
+  const lang = useLang();
   const [reporting, setReporting] = useState(false);
   const closeReport = useCallback(() => setReporting(false), []);
   const titled = useRef(false);
@@ -426,10 +443,10 @@ export default function BoatPage() {
           <button
             type="button"
             onClick={() => setReporting(true)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-ink-inverse/30 px-3.5 text-small font-semibold text-ink-inverse transition-[border-color,transform] duration-150 hover:border-ink-inverse/70 active:scale-[0.96]"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-pill border border-ink-inverse/30 px-3.5 text-small max-[400px]:px-0 font-semibold text-ink-inverse transition-[border-color,transform] duration-150 hover:border-ink-inverse/70 active:scale-[0.96]"
           >
             <CameraIcon />
-            Report dumping
+            <span className="max-[400px]:sr-only">{pick(bt('reportTitle'), lang)}</span>
           </button>
         )
       }

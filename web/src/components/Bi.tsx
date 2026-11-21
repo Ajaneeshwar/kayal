@@ -1,5 +1,6 @@
 import type { ElementType, ReactNode } from 'react';
 import { t, type StringKey, type Text } from '../i18n/index.ts';
+import { useLang } from '../i18n/language.ts';
 
 interface BiProps {
   /** A key from i18n/strings.ts, or a ready pair. */
@@ -16,11 +17,33 @@ interface BiProps {
 }
 
 /**
- * Malayalam with its English meaning beside it. Every Malayalam string on screen goes through
- * this, so a reader who knows only one of the two languages is never left out.
+ * A string in the visitor's chosen language. In the mixed setting, Malayalam sits beside its
+ * English meaning. Every Malayalam string on screen goes through this.
  */
 export function Bi({ k, text, as: Tag = 'span', layout = 'stack', className = '', mlClassName = '', enClassName = '', id }: BiProps) {
+  const lang = useLang();
   const pair = text ?? (k ? t(k) : { en: '', ml: '' });
+
+  // One language: the single line takes the main (English) styling.
+  if (lang === 'en' || (lang === 'ml' && !pair.ml)) {
+    return (
+      <Tag id={id} className={className}>
+        <span lang="en" className={`${layout === 'inline' ? '' : 'block'} ${enClassName}`}>
+          {pair.en}
+        </span>
+      </Tag>
+    );
+  }
+  if (lang === 'ml') {
+    return (
+      <Tag id={id} className={className}>
+        <span lang="ml" className={`${layout === 'inline' ? '' : 'block'} font-ml tracking-normal normal-case [overflow-wrap:anywhere] ${enClassName}`}>
+          {pair.ml}
+        </span>
+      </Tag>
+    );
+  }
+
   const enNode: ReactNode = (
     <span lang="en" className={`${layout === 'inline' ? '' : 'block'} ${enClassName}`}>
       {pair.en}
@@ -29,7 +52,7 @@ export function Bi({ k, text, as: Tag = 'span', layout = 'stack', className = ''
   const mlNode: ReactNode = pair.ml ? (
     <span
       lang="ml"
-      className={`${layout === 'inline' ? '' : 'block'} font-ml font-normal tracking-normal ${
+      className={`${layout === 'inline' ? '' : 'block'} font-ml font-normal tracking-normal [overflow-wrap:anywhere] ${
         layout === 'ml-first' ? '' : 'text-[0.78em] opacity-80'
       } ${mlClassName}`}
     >

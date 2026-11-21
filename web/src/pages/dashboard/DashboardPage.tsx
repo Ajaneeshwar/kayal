@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { AnimatePresence, motion } from 'motion/react';
 import { BrandMark } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
+import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
+import { usePick } from '../../i18n/language.ts';
 import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Facility, type Report } from './api.ts';
@@ -123,6 +125,7 @@ export default function DashboardPage() {
 
   const { state, setState, reports, setReports, error, link, fresh, refresh } = useDashboard();
   const [modal, setModal] = useState<Modal>(null);
+  const pick = usePick();
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [toast, setToast] = useState<Toast | null>(null);
   // The main map's latest view; the add-point dialog's small map starts from it.
@@ -219,15 +222,16 @@ export default function DashboardPage() {
             {state && <ChainPill {...state.chain} />}
             <HeaderButton onClick={() => setModal({ kind: 'boat' })}>
               <Plus />
-              {d('addBoat').en}
+              {pick(d('addBoat'))}
             </HeaderButton>
             <HeaderButton primary onClick={() => setModal({ kind: 'point' })}>
               <Plus />
-              {d('addPoint').en}
+              {pick(d('addPoint'))}
             </HeaderButton>
             <button type="button" onClick={signOut} className="min-h-10 rounded-control px-2 text-small font-semibold text-ink-inverse-muted underline decoration-ink-inverse/30 underline-offset-4 hover:text-ink-inverse">
-              {d('signOut').en}
+              {pick(d('signOut'))}
             </button>
+            <LanguageSwitch />
           </div>
         </div>
 
