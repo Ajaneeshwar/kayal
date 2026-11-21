@@ -7,6 +7,9 @@
 */
 export const en = {
   tagline: 'Proof of where houseboat waste went',
+  pageMissing: 'This page does not exist',
+  chooseDoorHelp: 'Go back to the start and choose a door.',
+  goHome: 'Go to the start',
 
   howTitle: 'How it works',
   sayTitle: 'Say it',

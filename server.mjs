@@ -213,6 +213,10 @@ async function route(req, res) {
       if (!file.startsWith(PUBLIC_DIR + path.sep)) throw new HttpError(404, 'Not found.');
       return sendFile(res, file);
     }
+    if (!/^\/api(?:\/|$)/.test(pathname) && /\btext\/html\b/i.test(req.headers.accept ?? '') && existsSync(path.join(WEB_DIST, 'index.html'))) {
+      res.setHeader('Cache-Control', 'no-cache');
+      return sendFile(res, path.join(WEB_DIST, 'index.html'));
+    }
     throw new HttpError(404, 'Not found.');
   }
 
