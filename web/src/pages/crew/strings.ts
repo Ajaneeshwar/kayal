@@ -1,0 +1,98 @@
+/*
+  English source strings for the crew voice page. The Malayalam lives in ./ml.json and comes from
+  sarvam-translate:v1. After adding or changing a string, deploy, then on the laptop run:
+    ssh gon 'cd ~/hackathoni && node web/src/pages/crew/translate.mjs'
+    scp gon:hackathoni/web/src/pages/crew/ml.json web/src/pages/crew/
+  Never write Malayalam by hand. This file must stay plain data (Node strips the types).
+*/
+export const en = {
+  back: 'Back to start',
+
+  stateReady: 'Tap to speak',
+  stateListening: 'Listening. Tap to stop.',
+  stateSending: 'Sending',
+  stateAnswered: 'Answered. Tap to log another.',
+  recordStart: 'Start recording',
+  recordStop: 'Stop recording',
+
+  introTitle: 'Say what you emptied, how much, and where',
+  introExample: 'We emptied 800 litres from the toilet tank at Kumarakom STP.',
+  forExample: 'For example',
+  lastSewage: 'Tank last emptied',
+  notYet: 'Not logged yet',
+
+  you: 'You',
+  replyFrom: 'Kayal Log',
+  playAgain: 'Play again',
+  speaking: 'Speaking',
+
+  photo: 'Photo',
+  type: 'Type',
+  speak: 'Speak',
+  typeLabel: 'Type what you emptied and where',
+  send: 'Send',
+  photoReady: 'Receipt photo ready. It goes with your next entry.',
+  photoRemove: 'Remove photo',
+  photoFailTitle: 'That photo could not be read',
+  photoFailBody: 'Take the photo again.',
+
+  savedTitle: 'Saved to the boat’s record',
+  waste: 'Waste',
+  quantity: 'Quantity',
+  place: 'Place',
+  proof: 'Proof',
+  notSaid: 'Not said',
+  fix: 'Fix',
+  fixTitle: 'Pick the right amount',
+  fixOther: 'Or type the amount',
+  fixSave: 'Save amount',
+  cancel: 'Cancel',
+  corrected: 'Corrected',
+
+  kindSewage: 'Toilet tank emptied',
+  kindSolid: 'Dry waste handed over',
+  kindOil: 'Engine oil handed over',
+
+  levelDeclared: 'Declared',
+  levelLocation: 'Location',
+  levelReceipt: 'Receipt',
+  reasonLocation: 'The phone was at an open collection point that takes this waste.',
+  reasonReceipt: 'The phone was at the collection point, and the photo was read as a receipt.',
+  reasonNoLocation: 'The phone’s location was not known, so only your word backs this entry.',
+  reasonNoFacility: 'No collection point takes this kind of waste.',
+  reasonTooFar: 'The phone was too far from the collection point.',
+  reasonClosed: 'This collection point is marked closed.',
+  photoIsReceipt: 'Receipt photo read',
+  photoNotReceipt: 'Photo kept, but it did not look like a receipt.',
+
+  locFinding: 'Finding location',
+  locReady: 'Location known',
+  locOff: 'Location off',
+  nearestOpen: 'Nearest open point',
+
+  micDeniedTitle: 'The microphone is blocked',
+  micDeniedBody: 'Allow the microphone for this site in your browser settings, or type instead.',
+  micMissingTitle: 'This browser cannot record here',
+  micMissingBody: 'Type what you emptied and where instead.',
+  locDeniedTitle: 'Location is off',
+  locDeniedBody: 'Entries will be saved as Declared. Turn on location for this site to prove where you were.',
+  offlineTitle: 'No network',
+  offlineBody: 'Nothing was sent. Check your mobile data and try again.',
+  notUnderstoodTitle: 'Not saved',
+  notUnderstoodBody: 'Say what you emptied, how much, and where.',
+  unusableTitle: 'That recording could not be used',
+  serviceTitle: 'The language service did not answer',
+  serviceBody: 'Nothing was saved. Try again in a moment.',
+  serverTitle: 'Could not save',
+  fixFailed: 'Could not change the amount',
+  tryAgain: 'Try again',
+  typeInstead: 'Type instead',
+  dismiss: 'Dismiss',
+
+  boatMissingTitle: 'This boat is not registered',
+  boatMissingBody: 'Go back and pick your boat from the list.',
+  loadFailTitle: 'Could not load your boat',
+  pickBoat: 'Pick your boat',
+} as const;
+
+export type CrewKey = keyof typeof en;

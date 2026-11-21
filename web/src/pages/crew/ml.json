@@ -1,0 +1,314 @@
+{
+  "back": {
+    "en": "Back to start",
+    "ml": "തുടക്കത്തിലേക്ക് മടങ്ങുക"
+  },
+  "crewLog": {
+    "en": "Crew log",
+    "ml": "ജീവനക്കാരുടെ ലോഗ്"
+  },
+  "stateReady": {
+    "en": "Tap to speak",
+    "ml": "സംസാരിക്കാൻ ടാപ്പ് ചെയ്യുക"
+  },
+  "stateListening": {
+    "en": "Listening. Tap to stop.",
+    "ml": "കേൾക്കുന്നു. നിർത്താൻ ടാപ്പ് ചെയ്യുക."
+  },
+  "stateSending": {
+    "en": "Sending",
+    "ml": "അയയ്ക്കുന്നു"
+  },
+  "stateAnswered": {
+    "en": "Answered. Tap to log another.",
+    "ml": "മറുപടി നൽകി. മറ്റൊന്ന് രേഖപ്പെടുത്താൻ ടാപ്പ് ചെയ്യുക."
+  },
+  "recordStart": {
+    "en": "Start recording",
+    "ml": "റെക്കോർഡിംഗ് ആരംഭിക്കുക"
+  },
+  "recordStop": {
+    "en": "Stop recording",
+    "ml": "റെക്കോർഡിംഗ് നിർത്തുക"
+  },
+  "introTitle": {
+    "en": "Say what you emptied, how much, and where",
+    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്ന് പറയുക, എത്രയാണെന്നും എവിടെയാണെന്നും പറയുക"
+  },
+  "introExample": {
+    "en": "We emptied 800 litres from the toilet tank at Kumarakom STP.",
+    "ml": "ഞങ്ങൾ കുമരകം എസ്.ടി.പിയിലെ ടോയ്‌ലറ്റ് ടാങ്കിൽ നിന്ന് 800 ലിറ്റർ ഒഴിഞ്ഞു."
+  },
+  "forExample": {
+    "en": "For example",
+    "ml": "ഉദാഹരണത്തിന്"
+  },
+  "lastSewage": {
+    "en": "Tank last emptied",
+    "ml": "ടാങ്ക് അവസാനമായി ഒഴിഞ്ഞത്"
+  },
+  "notYet": {
+    "en": "Not logged yet",
+    "ml": "ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല"
+  },
+  "you": {
+    "en": "You",
+    "ml": "നിങ്ങൾ"
+  },
+  "replyFrom": {
+    "en": "Kayal Log",
+    "ml": "കായൽ ലോഗ്"
+  },
+  "playAgain": {
+    "en": "Play again",
+    "ml": "വീണ്ടും പ്ലേ ചെയ്യുക"
+  },
+  "speaking": {
+    "en": "Speaking",
+    "ml": "സംസാരിക്കുന്നു"
+  },
+  "photo": {
+    "en": "Photo",
+    "ml": "ഫോട്ടോ"
+  },
+  "type": {
+    "en": "Type",
+    "ml": "ടൈപ്പ് ചെയ്യുക"
+  },
+  "speak": {
+    "en": "Speak",
+    "ml": "സംസാരിക്കുക"
+  },
+  "typeLabel": {
+    "en": "Type what you emptied and where",
+    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എവിടെയാണെന്നും ടൈപ്പ് ചെയ്യുക"
+  },
+  "send": {
+    "en": "Send",
+    "ml": "അയയ്ക്കുക"
+  },
+  "photoReady": {
+    "en": "Receipt photo ready. It goes with your next entry.",
+    "ml": "രസീത് ഫോട്ടോ തയ്യാറാണ്. ഇത് നിങ്ങളുടെ അടുത്ത എൻട്രിയോടൊപ്പം പോകും."
+  },
+  "photoRemove": {
+    "en": "Remove photo",
+    "ml": "ഫോട്ടോ നീക്കം ചെയ്യുക"
+  },
+  "photoFailTitle": {
+    "en": "That photo could not be read",
+    "ml": "ആ ഫോട്ടോ വായിക്കാൻ കഴിഞ്ഞില്ല."
+  },
+  "photoFailBody": {
+    "en": "Take the photo again.",
+    "ml": "വീണ്ടും ഫോട്ടോ എടുക്കുക."
+  },
+  "savedTitle": {
+    "en": "Saved to the boat’s record",
+    "ml": "ബോട്ടിന്റെ രേഖയിൽ സേവ് ചെയ്തു"
+  },
+  "waste": {
+    "en": "Waste",
+    "ml": "മാലിന്യം"
+  },
+  "quantity": {
+    "en": "Quantity",
+    "ml": "എണ്ണം"
+  },
+  "place": {
+    "en": "Place",
+    "ml": "സ്ഥലം"
+  },
+  "proof": {
+    "en": "Proof",
+    "ml": "തെളിവ്"
+  },
+  "notSaid": {
+    "en": "Not said",
+    "ml": "പറഞ്ഞില്ല"
+  },
+  "fix": {
+    "en": "Fix",
+    "ml": "ശരിയാക്കുക"
+  },
+  "fixTitle": {
+    "en": "Pick the right amount",
+    "ml": "ശരിയായ അളവ് തിരഞ്ഞെടുക്കുക"
+  },
+  "fixOther": {
+    "en": "Or type the amount",
+    "ml": "അല്ലെങ്കിൽ അളവ് ടൈപ്പ് ചെയ്യുക"
+  },
+  "fixSave": {
+    "en": "Save amount",
+    "ml": "തുക സംരക്ഷിക്കുക"
+  },
+  "cancel": {
+    "en": "Cancel",
+    "ml": "റദ്ദാക്കുക"
+  },
+  "corrected": {
+    "en": "Corrected",
+    "ml": "തിരുത്തി"
+  },
+  "kindSewage": {
+    "en": "Toilet tank emptied",
+    "ml": "ടോയ്‌ലറ്റ് ടാങ്ക് ഒഴിഞ്ഞു"
+  },
+  "kindSolid": {
+    "en": "Dry waste handed over",
+    "ml": "ഉണങ്ങിയ മാലിന്യം കൈമാറി"
+  },
+  "kindOil": {
+    "en": "Engine oil handed over",
+    "ml": "എഞ്ചിൻ ഓയിൽ കൈമാറി"
+  },
+  "levelDeclared": {
+    "en": "Declared",
+    "ml": "പ്രഖ്യാപിച്ചു"
+  },
+  "levelLocation": {
+    "en": "Location",
+    "ml": "സ്ഥലം"
+  },
+  "levelReceipt": {
+    "en": "Receipt",
+    "ml": "രസീത്"
+  },
+  "reasonLocation": {
+    "en": "The phone was at an open collection point that takes this waste.",
+    "ml": "ഈ മാലിന്യം സ്വീകരിക്കുന്ന തുറന്ന ശേഖരണ കേന്ദ്രത്തിലായിരുന്നു ഫോൺ."
+  },
+  "reasonReceipt": {
+    "en": "The phone was at the collection point, and the photo was read as a receipt.",
+    "ml": "ഫോൺ ശേഖരണ കേന്ദ്രത്തിലുണ്ടായിരുന്നു, ഫോട്ടോ ഒരു രസീതായി വായിച്ചു."
+  },
+  "reasonNoLocation": {
+    "en": "The phone’s location was not known, so only your word backs this entry.",
+    "ml": "ഫോണിന്റെ സ്ഥാനം അറിവായിരുന്നില്ല, അതിനാൽ നിങ്ങളുടെ വാക്ക് മാത്രമേ ഈ എൻട്രിയെ പിന്തുണയ്ക്കുകയുള്ളൂ."
+  },
+  "reasonNoFacility": {
+    "en": "No collection point takes this kind of waste.",
+    "ml": "ഇത്തരത്തിലുള്ള മാലിന്യം ശേഖരിക്കുന്ന സ്ഥലങ്ങളില്ല."
+  },
+  "reasonTooFar": {
+    "en": "The phone was too far from the collection point.",
+    "ml": "ഫോൺ ശേഖരിക്കുന്ന സ്ഥലത്ത് നിന്ന് വളരെ അകലെയായിരുന്നു."
+  },
+  "reasonClosed": {
+    "en": "This collection point is marked closed.",
+    "ml": "ഈ ശേഖരണ കേന്ദ്രം അടച്ചിരിക്കുന്നു എന്ന് രേഖപ്പെടുത്തിയിരിക്കുന്നു."
+  },
+  "photoIsReceipt": {
+    "en": "Receipt photo read",
+    "ml": "രസീത് ഫോട്ടോ വായിച്ചു."
+  },
+  "photoNotReceipt": {
+    "en": "Photo kept, but it did not look like a receipt.",
+    "ml": "ഫോട്ടോ സൂക്ഷിച്ചു, പക്ഷേ അത് രസീത് പോലെ തോന്നിയില്ല."
+  },
+  "locFinding": {
+    "en": "Finding location",
+    "ml": "സ്ഥലം കണ്ടെത്തുന്നു."
+  },
+  "locReady": {
+    "en": "Location known",
+    "ml": "സ്ഥലം അറിയാം."
+  },
+  "locOff": {
+    "en": "Location off",
+    "ml": "സ്ഥലം ഓഫാണ്."
+  },
+  "nearestOpen": {
+    "en": "Nearest open point",
+    "ml": "ഏറ്റവും അടുത്തുള്ള തുറന്ന സ്ഥലം."
+  },
+  "micDeniedTitle": {
+    "en": "The microphone is blocked",
+    "ml": "മൈക്രോഫോൺ തടസ്സപ്പെട്ടിരിക്കുന്നു."
+  },
+  "micDeniedBody": {
+    "en": "Allow the microphone for this site in your browser settings, or type instead.",
+    "ml": "നിങ്ങളുടെ ബ്രൗസർ ക്രമീകരണങ്ങളിൽ ഈ സൈറ്റിനായി മൈക്രോഫോൺ അനുവദിക്കുക, അല്ലെങ്കിൽ പകരം ടൈപ്പ് ചെയ്യുക."
+  },
+  "micMissingTitle": {
+    "en": "This browser cannot record here",
+    "ml": "ഈ ബ്രൗസറിന് ഇവിടെ റെക്കോർഡ് ചെയ്യാൻ കഴിയില്ല."
+  },
+  "micMissingBody": {
+    "en": "Type what you emptied and where instead.",
+    "ml": "പകരം നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എവിടെയാണെന്നും ടൈപ്പ് ചെയ്യുക."
+  },
+  "locDeniedTitle": {
+    "en": "Location is off",
+    "ml": "സ്ഥലം ഓഫാണ്."
+  },
+  "locDeniedBody": {
+    "en": "Entries will be saved as Declared. Turn on location for this site to prove where you were.",
+    "ml": "എൻട്രികൾ ഡിക്ലയേർഡ് ആയി സേവ് ചെയ്യും. നിങ്ങൾ എവിടെയായിരുന്നുവെന്ന് തെളിയിക്കാൻ ഈ സൈറ്റിനായി ലൊക്കേഷൻ ഓൺ ചെയ്യുക."
+  },
+  "offlineTitle": {
+    "en": "No network",
+    "ml": "നെറ്റ്‌വർക്കില്ല."
+  },
+  "offlineBody": {
+    "en": "Nothing was sent. Check your mobile data and try again.",
+    "ml": "ഒന്നും അയച്ചില്ല. നിങ്ങളുടെ മൊബൈൽ ഡാറ്റ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
+  },
+  "notUnderstoodTitle": {
+    "en": "Not saved",
+    "ml": "സേവ് ചെയ്തിട്ടില്ല."
+  },
+  "notUnderstoodBody": {
+    "en": "Say what you emptied, how much, and where.",
+    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞതെന്നും എത്രയാണെന്നും എവിടെയാണെന്നും പറയുക."
+  },
+  "unusableTitle": {
+    "en": "That recording could not be used",
+    "ml": "ആ റെക്കോർഡിംഗ് ഉപയോഗിക്കാൻ കഴിഞ്ഞില്ല."
+  },
+  "serviceTitle": {
+    "en": "The language service did not answer",
+    "ml": "ഭാഷാ സേവനം പ്രതികരിച്ചില്ല."
+  },
+  "serviceBody": {
+    "en": "Nothing was saved. Try again in a moment.",
+    "ml": "ഒന്നും സേവ് ചെയ്തിട്ടില്ല. ഒരല്പം കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "serverTitle": {
+    "en": "Could not save",
+    "ml": "സേവ് ചെയ്യാൻ കഴിഞ്ഞില്ല."
+  },
+  "fixFailed": {
+    "en": "Could not change the amount",
+    "ml": "തുക മാറ്റാൻ കഴിഞ്ഞില്ല."
+  },
+  "tryAgain": {
+    "en": "Try again",
+    "ml": "വീണ്ടും ശ്രമിക്കുക."
+  },
+  "typeInstead": {
+    "en": "Type instead",
+    "ml": "പകരം ടൈപ്പ് ചെയ്യുക."
+  },
+  "dismiss": {
+    "en": "Dismiss",
+    "ml": "പുറന്തള്ളുക."
+  },
+  "boatMissingTitle": {
+    "en": "This boat is not registered",
+    "ml": "ഈ ബോട്ട് രജിസ്റ്റർ ചെയ്തിട്ടില്ല."
+  },
+  "boatMissingBody": {
+    "en": "Go back and pick your boat from the list.",
+    "ml": "തിരികെ പോയി ലിസ്റ്റിൽ നിന്ന് നിങ്ങളുടെ ബോട്ട് തിരഞ്ഞെടുക്കുക."
+  },
+  "loadFailTitle": {
+    "en": "Could not load your boat",
+    "ml": "നിങ്ങളുടെ ബോട്ട് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല."
+  },
+  "pickBoat": {
+    "en": "Pick your boat",
+    "ml": "നിങ്ങളുടെ ബോട്ട് തിരഞ്ഞെടുക്കുക"
+  }
+}

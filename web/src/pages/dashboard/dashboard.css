@@ -1,0 +1,278 @@
+/* Inspector dashboard: map markers, the live feed highlight and print rules. Tokens only. */
+
+/* Warm the OpenStreetMap tiles towards the wood and cream palette. */
+.kl-map {
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+}
+.kl-map .leaflet-tile-pane {
+  filter: sepia(0.28) saturate(0.85) contrast(0.96) brightness(1.02);
+}
+.kl-map .leaflet-control-zoom {
+  border: 0;
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+.kl-map .leaflet-control-zoom a {
+  width: 2.25rem;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  background: var(--color-kasavu);
+  color: var(--color-ink);
+  border-color: var(--color-line);
+}
+.kl-map .leaflet-control-attribution {
+  background: oklch(0.985 0.013 88 / 0.8);
+  color: var(--color-ink-muted);
+  font-size: 0.6875rem;
+}
+.kl-map .leaflet-control-attribution a {
+  color: var(--color-gold-ink);
+}
+
+.kl-map .leaflet-popup-content-wrapper {
+  background: var(--color-kasavu);
+  color: var(--color-ink);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-raised);
+  border: 1px solid oklch(0.7 0.11 80 / 0.6);
+}
+.kl-map .leaflet-popup-tip {
+  background: var(--color-kasavu);
+}
+.kl-map .leaflet-popup-content {
+  margin: 0.75rem 1rem;
+  font-size: var(--text-small);
+  line-height: 1.45;
+}
+.kl-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.kl-pop strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+.kl-pop-meta {
+  color: var(--color-ink-muted);
+}
+.kl-pop-note {
+  margin-top: 0.25rem;
+  font-size: var(--text-caption);
+  color: var(--color-ink-muted);
+  font-style: italic;
+}
+
+/* Collection point: a brass token with a drop. */
+.kl-fac {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--color-gold);
+  color: var(--color-teak);
+  border: 2px solid var(--color-kasavu);
+  box-shadow: 0 0 0 1.5px var(--color-gold-edge), 0 4px 10px -2px oklch(0.17 0.024 48 / 0.55);
+}
+.kl-fac svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+.kl-fac-x {
+  stroke: var(--color-kasavu);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  fill: none;
+}
+.kl-fac.is-closed {
+  background: var(--color-wood-light);
+  color: var(--color-teak);
+  box-shadow: 0 0 0 1.5px var(--color-wood), 0 4px 10px -2px oklch(0.17 0.024 48 / 0.45);
+  opacity: 0.9;
+}
+.kl-fac.is-closed svg path:first-child {
+  opacity: 0.6;
+}
+.kl-fac.is-key {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+  box-shadow: 0 0 0 1px var(--color-gold-edge);
+}
+.kl-fac.is-closed.is-key {
+  box-shadow: 0 0 0 1px var(--color-wood);
+}
+
+.kl-radius {
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+}
+.kl-radius.is-open {
+  stroke: var(--color-gold-ink);
+  fill: var(--color-gold);
+  fill-opacity: 0.16;
+}
+.kl-radius.is-closed {
+  stroke: var(--color-wood);
+  fill: var(--color-wood-light);
+  fill-opacity: 0.12;
+}
+
+/* Entry: a dot in its proof colour. */
+.kl-entry {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2.5px solid var(--color-kasavu);
+  box-shadow: 0 1px 4px oklch(0.17 0.024 48 / 0.5);
+}
+.kl-entry.is-verified {
+  background: var(--color-verified);
+}
+.kl-entry.is-declared {
+  background: var(--color-declared);
+}
+.kl-entry.is-key {
+  width: 12px;
+  height: 12px;
+  border-width: 2px;
+}
+.kl-entry.is-fresh {
+  position: relative;
+}
+.kl-entry.is-fresh::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 3px solid var(--color-gold);
+  animation: kl-land 1.6s var(--ease-out) 3;
+}
+@keyframes kl-land {
+  from {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.kl-glass {
+  background: oklch(0.985 0.013 88 / 0.9);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
+}
+
+/* The live link dot. */
+.kl-ping {
+  animation: kl-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes kl-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* A new entry glows gold, then settles. */
+.kl-feed-item,
+.kl-row td {
+  transition: background-color 1.6s var(--ease-out);
+}
+.kl-feed-item.is-fresh {
+  background: oklch(0.8 0.12 85 / 0.22);
+  box-shadow: inset 3px 0 0 var(--color-gold-edge);
+}
+.kl-row.is-fresh td {
+  background: oklch(0.8 0.12 85 / 0.16);
+}
+
+.kl-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.kl-img {
+  outline: 1px solid oklch(0 0 0 / 0.1);
+  outline-offset: -1px;
+}
+
+/* Dialogs. */
+.kl-dialog::backdrop {
+  background: oklch(0.17 0.024 48 / 0.6);
+  backdrop-filter: blur(2px);
+}
+.kl-dialog {
+  max-height: calc(100dvh - 2rem);
+}
+.kl-dialog-panel {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.kl-print-only {
+  display: none;
+}
+
+/* Print only the open QR dialog, on white, without the page behind it. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  body:has(.kl-print[open]) > :not(.kl-print) {
+    display: none !important;
+  }
+  .kl-print[open] {
+    position: static;
+    display: block;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    overflow: visible;
+  }
+  .kl-print::backdrop {
+    display: none;
+  }
+  .kl-print .kl-dialog-panel {
+    box-shadow: none !important;
+    border: 0;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+    transform: none !important;
+    opacity: 1 !important;
+    background: #fff;
+  }
+  .kl-print .kl-no-print,
+  .kl-print .kl-dialog-panel > div > div:first-child {
+    display: none !important;
+  }
+  .kl-print .kl-print-only {
+    display: block;
+  }
+  .kl-print .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10mm;
+  }
+  .kl-qr {
+    break-inside: avoid;
+    border: 1px solid #000 !important;
+  }
+  .kl-qr > div {
+    max-width: 70mm !important;
+  }
+}

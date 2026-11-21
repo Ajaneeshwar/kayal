@@ -1,0 +1,122 @@
+{
+  "recordLabel": {
+    "en": "Public waste record",
+    "ml": "പൊതു മാലിന്യ രേഖ"
+  },
+  "registration": {
+    "en": "Registration",
+    "ml": "രജിസ്ട്രേഷൻ"
+  },
+  "sealVerified": {
+    "en": "Verified",
+    "ml": "സ്ഥിരീകരിച്ചു"
+  },
+  "sealDeclared": {
+    "en": "Declared only",
+    "ml": "പ്രഖ്യാപിച്ചത് മാത്രം"
+  },
+  "sealOverdue": {
+    "en": "Overdue",
+    "ml": "വൈകിയത്"
+  },
+  "sentenceVerified": {
+    "en": "This boat emptied its sewage tank at a treatment plant, and the crew’s phone was there when they logged it.",
+    "ml": "ഈ ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒരു ട്രീറ്റ്മെന്റ് പ്ലാന്റിൽ ഒഴിഞ്ഞു, ജീവനക്കാർ അത് ലോഗ് ചെയ്തപ്പോൾ അവരുടെ ഫോൺ അവിടെ ഉണ്ടായിരുന്നു."
+  },
+  "sentenceDeclared": {
+    "en": "The crew says they emptied the sewage tank, but nothing confirms where the waste went.",
+    "ml": "ജീവനക്കാർ മലിനജല ടാങ്ക് ഒഴിഞ്ഞുവെന്ന് പറയുന്നു, പക്ഷേ മാലിന്യം എവിടെ പോയെന്ന് ഒന്നും സ്ഥിരീകരിക്കുന്നില്ല."
+  },
+  "sentenceOverdue": {
+    "en": "This boat has not logged emptying its sewage tank in the last 90 days.",
+    "ml": "കഴിഞ്ഞ 90 ദിവസത്തിനുള്ളിൽ ഈ ബോട്ട് അതിന്റെ മലിനജല ടാങ്ക് ഒഴിഞ്ഞതായി രേഖപ്പെടുത്തിയിട്ടില്ല."
+  },
+  "lastEmptied": {
+    "en": "Sewage last emptied",
+    "ml": "അവസാനമായി മലിനജലം ഒഴിഞ്ഞത്"
+  },
+  "where": {
+    "en": "Where",
+    "ml": "എവിടെ"
+  },
+  "proof": {
+    "en": "Proof",
+    "ml": "തെളിവ്"
+  },
+  "daysLeft": {
+    "en": "Days left before overdue",
+    "ml": "വൈകാൻ എത്ര ദിവസമുണ്ട്"
+  },
+  "logTitle": {
+    "en": "Waste log",
+    "ml": "മാലിന്യ ലോഗ്"
+  },
+  "kindSewage": {
+    "en": "Sewage tank emptied",
+    "ml": "മലിനജല ടാങ്ക് ഒഴിഞ്ഞു"
+  },
+  "kindSolid": {
+    "en": "Solid waste handed over",
+    "ml": "ഖരമാലിന്യം കൈമാറി"
+  },
+  "kindOil": {
+    "en": "Used engine oil handed over",
+    "ml": "ഉപയോഗിച്ച എഞ്ചിൻ ഓയിൽ കൈമാറി"
+  },
+  "levelReceipt": {
+    "en": "Receipt",
+    "ml": "രസീത്"
+  },
+  "levelLocation": {
+    "en": "Location",
+    "ml": "സ്ഥലം"
+  },
+  "levelDeclared": {
+    "en": "Declared",
+    "ml": "പ്രഖ്യാപിച്ചത്"
+  },
+  "corrected": {
+    "en": "Quantity corrected",
+    "ml": "എത്ര അളവ് തിരുത്തി"
+  },
+  "receiptPhoto": {
+    "en": "Receipt photo",
+    "ml": "രസീത് ഫോട്ടോ"
+  },
+  "chainOk": {
+    "en": "Record intact",
+    "ml": "രേഖ കേടുകൂടാതെയിരിക്കുന്നു"
+  },
+  "chainBroken": {
+    "en": "Record altered",
+    "ml": "രേഖയിൽ മാറ്റം വരുത്തി"
+  },
+  "reportTitle": {
+    "en": "Report dumping",
+    "ml": "ഡമ്പിംഗ് റിപ്പോർട്ട് ചെയ്തു"
+  },
+  "reportPrompt": {
+    "en": "Did you see waste going into the water?",
+    "ml": "മാലിന്യം വെള്ളത്തിലേക്ക് പോകുന്നത് നിങ്ങൾ കണ്ടോ?"
+  },
+  "sendReport": {
+    "en": "Send report",
+    "ml": "റിപ്പോർട്ട് അയയ്ക്കുക"
+  },
+  "reportSent": {
+    "en": "Report sent",
+    "ml": "റിപ്പോർട്ട് അയച്ചു"
+  },
+  "howToRead": {
+    "en": "How to read the seal",
+    "ml": "സീൽ എങ്ങനെ വായിക്കാം"
+  },
+  "notFound": {
+    "en": "Boat not found",
+    "ml": "ബോട്ട് കണ്ടെത്തിയില്ല"
+  },
+  "goHome": {
+    "en": "Go to the start",
+    "ml": "ആരംഭത്തിലേക്ക് പോകുക"
+  }
+}

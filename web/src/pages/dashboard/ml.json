@@ -1,0 +1,86 @@
+{
+  "title": {
+    "en": "Inspector dashboard",
+    "ml": "ഇൻസ്പെക്ടർ ഡാഷ്ബോർഡ്"
+  },
+  "statVerified": {
+    "en": "Boats verified",
+    "ml": "പരിശോധിച്ച ബോട്ടുകൾ"
+  },
+  "statDeclared": {
+    "en": "Declared only",
+    "ml": "പ്രഖ്യാപിച്ചത് മാത്രം"
+  },
+  "statOverdue": {
+    "en": "Boats overdue",
+    "ml": "ബോട്ടുകൾ വൈകി"
+  },
+  "statToday": {
+    "en": "Entries today",
+    "ml": "ഇന്നത്തെ എൻട്രികൾ"
+  },
+  "statReports": {
+    "en": "Open reports",
+    "ml": "തുറന്ന റിപ്പോർട്ടുകൾ"
+  },
+  "mapTitle": {
+    "en": "Collection points and recent entries",
+    "ml": "ശേഖരണ പോയിന്റുകളും സമീപകാല എൻട്രികളും"
+  },
+  "boatsTitle": {
+    "en": "Boats, longest wait first",
+    "ml": "ഏറ്റവും കൂടുതൽ കാത്തിരിക്കുന്ന ബോട്ടുകൾ ആദ്യം"
+  },
+  "feedTitle": {
+    "en": "Live log",
+    "ml": "ലൈവ് ലോഗ്"
+  },
+  "pointsTitle": {
+    "en": "Collection points",
+    "ml": "ശേഖരണ പോയിന്റുകൾ"
+  },
+  "reportsTitle": {
+    "en": "Tourist reports",
+    "ml": "ടൂറിസ്റ്റ് റിപ്പോർട്ടുകൾ"
+  },
+  "addBoat": {
+    "en": "Add boat",
+    "ml": "ബോട്ട് ചേർക്കുക"
+  },
+  "addPoint": {
+    "en": "Add collection point",
+    "ml": "ശേഖരണ പോയിന്റ് ചേർക്കുക"
+  },
+  "qrCodes": {
+    "en": "QR codes",
+    "ml": "QR കോഡുകൾ"
+  },
+  "open": {
+    "en": "Open now",
+    "ml": "ഇപ്പോൾ തുറന്നു"
+  },
+  "closed": {
+    "en": "Closed now",
+    "ml": "ഇപ്പോൾ അടച്ചിരിക്കുന്നു"
+  },
+  "chainOk": {
+    "en": "Chain intact",
+    "ml": "ചെയിൻ കേടില്ലാതെയിരിക്കുന്നു"
+  },
+  "chainBroken": {
+    "en": "Chain broken",
+    "ml": "ചെയിൻ തകർന്നിരിക്കുന്നു"
+  },
+  "crewLink": {
+    "en": "Crew link",
+    "ml": "ക്രൂ ലിങ്ക്"
+  },
+  "publicRecord": {
+    "en": "Public record",
+    "ml": "പൊതു രേഖ"
+  },
+  "signOut": {
+    "en": "Sign out",
+    "ml": "സൈൻ ഔട്ട് ചെയ്യുക"
+  }
+}

@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './scene.css';
+
+@layer base {
+  html {
+    background: var(--color-teak);
+    color: var(--color-ink-inverse);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  a,
+  button,
+  select,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  button {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+
+  [lang='ml'] {
+    font-family: var(--font-ml);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-teak);
+  }
+}
+
+@layer components {
+  /* A light, kasavu-cream surface. Native controls inside it draw in light mode. */
+  .surface-light {
+    color-scheme: light;
+    color: var(--color-ink);
+  }
+}

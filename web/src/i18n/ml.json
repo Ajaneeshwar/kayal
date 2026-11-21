@@ -1,0 +1,94 @@
+{
+  "tagline": {
+    "en": "Proof of where houseboat waste went",
+    "ml": "ഹൗസ് ബോട്ട് മാലിന്യം എവിടെയെല്ലാം പോയി എന്നതിന്റെ തെളിവ്"
+  },
+  "howTitle": {
+    "en": "How it works",
+    "ml": "ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു"
+  },
+  "sayTitle": {
+    "en": "Say it",
+    "ml": "പറയുക"
+  },
+  "sayBody": {
+    "en": "The crew says in Malayalam which waste they handed over, and where.",
+    "ml": "ഏത് മാലിന്യമാണ് കൈമാറിയതെന്നും എവിടെയാണെന്നും ജീവനക്കാർ മലയാളത്തിൽ പറയുന്നു."
+  },
+  "proveTitle": {
+    "en": "Prove it",
+    "ml": "തെളിയിക്കുക"
+  },
+  "proveBody": {
+    "en": "The phone’s location and a photo of the receipt back up the entry.",
+    "ml": "ഫോണിന്റെ ലൊക്കേഷനും രസീത് ഫോട്ടോയും എൻട്രിയെ പിന്തുണയ്ക്കുന്നു."
+  },
+  "showTitle": {
+    "en": "Show it",
+    "ml": "കാണിക്കുക"
+  },
+  "showBody": {
+    "en": "Tourists and inspectors see the boat’s record, with a seal anyone can read.",
+    "ml": "വിനോദസഞ്ചാരികളും ഇൻസ്പെക്ടർമാരും ബോട്ടിന്റെ രേഖ കാണുന്നു, ആർക്കും വായിക്കാൻ കഴിയുന്ന ഒരു സീൽ ഇതിലുണ്ട്."
+  },
+  "signinTitle": {
+    "en": "Choose your door",
+    "ml": "നിങ്ങളുടെ വാതിൽ തിരഞ്ഞെടുക്കുക"
+  },
+  "crewTitle": {
+    "en": "Crew",
+    "ml": "ജീവനക്കാർ"
+  },
+  "crewBody": {
+    "en": "Log a waste handover by voice for your boat.",
+    "ml": "നിങ്ങളുടെ ബോട്ടിനായി ശബ്ദത്തിലൂടെ മാലിന്യം കൈമാറ്റം ചെയ്തത് രേഖപ്പെടുത്തുക."
+  },
+  "inspectorTitle": {
+    "en": "Inspector",
+    "ml": "ഇൻസ്പെക്ടർ"
+  },
+  "inspectorBody": {
+    "en": "See every boat on one map, most overdue first.",
+    "ml": "ഓരോ ബോട്ടും ഒരു മാപ്പിൽ കാണുക, ഏറ്റവും കൂടുതൽ കുടിശ്ശികയുള്ളവ ആദ്യം കാണുക."
+  },
+  "guestTitle": {
+    "en": "Guest",
+    "ml": "അതിഥി"
+  },
+  "guestBody": {
+    "en": "See any boat’s public record. No sign-in needed.",
+    "ml": "ഏത് ബോട്ടിന്റെയും പൊതു രേഖ കാണുക. സൈൻ-ഇൻ ആവശ്യമില്ല."
+  },
+  "yourBoat": {
+    "en": "Your boat",
+    "ml": "നിങ്ങളുടെ ബോട്ട്"
+  },
+  "openCrew": {
+    "en": "Open the crew page",
+    "ml": "ജീവനക്കാരുടെ പേജ് തുറക്കുക"
+  },
+  "pinLabel": {
+    "en": "Inspector PIN",
+    "ml": "ഇൻസ്പെക്ടർ പിൻ"
+  },
+  "signIn": {
+    "en": "Sign in",
+    "ml": "സൈൻ ഇൻ ചെയ്യുക"
+  },
+  "pinWrong": {
+    "en": "That PIN is wrong. Check it and try again.",
+    "ml": "ആ പിൻ നമ്പർ തെറ്റാണ്. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "verified": {
+    "en": "Verified",
+    "ml": "സ്ഥിരീകരിച്ചു"
+  },
+  "declared": {
+    "en": "Declared only",
+    "ml": "പ്രഖ്യാപിച്ചത് മാത്രം"
+  },
+  "overdue": {
+    "en": "Overdue",
+    "ml": "കുടിശ്ശിക"
+  }
+}

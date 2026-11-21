@@ -1,0 +1,108 @@
+/*
+  The landing scene's ambient motion. CSS keyframes, because they run on the compositor and
+  keep moving while the page loads. Only transform and opacity animate.
+*/
+
+@keyframes kl-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes kl-rock {
+  0%,
+  100% {
+    transform: rotate(0.7deg);
+  }
+  50% {
+    transform: rotate(-0.9deg);
+  }
+}
+
+@keyframes kl-drift {
+  to {
+    transform: translateX(calc(-1 * var(--wave-length)));
+  }
+}
+
+@keyframes kl-sway {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.8deg);
+  }
+}
+
+@keyframes kl-glint {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes kl-glow {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.kl-bob {
+  animation: kl-bob 5.6s var(--ease-in-out) infinite;
+}
+
+.kl-rock {
+  transform-origin: 50% 60%;
+  animation: kl-rock 7.3s ease-in-out infinite;
+}
+
+.kl-drift {
+  animation: kl-drift var(--wave-speed, 12s) linear infinite;
+}
+
+.kl-sway {
+  transform-box: view-box;
+  animation: kl-sway var(--sway-speed, 7s) ease-in-out infinite;
+}
+
+.kl-glint {
+  animation: kl-glint 3.2s ease-in-out infinite;
+}
+
+.kl-glow {
+  animation: kl-glow 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-bob,
+  .kl-rock,
+  .kl-drift,
+  .kl-sway,
+  .kl-glint,
+  .kl-glow {
+    animation: none;
+  }
+}
+
+/* Where the landing houseboat sits: mid-frame on phones, right and larger from 1024 px. */
+.kl-boat-place {
+  transform: translate(578px, 588px) scale(0.88);
+}
+
+@media (min-width: 1024px) {
+  .kl-boat-place {
+    transform: translate(790px, 606px) scale(1.42);
+  }
+}

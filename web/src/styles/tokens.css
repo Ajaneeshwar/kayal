@@ -1,0 +1,103 @@
+/*
+  Kayal Log theme: a Kerala houseboat. See "Look and feel" in PLAN.md.
+
+  Use these tokens and nothing else. Each one names a job, not a hue:
+  - teak, wood: the kettuvallam hull. Dark teak for headers and the landing page.
+  - surface, kasavu, line, ink: cream screens and cards, like a kasavu sari.
+  - gold: coir and brass. Main buttons, highlights, the kasavu edge, focus.
+  - verified, declared, overdue: the three proof states. Status only, never decoration.
+  - scene-*: the landing illustration only.
+
+  `static` keeps every variable in the CSS output, so other screens can use var(--…) freely.
+*/
+@theme static {
+  --color-*: initial;
+
+  /* Wood */
+  --color-teak-deep: oklch(0.17 0.024 48);
+  --color-teak: oklch(0.22 0.032 50);
+  --color-teak-raised: oklch(0.28 0.038 52);
+  --color-wood: oklch(0.42 0.068 55);
+  --color-wood-light: oklch(0.64 0.07 65);
+
+  /* Cream */
+  --color-surface: oklch(0.955 0.02 85);
+  --color-kasavu: oklch(0.985 0.013 88);
+  --color-line: oklch(0.86 0.032 80);
+  --color-field-border: oklch(0.6 0.04 65);
+
+  /* Text */
+  --color-ink: oklch(0.25 0.035 50);
+  --color-ink-muted: oklch(0.45 0.035 55);
+  --color-ink-inverse: oklch(0.96 0.02 85);
+  --color-ink-inverse-muted: oklch(0.8 0.035 78);
+
+  /* Gold */
+  --color-gold: oklch(0.8 0.12 85);
+  --color-gold-bright: oklch(0.86 0.12 88);
+  --color-gold-edge: oklch(0.7 0.11 80);
+  --color-gold-ink: oklch(0.5 0.09 75);
+  --color-focus: oklch(0.64 0.14 78);
+
+  /* Status */
+  --color-verified: oklch(0.48 0.1 158);
+  --color-verified-soft: oklch(0.93 0.045 158);
+  --color-declared: oklch(0.5 0.12 58);
+  --color-declared-soft: oklch(0.94 0.05 75);
+  --color-overdue: oklch(0.49 0.16 30);
+  --color-overdue-soft: oklch(0.93 0.04 30);
+
+  /* Landing scene: dusk on the backwaters */
+  --color-scene-sky: oklch(0.22 0.032 50);
+  --color-scene-sky-mid: oklch(0.34 0.065 42);
+  --color-scene-sky-glow: oklch(0.68 0.12 68);
+  --color-scene-sun: oklch(0.92 0.1 90);
+  --color-scene-shore: oklch(0.3 0.05 40);
+  --color-scene-palm: oklch(0.14 0.022 45);
+  --color-scene-water: oklch(0.36 0.06 48);
+  --color-scene-water-deep: oklch(0.17 0.024 48);
+  --color-scene-hull: oklch(0.4 0.075 48);
+  --color-scene-hull-dark: oklch(0.2 0.035 45);
+  --color-scene-roof: oklch(0.56 0.09 68);
+  --color-scene-roof-dark: oklch(0.3 0.05 55);
+  --color-scene-roof-light: oklch(0.82 0.11 82);
+  --color-scene-cabin: oklch(0.13 0.02 45);
+  --color-scene-lamp: oklch(0.9 0.13 85);
+
+  /* Type */
+  --font-display: 'Fraunces Variable', 'Anek Malayalam Variable', Georgia, serif;
+  --font-sans: 'Inter Variable', 'Anek Malayalam Variable', system-ui, sans-serif;
+  --font-ml: 'Anek Malayalam Variable', 'Noto Sans Malayalam', sans-serif;
+
+  --text-display: clamp(3.25rem, 2.2rem + 5vw, 6.5rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.025em;
+  --text-title: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.015em;
+  --text-heading: 1.375rem;
+  --text-heading--line-height: 1.2;
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.45;
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
+
+  /* Shape */
+  --radius-control: 0.875rem;
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px oklch(0.17 0.024 48 / 0.18), 0 12px 32px -12px oklch(0.17 0.024 48 / 0.55);
+  --shadow-raised: 0 2px 4px oklch(0.17 0.024 48 / 0.2), 0 24px 56px -20px oklch(0.17 0.024 48 / 0.7);
+  --shadow-button: 0 1px 0 oklch(1 0 0 / 0.35) inset, 0 1px 2px oklch(0.17 0.024 48 / 0.3);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-press: 150ms;
+  --duration-ui: 220ms;
+}
