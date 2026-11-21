@@ -27,3 +27,10 @@ test('empty, unavailable and unmatched select options have no navigable match', 
   assert.equal(findOption(options, ''), -1);
   assert.equal(findOption(options, 'unknown'), -1);
 });
+
+test('select type-ahead retains spaces inside multi-word boat names', () => {
+  assert.equal(findOption(options, 'Kayal ', 0), 0);
+  assert.equal(findOption(options, 'Kayal P', 0), 3);
+  assert.equal(findOption(options, 'Kayal Pearl', 0), 3);
+  assert.equal(findOption(options, 'Kayal Q', 0), -1);
+});

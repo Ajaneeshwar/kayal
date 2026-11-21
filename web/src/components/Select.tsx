@@ -116,6 +116,8 @@ export function Select({ id, name, form, value, onChange, options, disabled = fa
 
   function onKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (unavailable) return;
+    const now = Date.now();
+    const searching = search.current.text !== '' && now - search.current.at < 700;
     if (event.key === 'Tab') {
       if (open && options[active] && !options[active].disabled) onChange(options[active].value);
       close();
@@ -130,7 +132,7 @@ export function Select({ id, name, form, value, onChange, options, disabled = fa
       }
       return;
     }
-    if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+    if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key) && !(event.key === ' ' && searching)) {
       event.preventDefault();
       if (event.key === 'Enter' || event.key === ' ') {
         if (open) choose(active);
@@ -145,8 +147,7 @@ export function Select({ id, name, form, value, onChange, options, disabled = fa
     }
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
-      const now = Date.now();
-      const text = (now - search.current.at < 700 ? search.current.text : '') + event.key;
+      const text = (searching ? search.current.text : '') + event.key;
       search.current = { text, at: now };
       const repeated = [...text].every((char) => char === event.key);
       const current = open ? active : selected;
