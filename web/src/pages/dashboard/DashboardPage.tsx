@@ -252,7 +252,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <main id="main" className="surface-light mx-auto grid w-full max-w-[110rem] flex-1 gap-5 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <main id="main" className="surface-light mx-auto grid w-full max-w-[110rem] flex-1 grid-cols-[minmax(0,1fr)] gap-5 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
         <AnimatePresence>
           {toast && (
             <motion.div
@@ -298,7 +298,7 @@ export default function DashboardPage() {
             </ul>
         </section>
 
-        <div className="min-h-0 lg:h-[min(64vh,38rem)] [&>section]:h-full">
+        <div className="min-h-0 min-w-0 lg:h-[min(64vh,38rem)] [&>section]:h-full">
           {state ? (
             <Feed entries={state.entries} boats={boats} fresh={fresh} link={<LinkPill link={link} />} />
           ) : (
