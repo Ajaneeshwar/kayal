@@ -29,6 +29,7 @@ export const en = {
   guestTitle: 'Guest',
   guestBody: 'See any boat’s public record. No sign-in needed.',
   loggedDaysAgo: 'Logged {days} days ago',
+  loggedDayAgo: 'Logged 1 day ago',
 
   yourBoat: 'Your boat',
   openCrew: 'Open the crew page',

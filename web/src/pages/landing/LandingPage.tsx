@@ -28,7 +28,7 @@ function Hero({ ready }: { ready: boolean }) {
     ? boats.filter((b) => b.lastEntryAt).sort((a, b) => Date.parse(b.lastEntryAt!) - Date.parse(a.lastEntryAt!))[0]
     : undefined;
   const loggedDays = boat?.lastEntryAt ? Math.max(0, Math.floor((Date.now() - Date.parse(boat.lastEntryAt)) / 86_400_000)) : 0;
-  const logged = t('loggedDaysAgo');
+  const logged = t(loggedDays === 1 ? 'loggedDayAgo' : 'loggedDaysAgo');
   return (
     <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
       <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_75%,transparent)] lg:h-full lg:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]" />
