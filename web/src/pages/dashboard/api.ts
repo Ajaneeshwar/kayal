@@ -60,6 +60,7 @@ export interface State {
   boats: Boat[];
   facilities: Facility[];
   entries: Entry[];
+  weeklyEntryCount: number;
   chain: Chain;
   overdueDays: number;
   adminPinRequired: boolean;

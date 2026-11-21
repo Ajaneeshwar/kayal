@@ -4,10 +4,12 @@ Use same-origin URLs. POST requests carry JSON. API errors use `{"error":"A mess
 
 ## Routes
 
+`/api/state` returns at most 100 recent entries. `weeklyEntryCount` counts all projected handovers from Monday midnight in the server's local timezone through now, regardless of that feed limit; corrections do not count as additional handovers.
+
 | Method and path | Caller | Request body | Success | Errors |
 | --- | --- | --- | --- | --- |
 | `GET /api/health` | Anyone | None | 200 `{ok, sarvamKey}` | Common errors below |
-| `GET /api/state` | Anyone | None | 200 `{boats, facilities, entries, reports, chain, overdueDays, adminPinRequired}` | Common errors below |
+| `GET /api/state` | Anyone | None | 200 `{boats, facilities, entries, weeklyEntryCount, reports, chain, overdueDays, adminPinRequired}` | Common errors below |
 | **New** `GET /api/events` | Anyone | None | 200 `text/event-stream` with named events | 400 request body. 405 wrong method. |
 | `GET /api/boats/:boatId` | Anyone | None | 200 `{boat, entries, facilities}` | 404 unknown boat |
 | `POST /api/log` | Crew with a registered boat ID | See crew request below | 200 stored entry or an answer to a waste question | 400 missing or invalid input, media or position. 404 unknown boat. 413 body, recording, photo or text too large. 422 recording too short, no speech, invalid quantity or no waste handover found. 502 language service failed or timed out. |

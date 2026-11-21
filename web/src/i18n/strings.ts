@@ -7,6 +7,11 @@
 */
 export const en = {
   tagline: 'Proof of where houseboat waste went',
+  pageMissing: 'This page does not exist',
+  chooseDoorHelp: 'Go back to the start and choose a door.',
+  goHome: 'Go to the start',
+  pickBoatFirst: 'Pick your boat first',
+  inspectorFirst: 'Sign in as inspector',
 
   howTitle: 'How it works',
   sayTitle: 'Say it',
@@ -23,6 +28,8 @@ export const en = {
   inspectorBody: 'See every boat on one map, most overdue first.',
   guestTitle: 'Guest',
   guestBody: 'See any boat’s public record. No sign-in needed.',
+  loggedDaysAgo: 'Logged {days} days ago',
+  loggedDayAgo: 'Logged 1 day ago',
 
   yourBoat: 'Your boat',
   openCrew: 'Open the crew page',

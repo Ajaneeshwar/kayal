@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { AnimatePresence, motion } from 'motion/react';
 import { BrandMark } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
+import { AccessNotice } from '../../components/AccessNotice.tsx';
 import { LanguageSwitch } from '../../components/LanguageSwitch.tsx';
 import { usePick } from '../../i18n/language.ts';
 import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Facility, type Report } from './api.ts';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
-import { KIND_LABELS, LEVEL_LABELS, isToday } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
 import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
@@ -118,11 +119,10 @@ interface Toast {
 }
 
 export default function DashboardPage() {
-  const signedIn = useRef(readAdminPin() !== null).current;
-  useEffect(() => {
-    if (!signedIn) window.location.replace('/');
-  }, [signedIn]);
+  return readAdminPin() ? <InspectorDashboard /> : <AccessNotice role="inspector" />;
+}
 
+function InspectorDashboard() {
   const { state, setState, reports, setReports, error, link, fresh, refresh } = useDashboard();
   const [modal, setModal] = useState<Modal>(null);
   const pick = usePick();
@@ -196,10 +196,8 @@ export default function DashboardPage() {
       refresh();
     });
 
-  if (!signedIn) return null;
-
   const count = (s: Boat['status']['state']) => state?.boats.filter((b) => b.status.state === s).length ?? 0;
-  const today = state?.entries.filter((e) => isToday(e.at)).length ?? 0;
+  const thisWeek = state?.weeklyEntryCount ?? 0;
   const openReports = reports ? reports.filter((r) => !r.reviewed).length : reports === null ? '–' : 0;
   const total = state?.boats.length ?? 0;
   const dash = state ? null : '–';
@@ -239,7 +237,7 @@ export default function DashboardPage() {
           <Stat label={d('statVerified')} value={dash ?? count('verified')} tone="verified" note={`of ${total} boats`} />
           <Stat label={d('statDeclared')} value={dash ?? count('declared')} tone="declared" note="No location or receipt" />
           <Stat label={d('statOverdue')} value={dash ?? count('overdue')} tone="overdue" note={`${state?.overdueDays ?? 90}-day limit passed`} />
-          <Stat label={d('statToday')} value={dash ?? today} tone="plain" note={`${state?.entries.length ?? 0} in the recent log`} />
+          <Stat label={d('statWeek')} value={dash ?? thisWeek} tone="plain" note={`${state?.entries.length ?? 0} in the recent log`} />
           <Stat label={d('statReports')} value={dash ?? openReports} tone="plain" note={reports === null ? 'Not available yet' : 'From guests on board'} />
         </div>
       </header>
@@ -252,7 +250,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <main id="main" className="surface-light mx-auto grid w-full max-w-[110rem] flex-1 gap-5 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <main id="main" className="surface-light mx-auto grid w-full max-w-[110rem] flex-1 grid-cols-[minmax(0,1fr)] gap-5 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
         <AnimatePresence>
           {toast && (
             <motion.div
@@ -298,7 +296,7 @@ export default function DashboardPage() {
             </ul>
         </section>
 
-        <div className="min-h-0 lg:h-[min(64vh,38rem)] [&>section]:h-full">
+        <div className="order-2 min-h-0 min-w-0 lg:order-none lg:h-[min(64vh,38rem)] [&>section]:h-full">
           {state ? (
             <Feed entries={state.entries} boats={boats} fresh={fresh} link={<LinkPill link={link} />} />
           ) : (
@@ -314,7 +312,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="flex min-w-0 flex-col gap-5">
+        <div className="order-3 flex min-w-0 flex-col gap-5 lg:order-none">
           {state && <Points facilities={state.facilities} busy={busy} onToggle={toggleFacility} onAdd={() => setModal({ kind: 'point' })} />}
           <Reports reports={reports} boats={boats} busy={busy} onReview={review} />
         </div>

@@ -62,14 +62,14 @@ function sendJson(res, status, payload) {
   res.end(body);
 }
 
-async function sendFile(res, file) {
+async function sendFile(res, file, status = 200) {
   let body;
   try {
     body = await readFile(file);
   } catch {
     throw new HttpError(404, 'Not found.');
   }
-  res.writeHead(200, { 'Content-Type': CONTENT_TYPES[path.extname(file)] ?? 'application/octet-stream' });
+  res.writeHead(status, { 'Content-Type': CONTENT_TYPES[path.extname(file)] ?? 'application/octet-stream' });
   res.end(body);
 }
 
@@ -151,10 +151,18 @@ function boatView(boat, now) {
 
 function stateView() {
   const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
+  const entries = projectEntries(store.entries);
   return {
     boats: store.boats.map((b) => boatView(b, now)),
     facilities: store.facilities,
-    entries: projectEntries(store.entries).slice(-FEED_LIMIT).reverse(),
+    entries: entries.slice(-FEED_LIMIT).reverse(),
+    weeklyEntryCount: entries.filter((entry) => {
+      const at = new Date(entry.at);
+      return at >= weekStart && at <= now;
+    }).length,
     reports: store.reports.slice().reverse(),
     chain: checkChain(store.entries),
     overdueDays: OVERDUE_DAYS,
@@ -212,6 +220,10 @@ async function route(req, res) {
       const file = path.join(PUBLIC_DIR, path.normalize(pathname.slice('/static/'.length)));
       if (!file.startsWith(PUBLIC_DIR + path.sep)) throw new HttpError(404, 'Not found.');
       return sendFile(res, file);
+    }
+    if (!/^\/api(?:\/|$)/.test(pathname) && !path.posix.extname(pathname) && /\btext\/html\b/i.test(req.headers.accept ?? '') && existsSync(path.join(WEB_DIST, 'index.html'))) {
+      res.setHeader('Cache-Control', 'no-cache');
+      return sendFile(res, path.join(WEB_DIST, 'index.html'), 404);
     }
     throw new HttpError(404, 'Not found.');
   }

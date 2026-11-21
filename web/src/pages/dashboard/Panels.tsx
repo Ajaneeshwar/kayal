@@ -179,7 +179,7 @@ function LastPump({ boat, window }: { boat: Boat; window: number }) {
         {daysAgo(last.daysAgo)}
         {over > 0 && <span className="ms-1.5 font-semibold text-overdue">{over} days over</span>}
       </span>
-      <span className="truncate text-caption text-ink-muted">
+      <span className="break-words text-caption text-ink-muted">
         {LEVEL_LABELS[last.level]}
         {last.facilityName ? ` · ${last.facilityName}` : ''}
       </span>
@@ -191,7 +191,7 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
   return (
     <Panel>
       <PanelHead title={d('boatsTitle')} meta={`${boats.length} boats · a pump-out is due every ${window} days`} />
-      <div className="overflow-x-auto px-2 pb-2">
+      <div className="relative overflow-x-auto px-2 pb-2">
         <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-small">
           <thead>
             <tr className="text-start text-caption font-semibold uppercase tracking-[0.06em] text-ink-muted">
@@ -315,7 +315,7 @@ export function Reports({ reports, boats, busy, onReview }: { reports: Report[] 
               ) : null}
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="truncate font-semibold">{(r.boatId && boats.get(r.boatId)?.name) || r.boatId || 'No boat named'}</p>
+                  <p className="break-words font-semibold">{(r.boatId && boats.get(r.boatId)?.name) || r.boatId || <Bi text={d('unlinkedReport')} />}</p>
                   {r.at && <span className="shrink-0 text-caption text-ink-muted">{ago(r.at)}</span>}
                 </div>
                 {r.wasteSeen !== null && (
