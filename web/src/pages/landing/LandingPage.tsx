@@ -30,22 +30,16 @@ function Hero({ ready }: { ready: boolean }) {
         variants={heroGroup}
         className="mx-auto max-w-[76rem] px-5 pt-24 [text-shadow:0_1px_18px_color-mix(in_oklab,var(--color-teak-deep)_70%,transparent)] sm:px-6 sm:pt-32 lg:px-8 lg:pt-40"
       >
-        <motion.p variants={heroItem} className="text-caption font-semibold uppercase tracking-[0.16em] text-gold">
-          Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
+        <motion.p variants={heroItem} className="text-caption font-semibold text-gold">
+          Kayal Log · Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
         </motion.p>
-        <motion.h1
-          variants={heroItem}
-          id="hero-title"
-          className="mt-3 font-display text-display font-semibold text-ink-inverse [font-variation-settings:'SOFT'_60,'WONK'_1]"
-        >
-          Kayal Log
-        </motion.h1>
         <motion.div variants={heroItem}>
           <Bi
             k="tagline"
-            as="p"
-            className="mt-4 max-w-[24ch] text-lead font-medium text-ink-inverse sm:text-[1.375rem] lg:max-w-[30ch]"
-            mlClassName="mt-1.5 text-gold-bright"
+            as="h1"
+            id="hero-title"
+            className="mt-3 max-w-[16ch] font-display text-[clamp(2.5rem,5vw,4.75rem)] font-semibold leading-[1.05] text-ink-inverse"
+            mlClassName="mt-3 !text-[0.5em] leading-snug text-gold-bright"
           />
         </motion.div>
         <motion.div variants={heroItem} className="mt-7">
