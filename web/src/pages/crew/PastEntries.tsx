@@ -4,6 +4,7 @@ import { usePick } from '../../i18n/language.ts';
 import { methodOf } from '../../components/MethodIcon.tsx';
 import { bt, fetchBoat, formatDate, formatTime, KIND, METHOD, type Entry } from '../boat/data.ts';
 import { LevelChip } from '../boat/Timeline.tsx';
+import { entryPlace } from '../boat/entryPlace.ts';
 import { t } from './i18n.ts';
 
 export function PastEntries({ boatId, revision, onClose }: { boatId: string; revision: number; onClose: () => void }) {
@@ -41,14 +42,16 @@ export function PastEntries({ boatId, revision, onClose }: { boatId: string; rev
       <ol className="space-y-3">
         {entries?.map((entry) => {
           const method = methodOf(entry);
-          const place = method === 'collection_point' ? entry.verification.facilityName ?? entry.facilityMentioned : [entry.vehicleNumber, entry.handedTo].filter(Boolean).join(' · ');
+          const place = entryPlace(entry);
           return (
             <li key={entry.id} className="rounded-control border border-line bg-surface p-4">
               <time dateTime={entry.at} className="text-caption text-ink-muted">{formatDate(entry.at)} · {formatTime(entry.at)}</time>
               <Bi as="h3" text={bt(KIND[entry.kind])} className="mt-1 font-semibold" />
               {entry.quantity && <p className="mt-1 font-semibold">{entry.quantity}</p>}
               <Bi text={bt(METHOD[method])} className="mt-2 text-small font-semibold" />
-              <p className="mt-1 break-words text-small text-ink-muted">{place || <Bi text={t('pastNoPlace')} />}</p>
+              <p className="mt-1 break-words text-small text-ink-muted">{place ?? <Bi text={bt('noPlaceNamed')} />}</p>
+              {entry.vehicleNumber && <p className="mt-1 break-words text-small"><Bi text={bt('vehicle')} layout="inline" />: {entry.vehicleNumber}</p>}
+              {entry.handedTo && <p className="mt-1 break-words text-small"><Bi text={bt('receivedBy')} layout="inline" />: {entry.handedTo}</p>}
               <div className="mt-2"><LevelChip level={entry.verification.level} /></div>
             </li>
           );
