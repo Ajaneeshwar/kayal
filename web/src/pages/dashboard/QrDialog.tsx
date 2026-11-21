@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import { publicOrigin } from '../../lib/publicOrigin.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import type { Boat } from './api.ts';
@@ -35,8 +36,8 @@ function Code({ url, label, note }: { url: string; label: ReturnType<typeof d>; 
   );
 }
 
-export function QrDialog({ boat, onClose }: { boat: Boat; onClose: () => void }) {
-  const origin = window.location.origin;
+export function QrDialog({ boat, publicUrl, onClose }: { boat: Boat; publicUrl?: string | null; onClose: () => void }) {
+  const origin = publicOrigin(publicUrl);
   const crew = `${origin}/crew?boat=${encodeURIComponent(boat.id)}`;
   const record = `${origin}/boat/${encodeURIComponent(boat.id)}`;
   return (

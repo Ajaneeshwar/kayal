@@ -322,5 +322,37 @@
   "callFailed": {
     "en": "The phone service did not take the call. Try again in a minute.",
     "ml": "ഫോൺ സേവനം കോൾ എടുത്തില്ല. ഒരു മിനിറ്റിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക."
+  },
+  "addReceiver": {
+    "en": "Add receiver",
+    "ml": "സ്വീകർത്താവിനെ ചേർക്കുക"
+  },
+  "receiversTitle": {
+    "en": "Receivers",
+    "ml": "സ്വീകർത്താക്കൾ"
+  },
+  "receiversMeta": {
+    "en": "Who can confirm a handover",
+    "ml": "ആർക്കാണ് കൈമാറ്റം സ്ഥിരീകരിക്കാൻ കഴിയുക"
+  },
+  "receiversEmpty": {
+    "en": "No receivers yet. Add a plant desk, truck or collector so they can confirm handovers.",
+    "ml": "ഇതുവരെ സ്വീകർത്താക്കളില്ല. ഒരു പ്ലാന്റ് ഡെസ്ക്, ട്രക്ക് അല്ലെങ്കിൽ കളക്ടർ എന്നിവരെ ചേർക്കുക, അതുവഴി അവർക്ക് കൈമാറ്റം സ്ഥിരീകരിക്കാൻ കഴിയും."
+  },
+  "receiverPlant": {
+    "en": "Plant desk",
+    "ml": "പ്ലാന്റ് ഡെസ്ക്"
+  },
+  "receiverPump": {
+    "en": "Pump boat",
+    "ml": "പമ്പ് ബോട്ട്"
+  },
+  "receiverAdded": {
+    "en": "{name} can now confirm handovers",
+    "ml": "{name} ന് ഇപ്പോൾ കൈമാറ്റം സ്ഥിരീകരിക്കാൻ കഴിയും"
+  },
+  "receiverCodeNote": {
+    "en": "Give this sign-in code to the receiver now. Kayal Log does not show it again.",
+    "ml": "ഈ സൈൻ-ഇൻ കോഡ് ഇപ്പോൾ സ്വീകർത്താവിന് നൽകുക. കായൽ ലോഗ് ഇത് വീണ്ടും കാണിക്കില്ല."
   }
 }

@@ -123,7 +123,7 @@ async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export function fetchBoat(id: string, signal?: AbortSignal) {
-  return getJson<{ boat: BoatRecord; entries: Entry[] }>(`/api/boats/${encodeURIComponent(id)}`, signal);
+  return getJson<{ boat: BoatRecord; entries: Entry[]; publicUrl?: string | null }>(`/api/boats/${encodeURIComponent(id)}`, signal);
 }
 
 /** The chain covers every boat, so it comes from the state route. */

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import QRCode from 'qrcode';
+import { publicOrigin } from '../../lib/publicOrigin.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
@@ -12,24 +13,22 @@ import './sticker.css';
 export default function StickerPage() {
   const { boatId = '' } = useParams();
   const pick = usePick();
-  const [record, setRecord] = useState<{ boat: BoatRecord; svg: string } | null>(null);
+  const [record, setRecord] = useState<{ boat: BoatRecord; svg: string; url: string } | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
-  const url = `${window.location.origin}/boat/${encodeURIComponent(boatId)}`;
   useEffect(() => {
     const controller = new AbortController();
     setRecord(null);
     setFailed(false);
-    Promise.all([
-      fetchBoat(boatId, controller.signal),
-      QRCode.toString(url, { type: 'svg', margin: 4, errorCorrectionLevel: 'M' }),
-    ]).then(([{ boat }, svg]) => {
-      if (!controller.signal.aborted) setRecord({ boat, svg });
-    }, () => {
+    fetchBoat(boatId, controller.signal).then(async ({ boat, publicUrl }) => {
+      const url = `${publicOrigin(publicUrl)}/boat/${encodeURIComponent(boatId)}`;
+      const svg = await QRCode.toString(url, { type: 'svg', margin: 4, errorCorrectionLevel: 'M' });
+      if (!controller.signal.aborted) setRecord({ boat, svg, url });
+    }).catch(() => {
       if (!controller.signal.aborted) setFailed(true);
     });
     return () => controller.abort();
-  }, [boatId, url, attempt]);
+  }, [boatId, attempt]);
   return (
     <main className="sticker-page surface-light grid min-h-svh place-content-center gap-6 bg-surface p-4 text-ink">
       {!record ? (
@@ -46,7 +45,7 @@ export default function StickerPage() {
             <div className="mt-2"><StatusBadge state={record.boat.status.state} bilingual={false} /></div>
             <div role="img" aria-label={pick(bt('stickerScan'))} className="sticker-code mt-3 aspect-square w-full max-w-[52mm]" dangerouslySetInnerHTML={{ __html: record.svg }} />
             <Bi as="p" text={bt('stickerScan')} className="mt-2 font-semibold" />
-            <a href={url} className="mt-2 break-all text-caption underline">{url}</a>
+            <a href={record.url} className="mt-2 break-all text-caption underline">{record.url}</a>
           </article>
           <Button className="sticker-tools mx-auto" onClick={() => window.print()}><Bi text={bt('print')} /></Button>
         </>

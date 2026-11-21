@@ -24,6 +24,10 @@ export const en = {
   showTitle: 'Show it',
   showBody: 'Tourists and inspectors see the boat’s record, with a seal anyone can read.',
 
+  footerBuiltFor: 'Built for Kerala’s backwaters',
+  footerGoal: 'A clean Vembanad, one recorded handover at a time.',
+  footerSource: 'Source on GitHub',
+
   signinTitle: 'Choose your door',
   crewTitle: 'Crew',
   crewBody: 'Log a waste handover by voice for your boat.',

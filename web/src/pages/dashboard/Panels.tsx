@@ -6,7 +6,8 @@ import type { Text } from '../../i18n/index.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
 import { t } from '../../i18n/index.ts';
 import { boatsCsv, filterBoats } from '../../lib/boatTools.ts';
-import type { Boat, Custody, Entry, Facility, ReminderCall, Report } from './api.ts';
+import type { Boat, Custody, Entry, Facility, Operator, ReminderCall, Report } from './api.ts';
+import { RECEIVER_TYPES } from './AddDialogs.tsx';
 import { PhoneIcon, callDue } from './CallOwnerDialog.tsx';
 import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, shownLevel, whereText, type LevelTone, type Shown } from './format.ts';
 import { fill, namedReceiver } from '../boat/data.ts';
@@ -409,6 +410,53 @@ export function Points({ facilities, busy, onToggle, onAdd }: { facilities: Faci
           </li>
         ))}
       </ul>
+    </Panel>
+  );
+}
+
+/** Who can confirm a handover: plant desks, trucks, pump boats and collectors, grouped by type. */
+export function Receivers({ operators, facilities, onAdd }: { operators: Operator[]; facilities: Facility[]; onAdd: () => void }) {
+  const places = new Map(facilities.map((f) => [f.id, f.name]));
+  const order = (o: Operator) => RECEIVER_TYPES.findIndex((r) => r.type === o.type);
+  const sorted = [...operators].sort((a, b) => order(a) - order(b) || a.name.localeCompare(b.name));
+  return (
+    <Panel>
+      <PanelHead title={d('receiversTitle')} meta={<Bi text={d('receiversMeta')} layout="inline" />}>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-control px-2.5 text-caption font-semibold text-gold-ink transition-colors duration-150 hover:bg-gold/15"
+        >
+          <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M8 3v10M3 8h10" />
+          </svg>
+          Add
+        </button>
+      </PanelHead>
+      {sorted.length === 0 ? (
+        <Bi as="p" text={d('receiversEmpty')} className="px-5 pb-5 text-small text-ink-muted" />
+      ) : (
+        <ul className="px-2 pb-3">
+          {sorted.map((o) => {
+            const kind = RECEIVER_TYPES.find((r) => r.type === o.type) ?? RECEIVER_TYPES[0];
+            const where = o.vehicleNumber ?? (o.facilityId ? places.get(o.facilityId) ?? o.facilityId : null);
+            return (
+              <li key={o.id} className="flex items-center gap-3 rounded-control px-3 py-2">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gold/15 text-gold-ink" title={d(kind.label).en}>
+                  <MethodIcon method={kind.icon} size={17} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-semibold leading-snug">{o.name}</p>
+                  <p className="text-caption text-ink-muted [overflow-wrap:anywhere]">
+                    {where && <span className="sr-only">{d(kind.label).en}: </span>}
+                    {o.vehicleNumber ? <bdi className="whitespace-nowrap tabular-nums tracking-[0.02em]">{where}</bdi> : where ?? <Bi text={d(kind.label)} layout="inline" />}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </Panel>
   );
 }

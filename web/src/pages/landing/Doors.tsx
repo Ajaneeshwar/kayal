@@ -51,7 +51,7 @@ function CrewDoor({ status, boats, retry }: BoatsProps) {
   }
 
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${selectId}-t`}>
+    <Card as="article" id="door-crew" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${selectId}-t`}>
       <div id={`${selectId}-t`}>
         <DoorHeader icon={<OarIcon className="size-6" />} title="crewTitle" body="crewBody" />
       </div>
@@ -124,7 +124,7 @@ function InspectorDoor() {
   }
 
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${id}-t`}>
+    <Card as="article" id="door-inspector" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<ShieldIcon className="size-6" />} title="inspectorTitle" body="inspectorBody" />
       </div>
@@ -177,7 +177,7 @@ function GuestDoor({ status, boats, retry }: BoatsProps) {
   const matching = filterBoats(boats, query);
   const count = t('boatMatches');
   return (
-    <Card as="article" className="flex h-full flex-col p-6 sm:p-7 lg:col-span-2" aria-labelledby={`${id}-t`}>
+    <Card as="article" id="door-guest" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 lg:col-span-2" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<EyeIcon className="size-6" />} title="guestTitle" body="guestBody" />
       </div>

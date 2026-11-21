@@ -20,10 +20,12 @@ interface AppShellProps {
   /** Id of the main action, for the skip link. */
   skipTo?: string;
   skipLabel?: string;
+  /** Replaces the default one-line footer. */
+  footer?: ReactNode;
 }
 
 /** Header, main area and footer shared by every screen. */
-export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', skipLabel = 'Skip to content' }: AppShellProps) {
+export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', skipLabel = 'Skip to content', footer }: AppShellProps) {
   return (
     <div className={`flex min-h-dvh flex-col ${tone === 'cream' ? 'surface-light bg-surface' : 'bg-teak text-ink-inverse'}`}>
       <a
@@ -47,11 +49,13 @@ export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', 
       <main id="main" className="flex-1">
         {children}
       </main>
-      <footer className="bg-teak-deep pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-8 text-small text-ink-inverse-muted">
-        <div className="mx-auto flex max-w-[76rem] flex-col gap-2 px-4 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
-          <p>Built at HackaThoni, Alappuzha, November 2026.</p>
-        </div>
-      </footer>
+      {footer ?? (
+        <footer className="bg-teak-deep pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-8 text-small text-ink-inverse-muted">
+          <div className="mx-auto flex max-w-[76rem] flex-col gap-2 px-4 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
+            <p>Built at HackaThoni, Alappuzha, November 2026.</p>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

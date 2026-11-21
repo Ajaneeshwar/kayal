@@ -54,7 +54,7 @@ interface Exchange {
   notice?: { kind: NoticeKind; detail?: string; retry: boolean };
 }
 
-type Load = { status: 'loading' } | { status: 'ready'; boat: Boat; facilities: Facility[] } | { status: 'missing' } | { status: 'error' };
+type Load = { status: 'loading' } | { status: 'ready'; boat: Boat; facilities: Facility[]; publicUrl?: string | null } | { status: 'missing' } | { status: 'error' };
 
 function classify(err: unknown): NonNullable<Exchange['notice']> {
   if (!(err instanceof ApiError)) return { kind: 'server', detail: (err as Error).message, retry: true };
@@ -105,9 +105,9 @@ function Crew({ boatId }: { boatId: string }) {
     let live = true;
     setLoad({ status: 'loading' });
     getBoat(boatId)
-      .then(({ boat, facilities }) => {
+      .then(({ boat, facilities, publicUrl }) => {
         if (!live) return;
-        setLoad({ status: 'ready', boat, facilities });
+        setLoad({ status: 'ready', boat, facilities, publicUrl });
         rememberCrewBoat(boat.id);
       })
       .catch((err) => live && setLoad({ status: err instanceof ApiError && err.status === 404 ? 'missing' : 'error' }));
@@ -336,6 +336,7 @@ function Crew({ boatId }: { boatId: string }) {
           <Intro boat={boat} />
           {exchanges.map((x) => (
             <ExchangeView
+              publicUrl={load.publicUrl}
               key={x.id}
               x={x}
               speakingId={speakingId}
@@ -553,6 +554,7 @@ function LocationStrip({ location, facilities }: { location: ReturnType<typeof u
 }
 
 function ExchangeView({
+  publicUrl,
   x,
   speakingId,
   onPlay,
@@ -562,6 +564,7 @@ function ExchangeView({
   onPhotoAdded,
   onBeforePhoto,
 }: {
+  publicUrl?: string | null;
   x: Exchange;
   speakingId: string | null;
   onPlay: (id: string) => void;
@@ -587,7 +590,7 @@ function ExchangeView({
       {x.entry && <Receipt entry={x.entry} token={x.token ?? null} onCorrected={onCorrected} onPhotoAdded={onPhotoAdded} onBeforePhoto={onBeforePhoto} />}
       {/* Nobody receives waste at a public bin, so there is no one to show the code to. */}
       {x.entry?.handoverCode && !x.entry.confirmation && methodOf(x.entry) !== 'waste_bin' && (
-        <HandoverCard entry={{ ...x.entry, handoverCode: x.entry.handoverCode }} />
+        <HandoverCard publicUrl={publicUrl} entry={{ ...x.entry, handoverCode: x.entry.handoverCode }} />
       )}
       {x.notice && (
         <Notice

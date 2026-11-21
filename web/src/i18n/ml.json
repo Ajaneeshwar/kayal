@@ -63,6 +63,18 @@
     "en": "Tourists and inspectors see the boat’s record, with a seal anyone can read.",
     "ml": "വിനോദസഞ്ചാരികളും ഇൻസ്പെക്ടർമാരും ബോട്ടിന്റെ രേഖ കാണുന്നു, ആർക്കും വായിക്കാൻ കഴിയുന്ന ഒരു സീൽ ഇതിലുണ്ട്."
   },
+  "footerBuiltFor": {
+    "en": "Built for Kerala’s backwaters",
+    "ml": "കേരളത്തിലെ കായലുകൾക്കായി നിർമ്മിച്ചത്"
+  },
+  "footerGoal": {
+    "en": "A clean Vembanad, one recorded handover at a time.",
+    "ml": "ശുദ്ധമായ വേമ്പനാട്, ഓരോ തവണയും രേഖപ്പെടുത്തിയ കൈമാറ്റം."
+  },
+  "footerSource": {
+    "en": "Source on GitHub",
+    "ml": "Source on GitHub"
+  },
   "signinTitle": {
     "en": "Choose your door",
     "ml": "നിങ്ങളുടെ വാതിൽ തിരഞ്ഞെടുക്കുക"

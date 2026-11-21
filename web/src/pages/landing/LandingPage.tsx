@@ -12,6 +12,7 @@ import { Seal } from '../boat/Seal.tsx';
 import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
 import { Doors } from './Doors.tsx';
+import { LandingFooter } from './LandingFooter.tsx';
 import { ArrowIcon } from './icons.tsx';
 import { en } from './strings.ts';
 
@@ -147,7 +148,7 @@ export default function LandingPage() {
   }, [chosen]);
   if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
-    <AppShell>
+    <AppShell footer={<LandingFooter />}>
       <Hero ready={ready} />
       <Steps />
       <Doors />

@@ -126,7 +126,7 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
 }
 
 export const getBoat = (id: string) =>
-  request<{ boat: Boat; entries: Entry[]; facilities: Facility[] }>(`/api/boats/${encodeURIComponent(id)}`);
+  request<{ boat: Boat; entries: Entry[]; facilities: Facility[]; publicUrl?: string | null }>(`/api/boats/${encodeURIComponent(id)}`);
 
 /**
  * Sends an entry. XMLHttpRequest rather than fetch, because only it reports when the body has

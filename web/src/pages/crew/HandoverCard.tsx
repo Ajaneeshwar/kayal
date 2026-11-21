@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import { publicOrigin } from '../../lib/publicOrigin.ts';
 import { StampIcon } from '../../components/StatusBadge.tsx';
 import { usePick } from '../../i18n/language.ts';
 import type { Entry } from './api.ts';
@@ -29,10 +30,10 @@ function useQrSvg(url: string) {
  * After a save: the handover code and a QR link for the plant, truck or collector, who confirms
  * the handover on /operator. The crew turns the phone round, so the code is large and spaced.
  */
-export function HandoverCard({ entry }: { entry: Entry & { handoverCode: string } }) {
+export function HandoverCard({ entry, publicUrl }: { publicUrl?: string | null; entry: Entry & { handoverCode: string } }) {
   const pick = usePick();
   const code = entry.handoverCode.toUpperCase();
-  const svg = useQrSvg(`${window.location.origin}/operator?entry=${encodeURIComponent(entry.id)}`);
+  const svg = useQrSvg(`${publicOrigin(publicUrl)}/operator?entry=${encodeURIComponent(entry.id)}`);
 
   return (
     <section

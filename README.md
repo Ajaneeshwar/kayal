@@ -99,6 +99,7 @@ Environment variables, set in `.env` or the shell:
 | --- | --- | --- |
 | `SARVAM_API_KEY` | Key for the Sarvam calls. Without it, voice logging fails. | None |
 | `ADMIN_PIN` | The shared inspector PIN. If empty, inspector writes need no PIN. | Empty |
+| `PUBLIC_URL` | Public HTTP(S) base URL used for QR codes and printed links. | Browser origin |
 | `PORT` | Port the server listens on. | `3000` |
 | `HOST` | Address the server listens on. | `127.0.0.1` |
 | `DATA_DIR` | Where the JSON data and uploaded photos are stored. | `data/` in the repository |

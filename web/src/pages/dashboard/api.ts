@@ -72,6 +72,17 @@ export interface Custody {
   lastUnloadAt: string | null;
 }
 
+export type OperatorType = 'plant' | 'suction_truck' | 'mobile_pump' | 'waste_collector';
+
+/** A plant desk, truck, pump boat or collector that can confirm a handover. The sign-in code is never sent back. */
+export interface Operator {
+  id: string;
+  name: string;
+  type: OperatorType;
+  facilityId: string | null;
+  vehicleNumber: string | null;
+}
+
 export interface Chain {
   ok: boolean;
   count: number;
@@ -79,6 +90,7 @@ export interface Chain {
 }
 
 export interface State {
+  publicUrl?: string | null;
   boats: Boat[];
   facilities: Facility[];
   entries: Entry[];
@@ -88,6 +100,8 @@ export interface State {
   adminPinRequired: boolean;
   /** Tourist reports, newest first. Missing on a server without the reports route. */
   reports?: Record<string, unknown>[];
+  /** Receivers who can confirm handovers. Missing on a server without operators. */
+  operators?: Operator[];
   /** One row per registered truck or pump boat. Missing on a server without operators. */
   custody?: Custody[];
   /** The last 20 accepted owner reminder calls, newest first. Missing on an older server. */
@@ -170,6 +184,9 @@ export const addBoat = (name: string, registration: string) => request<{ boat: B
 
 export const addFacility = (input: { name: string; lat: number; lon: number; accepts: Waste[] }) =>
   request<{ facility: Facility }>('/api/facilities', input);
+
+export const addOperator = (input: { name: string; type: OperatorType; facilityId?: string; vehicleNumber?: string; code: string }) =>
+  request<{ operator: Operator }>('/api/operators', input);
 
 type Loose = Record<string, unknown>;
 const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v : null);

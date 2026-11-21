@@ -34,6 +34,10 @@ const webAppOwns = (pathname) =>
   existsSync(path.join(WEB_DIST, 'index.html'));
 const OVERDUE_DAYS = Number(process.env.OVERDUE_DAYS || 90);
 const ADMIN_PIN = process.env.ADMIN_PIN || '';
+const configuredPublicUrl = process.env.PUBLIC_URL?.trim() ?? '';
+const publicUrl = /^https?:\/\//i.test(configuredPublicUrl) && URL.canParse(configuredPublicUrl)
+  ? configuredPublicUrl.replace(/\/+$/, '')
+  : null;
 const MAX_BODY_BYTES = 12 * 1024 * 1024;
 const configuredBodyTimeout = Number(process.env.BODY_TIMEOUT_MS);
 const BODY_TIMEOUT_MS = Number.isInteger(configuredBodyTimeout) && configuredBodyTimeout > 0 && configuredBodyTimeout <= 2_147_483_647
@@ -227,6 +231,7 @@ function stateView() {
     chain: checkChain(store.entries),
     overdueDays: OVERDUE_DAYS,
     adminPinRequired: Boolean(ADMIN_PIN),
+    publicUrl,
   };
 }
 
@@ -244,7 +249,7 @@ async function route(req, res) {
 
   if (method === 'GET') {
     if (pathname === '/api/health') return sendJson(res, 200, {
-      ok: true, sarvamKey: Boolean(process.env.SARVAM_API_KEY), reminderCallConfigured: Boolean(sarvam.reminderCallConfig()),
+      ok: true, publicUrl, sarvamKey: Boolean(process.env.SARVAM_API_KEY), reminderCallConfigured: Boolean(sarvam.reminderCallConfig()),
     });
     if (pathname === '/api/state') return sendJson(res, 200, stateView());
     if (pathname === '/api/events') return events.subscribe(res);
@@ -278,6 +283,7 @@ async function route(req, res) {
       return sendJson(res, 200, {
         boat: boatView(boat, new Date()),
         entries: store.entriesFor(boat.id).reverse(),
+        publicUrl,
         facilities: store.facilities,
       });
     }

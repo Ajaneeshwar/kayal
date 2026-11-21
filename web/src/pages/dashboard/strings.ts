@@ -86,6 +86,14 @@ export const en = {
   callWait: 'A call was placed a moment ago. Try again in {seconds} seconds.',
   callNotSetUp: 'Calling is not set up on this server.',
   callFailed: 'The phone service did not take the call. Try again in a minute.',
+  addReceiver: 'Add receiver',
+  receiversTitle: 'Receivers',
+  receiversMeta: 'Who can confirm a handover',
+  receiversEmpty: 'No receivers yet. Add a plant desk, truck or collector so they can confirm handovers.',
+  receiverPlant: 'Plant desk',
+  receiverPump: 'Pump boat',
+  receiverAdded: '{name} can now confirm handovers',
+  receiverCodeNote: 'Give this sign-in code to the receiver now. Kayal Log does not show it again.',
 } as const;
 
 export type DashKey = keyof typeof en;

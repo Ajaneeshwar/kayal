@@ -9,17 +9,17 @@ import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Entry, type Facility, type ReminderCall, type Report } from './api.ts';
 import { CallOwnerDialog } from './CallOwnerDialog.tsx';
-import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
+import { AddBoatDialog, AddPointDialog, AddReceiverDialog } from './AddDialogs.tsx';
 import { KIND_LABELS, LEVEL_LABELS, shownLevel } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
-import { BoatTable, Feed, Points, Reports, TruckCustody, sortByUrgency } from './Panels.tsx';
+import { BoatTable, Feed, Points, Receivers, Reports, TruckCustody, sortByUrgency } from './Panels.tsx';
 import { QrDialog } from './QrDialog.tsx';
 import { WithdrawDialog } from './WithdrawDialog.tsx';
 import { useDashboard, type Link } from './useDashboard.ts';
 import './dashboard.css';
 
-type Modal = { kind: 'qr'; boat: Boat } | { kind: 'call'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'withdraw'; entry: Entry } | null;
+type Modal = { kind: 'qr'; boat: Boat } | { kind: 'call'; boat: Boat } | { kind: 'boat' } | { kind: 'point' } | { kind: 'receiver' } | { kind: 'withdraw'; entry: Entry } | null;
 type Tone = 'confirmed' | 'verified' | 'declared' | 'overdue' | 'plain';
 
 const TONE_TEXT: Record<Tone, string> = {
@@ -239,6 +239,10 @@ function InspectorDashboard() {
               <Plus />
               {pick(d('addBoat'))}
             </HeaderButton>
+            <HeaderButton onClick={() => setModal({ kind: 'receiver' })}>
+              <Plus />
+              {pick(d('addReceiver'))}
+            </HeaderButton>
             <HeaderButton primary onClick={() => setModal({ kind: 'point' })}>
               <Plus />
               {pick(d('addPoint'))}
@@ -357,6 +361,7 @@ function InspectorDashboard() {
 
         <div className="order-3 flex min-w-0 flex-col gap-5 lg:order-none">
           {state && <Points facilities={state.facilities} busy={busy} onToggle={toggleFacility} onAdd={() => setModal({ kind: 'point' })} />}
+          {state?.operators && <Receivers operators={state.operators} facilities={state.facilities} onAdd={() => setModal({ kind: 'receiver' })} />}
           {state?.custody && <TruckCustody rows={state.custody} />}
           <Reports reports={reports} boats={boats} busy={busy} onReview={review} />
         </div>
@@ -368,7 +373,7 @@ function InspectorDashboard() {
         </div>
       </footer>
 
-      {modal?.kind === 'qr' && <QrDialog boat={modal.boat} onClose={() => setModal(null)} />}
+      {modal?.kind === 'qr' && <QrDialog boat={modal.boat} publicUrl={state?.publicUrl} onClose={() => setModal(null)} />}
       {modal?.kind === 'call' && state && (
         <CallOwnerDialog
           boat={modal.boat}
@@ -404,6 +409,17 @@ function InspectorDashboard() {
           onClose={() => setModal(null)}
           onAdded={(boat) => {
             setModal({ kind: 'qr', boat });
+            refresh();
+          }}
+        />
+      )}
+      {modal?.kind === 'receiver' && state && (
+        <AddReceiverDialog
+          facilities={state.facilities}
+          onClose={() => setModal(null)}
+          onAdded={(op) => {
+            // The dialog stays open on the code; the list shows the new receiver at once.
+            setState((s) => s && { ...s, operators: [...(s.operators ?? []), op] });
             refresh();
           }}
         />
