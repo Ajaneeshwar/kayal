@@ -321,7 +321,6 @@ function InspectorDashboard() {
       <footer className="bg-teak-deep py-5 text-caption text-ink-inverse-muted">
         <div className="mx-auto flex max-w-[110rem] flex-col gap-1 px-5 sm:flex-row sm:justify-between lg:px-8">
           <p>Location shows the phone was at the point. It does not prove the tank was emptied.</p>
-          <p>Malayalam is machine-translated and not yet checked by a native speaker.</p>
         </div>
       </footer>
 
