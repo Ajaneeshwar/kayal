@@ -11,28 +11,6 @@ const base = {
   'aria-hidden': true,
 };
 
-export const MicIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base} {...p}>
-    <rect x="9" y="3" width="6" height="11" rx="3" />
-    <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
-  </svg>
-);
-
-export const ProofIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base} {...p}>
-    <path d="M9 21s-5-4.6-5-9a5 5 0 0 1 10 0c0 1-.3 2-.7 3" />
-    <circle cx="9" cy="12" r="1.8" />
-    <path d="M14 14.5h6v6.5l-1.5-1-1.5 1-1.5-1-1.5 1zM16 17h2" />
-  </svg>
-);
-
-export const SealIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base} {...p}>
-    <path d="M12 2.8l2 1.5 2.5-.2.8 2.4 2.1 1.4-.9 2.3.9 2.3-2.1 1.4-.8 2.4-2.5-.2-2 1.5-2-1.5-2.5.2-.8-2.4-2.1-1.4.9-2.3-.9-2.3 2.1-1.4.8-2.4 2.5.2z" />
-    <path d="M8.8 10.6l2.2 2.2 4.2-4.4" />
-  </svg>
-);
-
 export const OarIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base} {...p}>
     <path d="M3 15c3 3.5 15 3.5 18 0l-1.2 3.4c-3.8 2.2-11.8 2.2-15.6 0z" />

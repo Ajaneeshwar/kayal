@@ -6,10 +6,12 @@ import { t } from '../../i18n/index.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { useFontsReady } from '../../lib/useFontsReady.ts';
+import { useBoats } from '../../lib/useBoats.ts';
+import { Seal } from '../boat/Seal.tsx';
 import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
 import { Doors } from './Doors.tsx';
-import { ArrowIcon, MicIcon, ProofIcon, SealIcon } from './icons.tsx';
+import { ArrowIcon } from './icons.tsx';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -21,34 +23,32 @@ const heroItem: Variants = {
 
 function Hero({ ready }: { ready: boolean }) {
   const pick = usePick();
+  const { boats, status } = useBoats();
+  const boat = status === 'ready' ? boats[0] : undefined;
   return (
-    <section aria-labelledby="hero-title" className="relative isolate h-[47rem] overflow-hidden sm:h-[50rem] lg:h-[52rem]">
-      <HouseboatScene className="absolute inset-0 -z-10 size-full" />
+    <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
+      <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_75%,transparent)] lg:h-full lg:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-teak-deep/75 via-teak-deep/75 to-transparent lg:bg-gradient-to-r lg:from-teak-deep/75 lg:via-teak-deep/60 lg:via-35% lg:to-transparent lg:to-60%" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-b from-transparent to-teak" />
       <motion.div
         initial="hidden"
         animate={ready ? 'show' : 'hidden'}
         variants={heroGroup}
-        className="mx-auto max-w-[76rem] px-5 pt-24 [text-shadow:0_1px_18px_color-mix(in_oklab,var(--color-teak-deep)_70%,transparent)] sm:px-6 sm:pt-32 lg:px-8 lg:pt-40"
+        className="mx-auto max-w-[76rem] px-5 pt-20 sm:px-6 lg:px-8 lg:pt-24"
       >
-        <motion.p variants={heroItem} className="text-caption font-semibold uppercase tracking-[0.16em] text-gold">
-          Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
+        <motion.p variants={heroItem} className="text-caption font-semibold text-gold">
+          Kayal Log · Alappuzha backwaters<span className="hidden sm:inline"> · Vembanad lake</span>
         </motion.p>
-        <motion.h1
-          variants={heroItem}
-          id="hero-title"
-          className="mt-3 font-display text-display font-semibold text-ink-inverse [font-variation-settings:'SOFT'_60,'WONK'_1]"
-        >
-          Kayal Log
-        </motion.h1>
         <motion.div variants={heroItem}>
           <Bi
             k="tagline"
-            as="p"
-            className="mt-4 max-w-[24ch] text-lead font-medium text-ink-inverse sm:text-[1.375rem] lg:max-w-[30ch]"
-            mlClassName="mt-1.5 text-gold-bright"
+            as="h1"
+            id="hero-title"
+            className="mt-3 max-w-[16ch] font-display text-[clamp(2.5rem,5vw,4.75rem)] font-semibold leading-[1.05] text-ink-inverse"
+            mlClassName="mt-3 !text-[0.5em] leading-snug text-gold-bright"
           />
         </motion.div>
-        <motion.div variants={heroItem} className="mt-7 hidden sm:block">
+        <motion.div variants={heroItem} className="mt-7">
           <a
             href="#doors"
             className="group inline-flex min-h-12 items-center gap-2 rounded-pill bg-gold px-5 font-semibold text-teak shadow-[var(--shadow-button)] transition-[background-color,transform] duration-150 [text-shadow:none] hover:bg-gold-bright active:scale-[0.97]"
@@ -57,15 +57,32 @@ function Hero({ ready }: { ready: boolean }) {
             <ArrowIcon className="size-5 rotate-90 transition-transform duration-150 group-hover:translate-y-0.5" />
           </a>
         </motion.div>
+        {boat && (
+          <motion.div variants={heroItem} className="mt-5 w-full min-w-0 max-w-[calc(100vw-3.5rem)] sm:max-w-sm [text-shadow:none]">
+            <Bi k="guestBody" as="p" className="mb-2 text-small text-ink-inverse" mlClassName="mt-1" />
+            <a
+              href={`/boat/${encodeURIComponent(boat.id)}`}
+              className="surface-light group flex w-full min-w-0 items-center gap-3 rounded-card border border-gold-edge bg-kasavu p-3 text-ink shadow-raised"
+            >
+              <Seal state={boat.status.state} className="size-12 shrink-0" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{boat.name}</span>
+                <span className="mb-1 block break-words text-caption text-ink-muted">{boat.registration}</span>
+                <StatusBadge state={boat.status.state} bilingual={false} />
+              </span>
+              <ArrowIcon className="size-5 shrink-0 text-gold-ink transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );
 }
 
-const STEPS: { n: string; title: StringKey; body: StringKey; Icon: typeof MicIcon }[] = [
-  { n: '01', title: 'sayTitle', body: 'sayBody', Icon: MicIcon },
-  { n: '02', title: 'proveTitle', body: 'proveBody', Icon: ProofIcon },
-  { n: '03', title: 'showTitle', body: 'showBody', Icon: SealIcon },
+const STEPS: { n: string; title: StringKey; body: StringKey }[] = [
+  { n: '1', title: 'sayTitle', body: 'sayBody' },
+  { n: '2', title: 'proveTitle', body: 'proveBody' },
+  { n: '3', title: 'showTitle', body: 'showBody' },
 ];
 
 function Steps() {
@@ -78,30 +95,22 @@ function Steps() {
         className="font-display text-title font-semibold text-ink-inverse"
         mlClassName="mt-1 text-gold"
       />
-      <ol className="relative mt-8 grid gap-4 md:grid-cols-3 md:gap-5">
-        {/* The boat's wake, joining the three steps on wide screens */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-[16%] top-[3.25rem] hidden border-t-2 border-dashed border-gold/25 md:block"
-        />
-        {STEPS.map(({ n, title, body, Icon }, i) => (
+      <ol className="mt-8 grid md:grid-cols-3">
+        {STEPS.map(({ n, title, body }, i) => (
           <motion.li
             key={n}
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '0px 0px -10% 0px' }}
             transition={{ duration: 0.7, ease: EASE, delay: i * 0.08 }}
-            className="relative flex flex-col rounded-card border border-transparent bg-teak-raised p-6 shadow-[inset_0_0_0_1px_oklch(1_0_0/0.07),var(--shadow-card)] sm:p-7"
+            className="flex flex-col border-t border-white/10 py-6 first:border-t-0 first:pt-0 md:border-s md:border-t-0 md:px-7 md:py-0 md:first:border-s-0 md:first:ps-0 md:last:pe-0"
           >
-            <div className="flex items-center justify-between">
-              <span className="grid size-14 place-items-center rounded-full bg-teak text-gold shadow-[inset_0_0_0_1.5px_var(--color-gold-edge)]">
-                <Icon className="size-7" />
-              </span>
-              <span className="font-display text-title font-semibold tabular-nums text-gold/35">{n}</span>
+            <div className="flex items-baseline gap-3">
+              <span className="font-display text-heading font-semibold tabular-nums text-gold">{n}</span>
+              <Bi k={title} as="h3" className="font-display text-heading font-semibold text-ink-inverse" mlClassName="mt-0.5 text-gold" />
             </div>
-            <Bi k={title} as="h3" className="mt-6 font-display text-heading font-semibold text-ink-inverse" mlClassName="mt-0.5 text-gold" />
             <Bi k={body} as="p" className="mt-3 text-body text-ink-inverse-muted" mlClassName="mt-2" />
-            {n === '03' && (
+            {n === '3' && (
               <div className="mt-5 flex flex-wrap gap-2" aria-label="The three seals">
                 <StatusBadge state="verified" />
                 <StatusBadge state="declared" />
@@ -118,19 +127,9 @@ function Steps() {
 export default function LandingPage() {
   const ready = useFontsReady();
   const chosen = useLangChosen();
-  const pick = usePick();
   if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
-    <AppShell
-      headerEnd={
-        <a
-          href="#doors"
-          className="inline-flex min-h-11 items-center rounded-pill px-4 text-small font-semibold text-ink-inverse shadow-[inset_0_0_0_1px_oklch(1_0_0/0.25)] transition-colors duration-150 hover:bg-white/10"
-        >
-          {pick(t('signIn'))}
-        </a>
-      }
-    >
+    <AppShell>
       <Hero ready={ready} />
       <Steps />
       <Doors />

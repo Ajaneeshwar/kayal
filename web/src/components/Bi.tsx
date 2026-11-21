@@ -53,7 +53,7 @@ export function Bi({ k, text, as: Tag = 'span', layout = 'stack', className = ''
     <span
       lang="ml"
       className={`${layout === 'inline' ? '' : 'block'} font-ml font-normal tracking-normal [overflow-wrap:anywhere] ${
-        layout === 'ml-first' ? '' : 'text-[0.78em] opacity-80'
+        layout === 'ml-first' ? '' : 'text-[0.9em] opacity-90'
       } ${mlClassName}`}
     >
       {pair.ml}
