@@ -117,6 +117,7 @@ export function Select({ id, name, form, value, onChange, options, disabled = fa
   function onKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (unavailable) return;
     if (event.key === 'Tab') {
+      if (open && options[active] && !options[active].disabled) onChange(options[active].value);
       close();
       return;
     }
