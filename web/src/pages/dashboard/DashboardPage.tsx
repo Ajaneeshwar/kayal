@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import type L from 'leaflet';
 import { BrandMark } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
 import type { Text } from '../../i18n/index.ts';
@@ -9,7 +8,7 @@ import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
 import { KIND_LABELS, LEVEL_LABELS, isToday } from './format.ts';
 import { d } from './i18n.ts';
-import { MapPanel } from './MapPanel.tsx';
+import { MapPanel, type MapView } from './MapPanel.tsx';
 import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
 import { QrDialog } from './QrDialog.tsx';
 import { useDashboard, type Link } from './useDashboard.ts';
@@ -126,9 +125,10 @@ export default function DashboardPage() {
   const [modal, setModal] = useState<Modal>(null);
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [toast, setToast] = useState<Toast | null>(null);
-  const centre = useRef<L.LatLngTuple>([9.53, 76.38]);
-  const onCentre = useCallback((c: L.LatLngTuple) => {
-    centre.current = c;
+  // The main map's latest view; the add-point dialog's small map starts from it.
+  const mapView = useRef<MapView>({ centre: [9.53, 76.38], zoom: 13 });
+  const onView = useCallback((v: MapView) => {
+    mapView.current = v;
   }, []);
 
   const showToast = useCallback((t: Toast) => {
@@ -140,7 +140,7 @@ export default function DashboardPage() {
   const sorted = useMemo(() => sortByUrgency(state?.boats ?? []), [state]);
   const freshBoats = useMemo(() => new Set((state?.entries ?? []).filter((e) => fresh.has(e.id)).map((e) => e.boatId)), [state, fresh]);
 
-  // Announce the newest arrival over the map.
+  // Announce the newest arrival above the map.
   const announced = useRef<string | null>(null);
   useEffect(() => {
     const newest = state?.entries.find((e) => fresh.has(e.id));
@@ -249,8 +249,32 @@ export default function DashboardPage() {
       )}
 
       <main id="main" className="surface-light mx-auto grid w-full max-w-[110rem] flex-1 gap-5 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              key={toast.id}
+              role="status"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, transition: { duration: 0.18 } }}
+              transition={{ type: 'spring', duration: 0.45, bounce: 0.15 }}
+              className="min-w-0 lg:col-span-2"
+            >
+              <div className="surface-light flex items-start gap-3 rounded-card border border-gold-edge/70 bg-kasavu px-4 py-3 shadow-[var(--shadow-raised)]">
+                <span
+                  aria-hidden="true"
+                  className={`mt-1.5 size-2.5 shrink-0 rounded-full ${toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : 'bg-overdue'}`}
+                />
+                <div className="min-w-0">
+                  <p className="font-semibold">{toast.title}</p>
+                  <p className="text-small text-ink-muted">{toast.body}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <section id="map" aria-label="Map" className="relative h-[28rem] min-w-0 overflow-hidden rounded-card border border-line bg-teak shadow-[var(--shadow-card)] lg:h-[min(64vh,38rem)]">
-          {state && <MapPanel facilities={state.facilities} entries={state.entries} boats={boats} fresh={fresh} onCentre={onCentre} />}
+          {state && <MapPanel facilities={state.facilities} entries={state.entries} boats={boats} fresh={fresh} onView={onView} />}
             <div className="kl-glass absolute start-3 top-3 z-[500] max-w-[calc(100%-1.5rem)] rounded-control px-4 py-2.5">
               <Bi as="h2" text={d('mapTitle')} className="font-display text-body font-semibold" />
             </div>
@@ -268,30 +292,6 @@ export default function DashboardPage() {
                 <span className="kl-entry is-declared is-key" aria-hidden="true" /> Entry, declared only
               </li>
             </ul>
-          <AnimatePresence>
-            {toast && (
-              <motion.div
-                key={toast.id}
-                role="status"
-                initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, transition: { duration: 0.18 } }}
-                transition={{ type: 'spring', duration: 0.45, bounce: 0.15 }}
-                className="absolute end-3 top-3 z-[600] w-[min(24rem,calc(100%-1.5rem))]"
-              >
-                <div className="surface-light flex items-start gap-3 rounded-card border border-gold-edge/70 bg-kasavu px-4 py-3 shadow-[var(--shadow-raised)]">
-                  <span
-                    aria-hidden="true"
-                    className={`mt-1.5 size-2.5 shrink-0 rounded-full ${toast.tone === 'verified' ? 'bg-verified' : toast.tone === 'declared' ? 'bg-declared' : 'bg-overdue'}`}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-semibold">{toast.title}</p>
-                    <p className="text-small text-ink-muted">{toast.body}</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </section>
 
         <div className="min-h-0 lg:h-[min(64vh,38rem)] [&>section]:h-full">
@@ -335,7 +335,7 @@ export default function DashboardPage() {
       )}
       {modal?.kind === 'point' && (
         <AddPointDialog
-          centre={centre.current}
+          view={mapView.current}
           onClose={() => setModal(null)}
           onAdded={(f) => {
             setModal(null);

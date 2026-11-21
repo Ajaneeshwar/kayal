@@ -46,21 +46,28 @@ function entryPopup(e: Entry, boat: Boat | undefined) {
     <span class="kl-pop-meta">${esc(LEVEL_LABELS[e.verification.level])} · ${esc(whereText(e))}</span></div>`;
 }
 
+export interface MapView {
+  centre: L.LatLngTuple;
+  zoom: number;
+}
+
 interface Props {
   facilities: Facility[];
   entries: Entry[];
   boats: Map<string, Boat>;
   fresh: ReadonlySet<string>;
-  /** Called with the map once, so the add-point dialog can start from its centre. */
-  onCentre?: (centre: L.LatLngTuple) => void;
+  /** Called with the map's view after every pan or zoom, so the add-point dialog can start there. */
+  onView?: (view: MapView) => void;
 }
 
-export function MapPanel({ facilities, entries, boats, fresh, onCentre }: Props) {
+export function MapPanel({ facilities, entries, boats, fresh, onView }: Props) {
   const node = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.LayerGroup | null>(null);
   const fitted = useRef(false);
   const flown = useRef<string | null>(null);
+  const view = useRef(onView);
+  view.current = onView;
 
   useEffect(() => {
     if (!node.current) return;
@@ -69,6 +76,12 @@ export function MapPanel({ facilities, entries, boats, fresh, onCentre }: Props)
     L.tileLayer(TILES, { maxZoom: 18, attribution: ATTRIBUTION }).addTo(m);
     layer.current = L.layerGroup().addTo(m);
     map.current = m;
+    const reportView = () => {
+      const c = m.getCenter();
+      view.current?.({ centre: [c.lat, c.lng], zoom: m.getZoom() });
+    };
+    reportView();
+    m.on('moveend', reportView);
     const observer = new ResizeObserver(() => m.invalidateSize());
     observer.observe(node.current);
     return () => {
@@ -106,8 +119,6 @@ export function MapPanel({ facilities, entries, boats, fresh, onCentre }: Props)
       const points: L.LatLngTuple[] = facilities.map((f) => [f.lat, f.lon]);
       m.fitBounds(L.latLngBounds(points).pad(0.3), { maxZoom: 13 });
       fitted.current = true;
-      const c = m.getCenter();
-      onCentre?.([c.lat, c.lng]);
     }
 
     // Bring a newly arrived entry into view, so the room sees it land.
@@ -117,7 +128,7 @@ export function MapPanel({ facilities, entries, boats, fresh, onCentre }: Props)
       const at = L.latLng(newest.location!.lat, newest.location!.lon);
       if (!m.getBounds().pad(-0.1).contains(at)) m.flyTo(at, Math.max(m.getZoom(), 12), { duration: 1.1 });
     }
-  }, [facilities, entries, boats, fresh, onCentre]);
+  }, [facilities, entries, boats, fresh]);
 
   return <div ref={node} className="kl-map size-full" role="region" aria-label="Map of collection points and recent entries" />;
 }

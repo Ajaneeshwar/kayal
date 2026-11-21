@@ -4,6 +4,7 @@ import { Button } from '../../components/Button.tsx';
 import { addBoat, addFacility, type Boat, type Facility, type Waste } from './api.ts';
 import { Dialog, Field, FormError, inputClass } from './Dialog.tsx';
 import { WASTE_LABELS } from './format.ts';
+import type { MapView } from './MapPanel.tsx';
 import { d } from './i18n.ts';
 
 export function AddBoatDialog({ onClose, onAdded }: { onClose: () => void; onAdded: (boat: Boat) => void }) {
@@ -50,7 +51,7 @@ export function AddBoatDialog({ onClose, onAdded }: { onClose: () => void; onAdd
 
 const WASTES: Waste[] = ['sewage', 'solid', 'oil'];
 
-function PickMap({ centre, value, onPick }: { centre: L.LatLngTuple; value: L.LatLngTuple; onPick: (p: L.LatLngTuple) => void }) {
+function PickMap({ view, value, onPick }: { view: MapView; value: L.LatLngTuple; onPick: (p: L.LatLngTuple) => void }) {
   const node = useRef<HTMLDivElement>(null);
   const marker = useRef<L.Marker | null>(null);
   const pick = useRef(onPick);
@@ -58,7 +59,7 @@ function PickMap({ centre, value, onPick }: { centre: L.LatLngTuple; value: L.La
 
   useEffect(() => {
     if (!node.current) return;
-    const m = L.map(node.current, { zoomControl: true, attributionControl: false }).setView(centre, 13);
+    const m = L.map(node.current, { zoomControl: true, attributionControl: false }).setView(view.centre, view.zoom);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(m);
     const icon = L.divIcon({ className: '', iconSize: [34, 34], iconAnchor: [17, 17], html: '<span class="kl-fac is-open is-new"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6c2.9 3.6 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2.1-5.4 5-9z"/></svg></span>' });
     marker.current = L.marker(value, { icon, draggable: true }).addTo(m);
@@ -82,10 +83,10 @@ function PickMap({ centre, value, onPick }: { centre: L.LatLngTuple; value: L.La
   return <div ref={node} className="kl-map h-56 w-full overflow-hidden rounded-control border border-field-border" />;
 }
 
-export function AddPointDialog({ centre, onClose, onAdded }: { centre: L.LatLngTuple; onClose: () => void; onAdded: (f: Facility) => void }) {
+export function AddPointDialog({ view, onClose, onAdded }: { view: MapView; onClose: () => void; onAdded: (f: Facility) => void }) {
   const [name, setName] = useState('');
   const [accepts, setAccepts] = useState<Waste[]>(['sewage']);
-  const [at, setAt] = useState<L.LatLngTuple>(centre);
+  const [at, setAt] = useState<L.LatLngTuple>(view.centre);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,7 +139,7 @@ export function AddPointDialog({ centre, onClose, onAdded }: { centre: L.LatLngT
           </div>
         </fieldset>
         <div>
-          <PickMap centre={centre} value={at} onPick={setAt} />
+          <PickMap view={view} value={at} onPick={setAt} />
           <p className="mt-1.5 text-caption tabular-nums text-ink-muted">
             {at[0].toFixed(5)}, {at[1].toFixed(5)} · boats within 400 m count as here
           </p>

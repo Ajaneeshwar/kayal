@@ -94,7 +94,7 @@ function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined
           )}
           {entry.photo && (
             <a href={`/uploads/${entry.photo.file}`} target="_blank" rel="noopener" className="mt-2 flex items-center gap-2.5 text-caption text-ink-muted hover:text-ink">
-              <img src={`/uploads/${entry.photo.file}`} alt="" loading="lazy" className="kl-img size-10 rounded-md object-cover" />
+              <img src={`/uploads/${entry.photo.file}`} alt="" loading="eager" className="kl-img h-16 w-12 shrink-0 rounded-md bg-white object-contain" />
               <span className="line-clamp-2">
                 <span className="font-semibold text-ink">{entry.photo.isReceipt ? 'Receipt' : 'Photo'}</span>
                 {entry.photo.caption ? ` · ${entry.photo.caption}` : ''}
@@ -236,10 +236,10 @@ export function Points({ facilities, busy, onToggle, onAdd }: { facilities: Faci
       </PanelHead>
       <ul className="px-2 pb-3">
         {facilities.map((f) => (
-          <li key={f.id} className="flex items-center gap-3 rounded-control px-3 py-2.5">
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold">{f.name}</p>
-              <p className="truncate text-caption text-ink-muted">{f.accepts.map((a) => WASTE_LABELS[a]).join(', ')}</p>
+          <li key={f.id} className="flex flex-col items-start gap-2 rounded-control px-3 py-2.5">
+            <div className="w-full min-w-0">
+              <p className="text-pretty break-words font-semibold leading-snug">{f.name}</p>
+              <p className="text-caption text-ink-muted">{f.accepts.map((a) => WASTE_LABELS[a]).join(', ')}</p>
             </div>
             <button
               type="button"
@@ -252,14 +252,14 @@ export function Points({ facilities, busy, onToggle, onAdd }: { facilities: Faci
                 f.open ? 'border-gold-edge bg-gold/20 text-ink' : 'border-line bg-surface text-ink-muted'
               }`}
             >
-              <span className={`relative h-6 w-10 rounded-pill transition-colors duration-200 ${f.open ? 'bg-gold-ink' : 'bg-line'}`}>
+              <span aria-hidden="true" className={`relative block h-6 w-10 shrink-0 rounded-pill transition-colors duration-200 ${f.open ? 'bg-gold-ink' : 'bg-line'}`}>
                 <span
-                  className={`absolute top-0.5 size-5 rounded-full bg-kasavu shadow-sm transition-transform duration-200 ease-[var(--ease-out)] ${
-                    f.open ? 'translate-x-[1.125rem]' : 'translate-x-0.5'
+                  className={`absolute left-0.5 top-0.5 block size-5 rounded-full bg-kasavu shadow-sm transition-transform duration-200 ease-[var(--ease-out)] ${
+                    f.open ? 'translate-x-4' : 'translate-x-0'
                   }`}
                 />
               </span>
-              <Bi text={d(f.open ? 'open' : 'closed')} layout="inline" className="min-w-[4.5rem]" />
+              <Bi text={d(f.open ? 'open' : 'closed')} layout="inline" className="min-w-0" />
             </button>
           </li>
         ))}
