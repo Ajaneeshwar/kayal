@@ -29,6 +29,7 @@ function Hero({ ready }: { ready: boolean }) {
     <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
       <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_75%,transparent)] lg:h-full lg:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-teak-deep/75 via-teak-deep/75 to-transparent lg:bg-gradient-to-r lg:from-teak-deep/75 lg:via-teak-deep/60 lg:via-35% lg:to-transparent lg:to-60%" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-b from-transparent to-teak" />
       <motion.div
         initial="hidden"
         animate={ready ? 'show' : 'hidden'}
@@ -57,7 +58,7 @@ function Hero({ ready }: { ready: boolean }) {
           </a>
         </motion.div>
         {boat && (
-          <motion.div variants={heroItem} className="mt-5 w-full min-w-0 max-w-sm [text-shadow:none]">
+          <motion.div variants={heroItem} className="mt-5 w-full min-w-0 max-w-[calc(100vw-3.5rem)] sm:max-w-sm [text-shadow:none]">
             <Bi k="guestBody" as="p" className="mb-2 text-small text-ink-inverse" mlClassName="mt-1" />
             <a
               href={`/boat/${encodeURIComponent(boat.id)}`}
