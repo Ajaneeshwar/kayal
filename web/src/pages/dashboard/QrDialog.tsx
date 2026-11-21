@@ -5,6 +5,7 @@ import { Button } from '../../components/Button.tsx';
 import type { Boat } from './api.ts';
 import { Dialog } from './Dialog.tsx';
 import { d } from './i18n.ts';
+import { bt } from '../boat/data.ts';
 
 const INK = '#0b2737'; // --color-ink
 const PAPER = '#fefdf8'; // --color-kasavu
@@ -48,6 +49,7 @@ export function QrDialog({ boat, onClose }: { boat: Boat; onClose: () => void })
         <Code url={record} label={d('publicRecord')} note="For guests. Put it where they board." />
       </div>
       <div className="kl-no-print mt-6 flex justify-end gap-3">
+        <a href={`/boat/${encodeURIComponent(boat.id)}/sticker`} className="min-h-11 content-center font-semibold text-gold-ink underline"><Bi text={bt('sticker')} /></a>
         <Button variant="secondary" onClick={onClose}>
           Close
         </Button>

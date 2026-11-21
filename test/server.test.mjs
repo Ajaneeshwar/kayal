@@ -68,7 +68,7 @@ test('SPA pages retain HTTP status and missing files stay JSON', {
   skip: !existsSync(new URL('../web/dist/index.html', import.meta.url)) && 'Build web/ first to test SPA responses',
 }, async (t) => {
   const url = await startServer(t);
-  for (const pathname of ['/', '/crew', '/dashboard', '/boat/test']) {
+  for (const pathname of ['/', '/crew', '/dashboard', '/boat/test', '/boat/test/sticker']) {
     const res = await fetch(`${url}${pathname}`, { headers: { accept: 'text/html' } });
     assert.equal(res.status, 200, pathname);
     assert.match(res.headers.get('content-type'), /text\/html/);

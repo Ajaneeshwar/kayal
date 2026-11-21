@@ -27,7 +27,7 @@ const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 // The new frontend (web/, built to web/dist). Add a screen's path here when it moves over from public/.
 const WEB_DIST = path.join(ROOT, 'web', 'dist');
-const WEB_APP_PATHS = ['/', '/dashboard', '/boat/:boatId', '/crew'];
+const WEB_APP_PATHS = ['/', '/dashboard', '/boat/:boatId', '/boat/:boatId/sticker', '/crew'];
 const webAppOwns = (pathname) =>
   WEB_APP_PATHS.some((p) => new RegExp(`^${p.replace(/:[\w]+/g, '[\\w-]+')}$`).test(pathname)) &&
   existsSync(path.join(WEB_DIST, 'index.html'));
