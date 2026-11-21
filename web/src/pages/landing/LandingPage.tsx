@@ -134,19 +134,9 @@ function Steps() {
 export default function LandingPage() {
   const ready = useFontsReady();
   const chosen = useLangChosen();
-  const pick = usePick();
   if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
-    <AppShell
-      headerEnd={
-        <a
-          href="#doors"
-          className="inline-flex min-h-11 items-center rounded-pill px-4 text-small font-semibold text-ink-inverse shadow-[inset_0_0_0_1px_oklch(1_0_0/0.25)] transition-colors duration-150 hover:bg-white/10"
-        >
-          {pick(t('signIn'))}
-        </a>
-      }
-    >
+    <AppShell>
       <Hero ready={ready} />
       <Steps />
       <Doors />
