@@ -123,7 +123,7 @@ function Fact({ label, children, className = '' }: { label: BoatStringKey; child
   );
 }
 
-function ChainLine({ chain }: { chain: Chain | null }) {
+function ChainLine({ chain, count }: { chain: Chain | null; count: number }) {
   if (!chain) {
     return <p className="text-small text-ink-muted">The tamper check could not be loaded just now. It will try again shortly.</p>;
   }
@@ -147,11 +147,11 @@ function ChainLine({ chain }: { chain: Chain | null }) {
       </span>
       <div className="text-small">
         <Bi text={word} className={`font-semibold ${chain.ok ? 'text-verified' : 'text-overdue'}`} />
-        <p className="text-ink-muted">
-          {chain.ok
-            ? `Each entry is sealed to the one before it, so nobody can quietly change an old entry. All ${chain.count} entries in Kayal Log still match.`
-            : `An entry was changed after it was written${chain.brokenAt != null ? ` (entry ${chain.brokenAt + 1} of ${chain.count})` : ''}. Treat this record with care and tell an inspector.`}
-        </p>
+        {chain.ok ? (
+          <Bi as="p" text={{ en: bt('boatChainIntact').en.replace('{count}', String(count)), ml: bt('boatChainIntact').ml.replace('{count}', String(count)) }} className="text-ink-muted" />
+        ) : (
+          <p className="text-ink-muted">{`An entry was changed after it was written${chain.brokenAt != null ? ` (entry ${chain.brokenAt + 1} of ${chain.count})` : ''}. Treat this record with care and tell an inspector.`}</p>
+        )}
       </div>
     </div>
   );
@@ -196,6 +196,9 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
 
       <div className="flex flex-col items-center text-center">
         <Seal state={state} stamp className="size-36 sm:size-40" />
+        <a href="#legend-heading" className="mt-2 min-h-11 content-center text-small font-semibold text-gold-ink underline underline-offset-4 lg:hidden">
+          <Bi text={bt('sealHelp')} />
+        </a>
         <motion.div {...enter(0.35)} className="mt-3">
           {lang === 'ml' && word.ml ? (
             <p lang="ml" className={`font-ml text-[1.75rem] font-semibold leading-tight ${seal.tone}`}>
@@ -271,7 +274,7 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
         </dl>
 
         <div className="mt-6 rounded-control bg-surface p-3.5">
-          <ChainLine chain={chain} />
+          <ChainLine chain={chain} count={entries.length} />
         </div>
       </motion.div>
     </Card>
@@ -449,10 +452,29 @@ function Skeleton() {
 export default function BoatPage() {
   const { boatId = '' } = useParams();
   const { load, retry } = useBoatRecord(boatId);
-  const lang = useLang();
   const [reporting, setReporting] = useState(false);
   const closeReport = useCallback(() => setReporting(false), []);
   const titled = useRef(false);
+  const [shareMessage, setShareMessage] = useState<'linkCopied' | 'shareFailed' | null>(null);
+
+  useEffect(() => {
+    if (!shareMessage) return;
+    const timer = window.setTimeout(() => setShareMessage(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [shareMessage]);
+
+  async function share() {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareMessage('linkCopied');
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') setShareMessage('shareFailed');
+    }
+  }
 
   useEffect(() => {
     if (load.status === 'ready' && !titled.current) {
@@ -471,15 +493,15 @@ export default function BoatPage() {
         ready && (
           <button
             type="button"
-            onClick={() => setReporting(true)}
+            onClick={share}
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-pill border border-ink-inverse/30 px-3.5 text-small max-[400px]:px-0 font-semibold text-ink-inverse transition-[border-color,transform] duration-150 hover:border-ink-inverse/70 active:scale-[0.96]"
           >
-            <CameraIcon />
-            <span className="max-[400px]:sr-only">{pick(bt('reportTitle'), lang)}</span>
+            <Bi text={bt('share')} />
           </button>
         )
       }
     >
+      {shareMessage && <p role="status" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-control bg-kasavu p-4 text-center text-ink shadow-raised"><Bi text={bt(shareMessage)} /></p>}
       <div className="relative px-4 pb-12 pt-20 sm:px-6 sm:pt-24 lg:px-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-teak to-teak-deep" />
         <div className="relative">

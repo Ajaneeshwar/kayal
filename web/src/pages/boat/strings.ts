@@ -51,6 +51,11 @@ export const en = {
 
   chainOk: 'Record intact',
   chainBroken: 'Record altered',
+  boatChainIntact: 'This boat’s {count} entries are sealed and intact. Each entry is sealed to the one before it so old entries cannot be quietly changed.',
+  share: 'Share',
+  linkCopied: 'Link copied',
+  shareFailed: 'Could not share the link. Copy the address from your browser.',
+  sealHelp: 'What does this mean?',
 
   reportTitle: 'Report dumping',
   reportPrompt: 'Did you see waste going into the water?',
