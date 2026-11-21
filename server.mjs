@@ -151,10 +151,18 @@ function boatView(boat, now) {
 
 function stateView() {
   const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
+  const entries = projectEntries(store.entries);
   return {
     boats: store.boats.map((b) => boatView(b, now)),
     facilities: store.facilities,
-    entries: projectEntries(store.entries).slice(-FEED_LIMIT).reverse(),
+    entries: entries.slice(-FEED_LIMIT).reverse(),
+    weeklyEntryCount: entries.filter((entry) => {
+      const at = new Date(entry.at);
+      return at >= weekStart && at <= now;
+    }).length,
     reports: store.reports.slice().reverse(),
     chain: checkChain(store.entries),
     overdueDays: OVERDUE_DAYS,

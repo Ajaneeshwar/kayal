@@ -9,7 +9,7 @@ import type { Text } from '../../i18n/index.ts';
 import { readAdminPin } from '../../lib/api.ts';
 import { ApiError, markReportReviewed, setFacilityOpen, signOut, type Boat, type Facility, type Report } from './api.ts';
 import { AddBoatDialog, AddPointDialog } from './AddDialogs.tsx';
-import { KIND_LABELS, LEVEL_LABELS, isThisWeek } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS } from './format.ts';
 import { d } from './i18n.ts';
 import { MapPanel, type MapView } from './MapPanel.tsx';
 import { BoatTable, Feed, Points, Reports, sortByUrgency } from './Panels.tsx';
@@ -197,7 +197,7 @@ function InspectorDashboard() {
     });
 
   const count = (s: Boat['status']['state']) => state?.boats.filter((b) => b.status.state === s).length ?? 0;
-  const thisWeek = state?.entries.filter((e) => isThisWeek(e.at)).length ?? 0;
+  const thisWeek = state?.weeklyEntryCount ?? 0;
   const openReports = reports ? reports.filter((r) => !r.reviewed).length : reports === null ? '–' : 0;
   const total = state?.boats.length ?? 0;
   const dash = state ? null : '–';

@@ -70,13 +70,5 @@ export function whereText(entry: Entry) {
   }
 }
 
-export function isThisWeek(iso: string, now = new Date()) {
-  const d = new Date(iso);
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - (start.getDay() + 6) % 7);
-  return d >= start && d <= now;
-}
-
 const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (v: unknown) => String(v ?? '').replace(/[&<>"']/g, (c) => ESCAPES[c]);
