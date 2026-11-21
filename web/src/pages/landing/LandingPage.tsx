@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { motion, type Variants } from 'motion/react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type Ref } from 'react';
+import { AnimatePresence, motion, type Variants } from 'motion/react';
 import { AppShell } from '../../components/AppShell.tsx';
 import { LanguagePage } from '../../components/LanguagePage.tsx';
-import { useLangChosen, usePick } from '../../i18n/language.ts';
+import { useLang, useLangChosen, usePick } from '../../i18n/language.ts';
 import { t } from '../../i18n/index.ts';
 import { Bi } from '../../components/Bi.tsx';
 import { StatusBadge } from '../../components/StatusBadge.tsx';
@@ -11,8 +11,9 @@ import { useBoats } from '../../lib/useBoats.ts';
 import { Seal } from '../boat/Seal.tsx';
 import type { StringKey } from '../../i18n/index.ts';
 import { HouseboatScene } from './HouseboatScene.tsx';
-import { Doors } from './Doors.tsx';
+import { SignInSheet, signinFromHash, type DoorKey } from './SignInSheet.tsx';
 import { LandingFooter } from './LandingFooter.tsx';
+import { Partners } from './Partners.tsx';
 import { ArrowIcon } from './icons.tsx';
 import { en } from './strings.ts';
 
@@ -24,7 +25,7 @@ const heroItem: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } },
 };
 
-function Hero({ ready }: { ready: boolean }) {
+function Hero({ ready, onSignin }: { ready: boolean; onSignin: (from: HTMLElement) => void }) {
   const pick = usePick();
   const { boats, status } = useBoats();
   const boat = status === 'ready'
@@ -56,13 +57,15 @@ function Hero({ ready }: { ready: boolean }) {
           />
         </motion.div>
         <motion.div variants={heroItem} className="mt-7">
-          <a
-            href="#doors"
-            className="group inline-flex min-h-12 items-center gap-2 rounded-pill bg-gold px-5 font-semibold text-teak shadow-[var(--shadow-button)] transition-[background-color,transform] duration-150 [text-shadow:none] hover:bg-gold-bright active:scale-[0.97]"
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={(e) => onSignin(e.currentTarget)}
+            className="group inline-flex min-h-12 items-center gap-2 rounded-pill bg-gold px-5 text-start font-semibold text-teak shadow-[var(--shadow-button)] transition-[background-color,transform] duration-150 [text-shadow:none] hover:bg-gold-bright active:scale-[0.97]"
           >
             {pick(t('signinTitle'))}
-            <ArrowIcon className="size-5 rotate-90 transition-transform duration-150 group-hover:translate-y-0.5" />
-          </a>
+            <ArrowIcon className="size-5 transition-transform duration-150 group-hover:translate-x-0.5" />
+          </button>
         </motion.div>
         {boat && (
           <motion.div variants={heroItem} className="mt-5 w-full min-w-0 max-w-[calc(100vw-3.5rem)] sm:max-w-sm [text-shadow:none]">
@@ -138,20 +141,103 @@ function Steps() {
   );
 }
 
+/** The small Sign in button at the end of the landing header, beside the language switch. */
+function SignInButton({ open, onClick, ref }: { open: boolean; onClick: () => void; ref: Ref<HTMLButtonElement> }) {
+  const lang = useLang();
+  // "സൈൻ ഇൻ ചെയ്യുക" is about 2.5 times as wide as "Sign in". Below 400 px it wraps onto two lines,
+  // so the logo, this button and the language switch still fit a 360 px phone.
+  const wrap = lang === 'both' ? 'max-[400px]:max-w-[4.25rem]' : lang === 'ml' ? 'max-[400px]:max-w-[5.5rem]' : '';
+  return (
+    <button
+      ref={ref}
+      type="button"
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      onClick={onClick}
+      className="inline-flex min-h-11 shrink-0 items-center rounded-pill border border-gold-edge px-3 text-small font-semibold text-gold-bright transition-[background-color,transform] duration-150 hover:bg-gold/15 active:scale-[0.96]"
+    >
+      <Bi k="signIn" className={`flex flex-col items-start py-1 text-start ${wrap}`} enClassName="leading-[1.25] [overflow-wrap:normal]" mlClassName="text-[0.6875rem] font-medium leading-[1.2]" />
+    </button>
+  );
+}
+
+const NARROW = '(max-width: 399.98px)';
+function subscribeNarrow(fn: () => void) {
+  const query = window.matchMedia(NARROW);
+  query.addEventListener('change', fn);
+  return () => query.removeEventListener('change', fn);
+}
+
 export default function LandingPage() {
   const ready = useFontsReady();
   const chosen = useLangChosen();
-  useEffect(() => {
-    if (chosen && window.location.hash === '#doors') {
-      document.getElementById('doors')?.scrollIntoView();
+  const lang = useLang();
+  const narrow = useSyncExternalStore(subscribeNarrow, () => window.matchMedia(NARROW).matches, () => false);
+  // The open sign-in sheet and the door it opened at, or null when it is closed.
+  const [signin, setSignin] = useState<{ door?: DoorKey } | null>(null);
+  const signinButton = useRef<HTMLButtonElement>(null);
+  // Where focus goes back to on close: the control that opened the sheet, else the Sign in button.
+  const returnTo = useRef<HTMLElement | null>(null);
+
+  const openSignin = useCallback((door?: DoorKey, from?: HTMLElement | null) => {
+    returnTo.current = from ?? null;
+    setSignin({ door });
+  }, []);
+
+  const closeSignin = useCallback(() => {
+    setSignin(null);
+    if (signinFromHash(window.location.hash)) {
+      history.replaceState(history.state, '', window.location.pathname + window.location.search);
     }
-  }, [chosen]);
+  }, []);
+
+  // `/#signin` and `/#signin-crew` (and the other doors) open the sheet, on load and from links.
+  useEffect(() => {
+    if (!chosen) return;
+    function fromHash() {
+      const asked = signinFromHash(window.location.hash);
+      if (asked) {
+        const active = document.activeElement;
+        openSignin(asked.door, active instanceof HTMLElement && active !== document.body ? active : null);
+      } else {
+        setSignin(null);
+      }
+    }
+    if (signinFromHash(window.location.hash)) fromHash();
+    window.addEventListener('hashchange', fromHash);
+    return () => window.removeEventListener('hashchange', fromHash);
+  }, [chosen, openSignin]);
+
+  // While the sheet is open the page behind it is inert and does not scroll.
+  const isOpen = signin !== null;
+  useEffect(() => {
+    if (!isOpen) return;
+    const root = document.getElementById('root');
+    const html = document.documentElement;
+    const scrollbar = window.innerWidth - html.clientWidth;
+    root?.setAttribute('inert', '');
+    html.style.overflow = 'hidden';
+    if (scrollbar > 0) html.style.paddingRight = `${scrollbar}px`;
+    return () => {
+      root?.removeAttribute('inert');
+      html.style.overflow = '';
+      html.style.paddingRight = '';
+      const back = returnTo.current?.isConnected ? returnTo.current : signinButton.current;
+      back?.focus({ preventScroll: true });
+    };
+  }, [isOpen]);
+
   if (!chosen) return <LanguagePage backdrop={<HouseboatScene className="size-full" />} />;
   return (
-    <AppShell footer={<LandingFooter />}>
-      <Hero ready={ready} />
+    <AppShell
+      footer={<LandingFooter />}
+      // In Malayalam a 360 px header has no room for the switch's language name as well.
+      compactLanguage={narrow && lang === 'ml'}
+      headerEnd={<SignInButton ref={signinButton} open={isOpen} onClick={() => openSignin(undefined, signinButton.current)} />}>
+      <Hero ready={ready} onSignin={(from) => openSignin(undefined, from)} />
       <Steps />
-      <Doors />
+      <Partners />
+      <AnimatePresence>{signin && <SignInSheet key="signin" door={signin.door} onClose={closeSignin} />}</AnimatePresence>
     </AppShell>
   );
 }

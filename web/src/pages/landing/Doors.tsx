@@ -7,13 +7,13 @@ import { StatusBadge } from '../../components/StatusBadge.tsx';
 import { Select } from '../../components/Select.tsx';
 import { usePick } from '../../i18n/language.ts';
 import { goTo, lastCrewBoat, rememberCrewBoat, saveAdminPin, signInInspector, type Boat } from '../../lib/api.ts';
-import { useBoats, type BoatsState } from '../../lib/useBoats.ts';
+import type { BoatsState } from '../../lib/useBoats.ts';
 import type { StringKey } from '../../i18n/index.ts';
 import { t } from '../../i18n/index.ts';
 import { filterBoats } from '../../lib/boatTools.ts';
 import { ArrowIcon, EyeIcon, OarIcon, ShieldIcon } from './icons.tsx';
 
-type BoatsProps = BoatsState & { retry: () => void };
+export type BoatsProps = BoatsState & { retry: () => void };
 
 function DoorHeader({ icon, title, body }: { icon: ReactNode; title: StringKey; body: StringKey }) {
   return (
@@ -40,7 +40,7 @@ function LoadError({ retry }: { retry: () => void }) {
   );
 }
 
-function CrewDoor({ status, boats, retry }: BoatsProps) {
+export function CrewDoor({ status, boats, retry }: BoatsProps) {
   const pick = usePick();
   const [chosen, setChosen] = useState(lastCrewBoat);
   const selected: Boat | undefined = boats.find((b) => b.id === chosen) ?? boats[0];
@@ -54,7 +54,7 @@ function CrewDoor({ status, boats, retry }: BoatsProps) {
   }
 
   return (
-    <Card as="article" id="door-crew" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${selectId}-t`}>
+    <Card as="article" id="door-crew" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${selectId}-t`}>
       <div id={`${selectId}-t`}>
         <DoorHeader icon={<OarIcon className="size-6" />} title="crewTitle" body="crewBody" />
       </div>
@@ -86,7 +86,7 @@ function CrewDoor({ status, boats, retry }: BoatsProps) {
   );
 }
 
-function InspectorDoor() {
+export function InspectorDoor() {
   const [pin, setPin] = useState('');
   const [state, setState] = useState<'idle' | 'busy' | 'empty' | 'wrong' | 'error'>('idle');
   const [attempt, setAttempt] = useState(0);
@@ -119,7 +119,7 @@ function InspectorDoor() {
   }
 
   return (
-    <Card as="article" id="door-inspector" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${id}-t`}>
+    <Card as="article" id="door-inspector" className="flex h-full flex-col p-6 sm:p-7 [&>div]:flex [&>div]:flex-1 [&>div]:flex-col" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<ShieldIcon className="size-6" />} title="inspectorTitle" body="inspectorBody" />
       </div>
@@ -166,13 +166,13 @@ function InspectorDoor() {
   );
 }
 
-function GuestDoor({ status, boats, retry }: BoatsProps) {
+export function GuestDoor({ status, boats, retry }: BoatsProps) {
   const id = useId();
   const [query, setQuery] = useState('');
   const matching = filterBoats(boats, query);
   const count = t('boatMatches');
   return (
-    <Card as="article" id="door-guest" className="flex h-full scroll-mt-6 flex-col p-6 sm:p-7 lg:col-span-2" aria-labelledby={`${id}-t`}>
+    <Card as="article" id="door-guest" className="flex h-full flex-col p-6 sm:p-7" aria-labelledby={`${id}-t`}>
       <div id={`${id}-t`}>
         <DoorHeader icon={<EyeIcon className="size-6" />} title="guestTitle" body="guestBody" />
       </div>
@@ -188,7 +188,9 @@ function GuestDoor({ status, boats, retry }: BoatsProps) {
           <ul
             aria-label="Boats"
             aria-busy={status === 'loading' || undefined}
-            className="grid gap-2 md:grid-cols-2 lg:grid-cols-3"
+            /* In the sign-in sheet's 2×2 grid the list scrolls, so the guest door stays near the height of
+               the inspector door beside it. The next row peeks out to show there is more. */
+            className="grid gap-2 md:grid-cols-2 lg:max-h-[15.5rem] lg:grid-cols-1 lg:overflow-y-auto lg:overscroll-contain"
           >
             {status === 'loading' && !boats.length &&
               [0, 1, 2, 3].map((i) => (
@@ -217,27 +219,5 @@ function GuestDoor({ status, boats, retry }: BoatsProps) {
         )}
       </div>
     </Card>
-  );
-}
-
-export function Doors() {
-  const boats = useBoats();
-  return (
-    <section id="doors" aria-labelledby="doors-title" className="surface-light scroll-mt-4 bg-surface">
-      {/* Kasavu border: a gold band with a fine second line, like the edge of a Kerala sari. */}
-      <div aria-hidden className="h-[3px] bg-gold-edge" />
-      <div aria-hidden className="mt-[3px] h-px bg-gold-edge/60" />
-      <div className="mx-auto max-w-[76rem] px-4 pb-20 pt-14 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
-        <div className="max-w-2xl">
-          <Bi k="signinTitle" as="h2" id="doors-title" className="font-display text-title font-semibold text-ink" mlClassName="mt-1 text-gold-ink" />
-          <p className="mt-3 text-body text-ink-muted">Demo sign-ins for HackaThoni, not real accounts.</p>
-        </div>
-        <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-2">
-          <CrewDoor {...boats} />
-          <InspectorDoor />
-          <GuestDoor {...boats} />
-        </div>
-      </div>
-    </section>
   );
 }

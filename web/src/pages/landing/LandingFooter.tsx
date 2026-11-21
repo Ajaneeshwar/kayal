@@ -1,13 +1,16 @@
 import { t, type StringKey } from '../../i18n/index.ts';
 import { BrandMark } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
+import { PartnerLogo } from './Partners.tsx';
 
 const SOURCE_URL = 'https://github.com/Ajaneeshwar/kayal';
 
+/** Each link opens the sign-in sheet at that door (see SignInSheet.tsx). */
 const DOORS: { href: string; k: StringKey }[] = [
-  { href: '#door-crew', k: 'crewTitle' },
-  { href: '#door-inspector', k: 'inspectorTitle' },
-  { href: '#door-guest', k: 'guestTitle' },
+  { href: '#signin-crew', k: 'crewTitle' },
+  { href: '#signin-receiver', k: 'receiverTitle' },
+  { href: '#signin-inspector', k: 'inspectorTitle' },
+  { href: '#signin-guest', k: 'guestTitle' },
 ];
 
 const link =
@@ -19,7 +22,7 @@ export function LandingFooter() {
   const source = t('footerSource');
   return (
     <footer className="bg-teak-deep pb-[max(1.75rem,env(safe-area-inset-bottom))] text-ink-inverse-muted">
-      {/* The same kasavu band that opens the doors section closes the page. */}
+      {/* The same kasavu band that edges the sign-in sheet closes the page. */}
       <div aria-hidden className="h-[3px] bg-gold-edge" />
       <div aria-hidden className="mt-[3px] h-px bg-gold-edge/60" />
       <div className="mx-auto max-w-[76rem] px-4 pt-10 sm:px-6 lg:px-8 lg:pt-12">
@@ -53,7 +56,13 @@ export function LandingFooter() {
             </ul>
           </nav>
         </div>
-        <p className="mt-8 border-t border-ink-inverse/10 pt-5 text-caption">HackaThoni, Alappuzha, 2026</p>
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-t border-ink-inverse/10 pt-4 text-caption">
+          <p>HackaThoni, Alappuzha, 2026</p>
+          <p className="inline-flex items-center gap-2">
+            <Bi k="footerBuiltWith" layout="inline" />
+            <PartnerLogo name="devin" className="h-11 py-[0.9375rem] text-ink-inverse opacity-80" />
+          </p>
+        </div>
       </div>
     </footer>
   );

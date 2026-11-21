@@ -75,9 +75,29 @@
     "en": "Source on GitHub",
     "ml": "Source on GitHub"
   },
+  "footerBuiltWith": {
+    "en": "Built with",
+    "ml": "ഇതുപയോഗിച്ച് നിർമ്മിച്ചത്"
+  },
+  "partnersTitle": {
+    "en": "HackaThoni partners",
+    "ml": "ഹക്കത്തോണി പങ്കാളികൾ"
+  },
+  "partnerSarvamNote": {
+    "en": "Runs the speech, translation and voice in Kayal Log",
+    "ml": "കായൽ ലോഗിൽ സംഭാഷണം, വിവർത്തനം, ശബ്ദം എന്നിവ പ്രവർത്തിപ്പിക്കുന്നു."
+  },
   "signinTitle": {
     "en": "Choose your door",
     "ml": "നിങ്ങളുടെ വാതിൽ തിരഞ്ഞെടുക്കുക"
+  },
+  "signinSheetTitle": {
+    "en": "Sign in to Kayal Log",
+    "ml": "കയാൽ ലോഗിന് സൈൻ ഇൻ ചെയ്യുക"
+  },
+  "close": {
+    "en": "Close",
+    "ml": "അടയ്ക്കുക"
   },
   "crewTitle": {
     "en": "Crew",
@@ -114,6 +134,10 @@
   "yourBoat": {
     "en": "Your boat",
     "ml": "നിങ്ങളുടെ ബോട്ട്"
+  },
+  "loadingBoats": {
+    "en": "Loading boats…",
+    "ml": "ലോഡിംഗ് ബോട്ടുകൾ..."
   },
   "openCrew": {
     "en": "Open the crew page",
@@ -174,5 +198,57 @@
   "disputed": {
     "en": "Disputed",
     "ml": "തർക്കത്തിലുള്ളത്"
+  },
+  "receiverTitle": {
+    "en": "Receiver",
+    "ml": "സ്വീകർത്താവ്"
+  },
+  "receiverBody": {
+    "en": "Treatment plant desks, suction trucks and waste collectors confirm the handovers they received.",
+    "ml": "ട്രീറ്റ്‌മെന്‍റ് പ്ലാന്‍റ് ഡെസ്‌കുകള്‍, സക്ഷന്‍ ട്രക്കുകള്‍, മാലിന്യ ശേഖരണികള്‍ എന്നിവ അവര്‍ക്ക് ലഭിച്ച കൈമാറ്റങ്ങള്‍ സ്ഥിരീകരിക്കുന്നു."
+  },
+  "receiverPick": {
+    "en": "Your name",
+    "ml": "നിങ്ങളുടെ പേര്"
+  },
+  "receiverCode": {
+    "en": "Your code",
+    "ml": "നിങ്ങളുടെ കോഡ്"
+  },
+  "receiversLoading": {
+    "en": "Loading receivers…",
+    "ml": "സ്വീകർത്താക്കളെ ലോഡ് ചെയ്യുന്നു..."
+  },
+  "receiversNone": {
+    "en": "No receivers are registered yet. Ask the inspector to add you.",
+    "ml": "സ്വീകർത്താക്കൾ ആരും ഇതുവരെ രജിസ്റ്റർ ചെയ്തിട്ടില്ല. നിങ്ങളെ ചേർക്കാൻ ഇൻസ്പെക്ടറോട് ആവശ്യപ്പെടുക."
+  },
+  "receiversLoadFail": {
+    "en": "Could not load the receivers.",
+    "ml": "സ്വീകർത്താക്കളെ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല."
+  },
+  "receiversRetry": {
+    "en": "Try again",
+    "ml": "വീണ്ടും ശ്രമിക്കുക"
+  },
+  "receiverCodeEmpty": {
+    "en": "Enter your code first.",
+    "ml": "ആദ്യം നിങ്ങളുടെ കോഡ് നൽകുക."
+  },
+  "receiverCodeWrong": {
+    "en": "That code is wrong. Check it and try again.",
+    "ml": "ആ കോഡ് തെറ്റാണ്. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+  },
+  "receiverGone": {
+    "en": "That receiver is no longer registered. Pick your name again.",
+    "ml": "ആ സ്വീകർത്താവ് ഇനി രജിസ്റ്റർ ചെയ്തിട്ടില്ല. നിങ്ങളുടെ പേര് വീണ്ടും തിരഞ്ഞെടുക്കുക."
+  },
+  "receiverOffline": {
+    "en": "Could not reach Kayal Log. Check the connection and try again.",
+    "ml": "കായൽ ലോഗിൽ എത്താൻ കഴിഞ്ഞില്ല. കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
+  },
+  "receiverSlow": {
+    "en": "Kayal Log took too long to answer. Check the connection and try again.",
+    "ml": "കായൽ ലോഗ് മറുപടി നൽകാൻ വൈകി. കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക."
   }
 }

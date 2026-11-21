@@ -27,8 +27,15 @@ export const en = {
   footerBuiltFor: 'Built for Kerala’s backwaters',
   footerGoal: 'A clean Vembanad, one recorded handover at a time.',
   footerSource: 'Source on GitHub',
+  footerBuiltWith: 'Built with',
+
+  // The partner logos above the footer (landing/Partners.tsx).
+  partnersTitle: 'HackaThoni partners',
+  partnerSarvamNote: 'Runs the speech, translation and voice in Kayal Log',
 
   signinTitle: 'Choose your door',
+  signinSheetTitle: 'Sign in to Kayal Log',
+  close: 'Close',
   crewTitle: 'Crew',
   crewBody: 'Log a waste handover by voice for your boat.',
   inspectorTitle: 'Inspector',
@@ -57,6 +64,21 @@ export const en = {
   overdue: 'Overdue',
   confirmed: 'Confirmed',
   disputed: 'Disputed',
+
+  // The receiver door (landing/ReceiverDoor.tsx).
+  receiverTitle: 'Receiver',
+  receiverBody: 'Treatment plant desks, suction trucks and waste collectors confirm the handovers they received.',
+  receiverPick: 'Your name',
+  receiverCode: 'Your code',
+  receiversLoading: 'Loading receivers…',
+  receiversNone: 'No receivers are registered yet. Ask the inspector to add you.',
+  receiversLoadFail: 'Could not load the receivers.',
+  receiversRetry: 'Try again',
+  receiverCodeEmpty: 'Enter your code first.',
+  receiverCodeWrong: 'That code is wrong. Check it and try again.',
+  receiverGone: 'That receiver is no longer registered. Pick your name again.',
+  receiverOffline: 'Could not reach Kayal Log. Check the connection and try again.',
+  receiverSlow: 'Kayal Log took too long to answer. Check the connection and try again.',
 } as const;
 
 export type StringKey = keyof typeof en;

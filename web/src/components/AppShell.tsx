@@ -22,10 +22,12 @@ interface AppShellProps {
   skipLabel?: string;
   /** Replaces the default one-line footer. */
   footer?: ReactNode;
+  /** Show the language switch as a globe only, for a crowded phone header. */
+  compactLanguage?: boolean;
 }
 
 /** Header, main area and footer shared by every screen. */
-export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', skipLabel = 'Skip to content', footer }: AppShellProps) {
+export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', skipLabel = 'Skip to content', footer, compactLanguage = false }: AppShellProps) {
   return (
     <div className={`flex min-h-dvh flex-col ${tone === 'cream' ? 'surface-light bg-surface' : 'bg-teak text-ink-inverse'}`}>
       <a
@@ -42,7 +44,7 @@ export function AppShell({ children, headerEnd, tone = 'teak', skipTo = 'main', 
           </a>
           <div className="flex min-w-0 items-center gap-2">
             {headerEnd}
-            <LanguageSwitch />
+            <LanguageSwitch compact={compactLanguage} />
           </div>
         </div>
       </header>
