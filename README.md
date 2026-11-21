@@ -55,7 +55,7 @@ QR sticker — a printable link to Kayal Rani’s public waste record.
 
 ## The problem
 
-The High Court ordered that houseboats without pollution control and valid certification may not run on Vembanad lake from 19 April 2026 (The Hindu / PTI, 17 April 2026). To renew a licence, a boat must empty its septage at a treatment plant every three months (New Indian Express, 16 October 2023). Only one of the two plants works (Down To Earth, 25 May 2026). Government estimates count about 700 registered and 750 unregistered houseboats (Down To Earth, 25 May 2026). Inspectors check them one at a time, and in April one boat without valid papers took so long that the team could not check the others (Onmanorama, 21 April 2026). There is no shared record of who emptied what.
+The High Court ordered that houseboats without pollution control and valid certification may not run on Vembanad lake from 19 April 2026 ([The Hindu / PTI, 17 April 2026][hindu-ban]). To renew a licence, a boat must empty its septage at a treatment plant every three months ([New Indian Express, 16 October 2023][nie-extinction]). Only one of the two plants works ([Down To Earth, 25 May 2026][dte-vembanad]). Government estimates count about 700 registered and 750 unregistered houseboats ([Down To Earth, 25 May 2026][dte-vembanad]). Inspectors check them one at a time, and in April one boat without valid papers took so long that the team could not check the others ([Onmanorama, 21 April 2026][manorama-inspect]). There is no shared record of who emptied what.
 
 ## What it does
 
@@ -210,3 +210,19 @@ Every route is described in [docs/API.md](docs/API.md).
 - An offline queue, so the crew can log on the lake without signal and send it later.
 - Plant-side intake records, so each plant keeps its own log of what it received.
 - A native Malayalam speaker to check every line.
+
+## Sources
+
+- The Hindu / PTI, 17 April 2026: [Houseboats without pollution control systems barred from Vembanad lake][hindu-ban]
+- Onmanorama, 21 April 2026: [Inspections begin on houseboats in Alappuzha over waste treatment lapses][manorama-inspect]
+- Down To Earth, 25 May 2026: [Houseboats can be easily blamed for pollution in Kerala's Lake Vembanad. The actual crisis though goes much deeper][dte-vembanad]
+- New Indian Express, 16 October 2023: [Alappuzha houseboats on the verge of extinction, say operators][nie-extinction]
+- Onmanorama, 3 November 2023: [Tourism dept pitches solution to waste disposal issue threatening Alappuzha's houseboat industry][manorama-stp]
+- New Indian Express, 9 November 2026: [Keralam maritime board order asking other-districts houseboats to leave draws mixed reactions][nie-maritime]
+
+[hindu-ban]: https://www.thehindu.com/news/national/kerala/houseboats-without-pollution-control-systems-barred-from-vembanad-lake/article70874676.ece
+[manorama-inspect]: https://www.onmanorama.com/news/kerala/2026/04/21/houseboat-waste-inspections-lake.html
+[dte-vembanad]: https://www.downtoearth.org.in/water/houseboats-can-be-easily-blamed-for-pollution-in-keralas-lake-vembanad-the-actual-pollution-crisis-though-goes-much-deeper
+[nie-extinction]: https://www.newindianexpress.com/states/kerala/2023/Oct/16/alappuzha-houseboats-on-the-verge-of-extinction-say-operators-2624437.html
+[manorama-stp]: https://www.onmanorama.com/news/kerala/2023/11/03/tourism-department-finds-solution-for-waste-disposal-issue-of-houseboats.html
+[nie-maritime]: https://www.newindianexpress.com/states/kerala/2026/Nov/10/keralam-maritime-board-order-asking-other-districts-houseboats-to-leave-draws-mixed-reactions
