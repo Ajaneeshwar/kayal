@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kayal Log pitch deck</title>
+<style>
+@font-face { font-family: 'Fraunces Deck'; src: url({{font:fraunces}}) format('woff2'); font-weight: 100 900; font-style: normal; }
+@font-face { font-family: 'Inter Deck'; src: url({{font:inter}}) format('woff2'); font-weight: 100 900; font-style: normal; }
+
+/* Colours copied from web/src/styles/tokens.css. */
+.slide {
+  --teak-deep: oklch(0.215 0.045 236);
+  --teak: oklch(0.27 0.05 233);
+  --teak-raised: oklch(0.335 0.062 230);
+  --wood: oklch(0.44 0.075 52);
+  --surface: oklch(0.972 0.01 92);
+  --kasavu: oklch(0.993 0.006 95);
+  --line: oklch(0.895 0.022 88);
+  --ink: oklch(0.26 0.045 238);
+  --ink-muted: oklch(0.47 0.04 232);
+  --ink-inverse: oklch(0.975 0.01 95);
+  --ink-inverse-muted: oklch(0.84 0.03 220);
+  --gold: oklch(0.82 0.135 84);
+  --gold-bright: oklch(0.875 0.125 90);
+  --gold-edge: oklch(0.74 0.115 82);
+  --gold-ink: oklch(0.46 0.085 224);
+  --verified: oklch(0.5 0.12 150);
+  --verified-soft: oklch(0.945 0.05 150);
+  --declared: oklch(0.53 0.115 62);
+  --declared-soft: oklch(0.95 0.048 82);
+  --overdue: oklch(0.5 0.17 28);
+  --overdue-soft: oklch(0.945 0.024 22);
+  --confirmed: oklch(0.47 0.15 300);
+  --confirmed-soft: oklch(0.945 0.028 300);
+  --color-scene-sky: oklch(0.27 0.05 233);
+  --color-scene-sky-mid: oklch(0.46 0.075 250);
+  --color-scene-sky-glow: oklch(0.8 0.105 70);
+  --color-scene-sun: oklch(0.94 0.075 92);
+  --color-scene-shore: oklch(0.38 0.05 238);
+  --color-scene-palm: oklch(0.18 0.03 215);
+  --color-scene-water: oklch(0.45 0.075 218);
+  --color-scene-water-deep: oklch(0.215 0.045 236);
+  --color-scene-hull: oklch(0.44 0.085 50);
+  --color-scene-hull-dark: oklch(0.22 0.04 45);
+  --color-scene-roof: oklch(0.6 0.1 70);
+  --color-scene-roof-dark: oklch(0.33 0.055 58);
+  --color-scene-roof-light: oklch(0.84 0.11 84);
+  --color-scene-cabin: oklch(0.15 0.025 45);
+  --color-scene-lamp: oklch(0.89 0.12 86);
+  --shadow-card: 0 1px 2px oklch(0.215 0.045 236 / 0.14), 0 14px 30px -18px oklch(0.215 0.045 236 / 0.5);
+  --shadow-raised: 0 2px 4px oklch(0.215 0.045 236 / 0.2), 0 24px 48px -22px oklch(0.215 0.045 236 / 0.75);
+
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: 'Inter Deck', Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+}
+.slide * { box-sizing: border-box; margin: 0; padding: 0; }
+.slide .notes { display: none; }
+/* The kasavu edge: a gold band along the bottom of every slide. */
+.slide::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px;
+  background: linear-gradient(90deg, var(--gold-edge), var(--gold-bright) 50%, var(--gold-edge));
+}
+.slide.dark { background: var(--teak-deep); color: var(--ink-inverse); }
+.slide .serif { font-family: 'Fraunces Deck', Georgia, serif; }
+
+.eyebrow {
+  position: absolute; left: 56px; top: 42px;
+  font-size: 12px; font-weight: 650; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-ink);
+}
+.dark .eyebrow { color: var(--gold); }
+.slide h1 {
+  position: absolute; left: 56px; top: 64px;
+  font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.12; letter-spacing: -0.015em;
+}
+.source { position: absolute; left: 56px; bottom: 21px; max-width: 720px; font-size: 10.5px; line-height: 1.4; color: var(--ink-muted); }
+.dark .source { color: var(--ink-inverse-muted); }
+.pageno { position: absolute; right: 56px; bottom: 21px; font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-muted); }
+.dark .pageno { color: var(--ink-inverse-muted); }
+
+.card { background: var(--kasavu); border: 1.5px solid var(--gold-edge); border-radius: 20px; box-shadow: var(--shadow-card); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 13px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 650; white-space: nowrap;
+}
+.pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pill.declared { background: var(--declared-soft); color: var(--declared); }
+.pill.verified { background: var(--verified-soft); color: var(--verified); }
+.pill.confirmed { background: var(--confirmed-soft); color: var(--confirmed); }
+.pill.overdue { background: var(--overdue-soft); color: var(--overdue); }
+
+.phone { position: absolute; padding: 7px; border-radius: 28px; background: oklch(0.15 0.03 236); box-shadow: var(--shadow-raised); }
+.dark .phone { outline: 1px solid oklch(1 0 0 / 0.2); }
+.phone .screen { overflow: hidden; border-radius: 21px; background: var(--teak-deep); }
+.phone img { display: block; width: 100%; }
+.caption { position: absolute; font-size: 12px; line-height: 1.35; color: var(--ink-muted); text-align: center; }
+.dark .caption { color: var(--ink-inverse-muted); }
+
+/* 1 and 10: the scene */
+.scene { position: absolute; inset: 0; }
+.scene svg { display: block; }
+.title-shade { position: absolute; inset: 0; background: linear-gradient(90deg, oklch(0.215 0.045 236 / 0.62) 0%, oklch(0.215 0.045 236 / 0) 64%), linear-gradient(180deg, oklch(0.215 0.045 236 / 0.35) 0%, oklch(0.215 0.045 236 / 0) 45%); }
+.title-event { position: absolute; left: 56px; top: 38px; font-size: 12.5px; font-weight: 650; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+.title-name { position: absolute; left: 52px; top: 54px; font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 104px; line-height: 1; letter-spacing: -0.03em; color: var(--ink-inverse); }
+.title-rule { position: absolute; left: 56px; top: 170px; width: 72px; height: 3px; border-radius: 2px; background: var(--gold); }
+.title-tag { position: absolute; left: 56px; top: 186px; width: 590px; font-size: 21px; line-height: 1.32; font-weight: 450; color: var(--ink-inverse); }
+.title-tracks { position: absolute; left: 56px; top: 300px; width: 620px; }
+.title-tracks b { display: block; margin-bottom: 8px; font-size: 11.5px; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.title-tracks span { display: inline-block; margin-right: 8px; padding: 5px 13px; border-radius: 999px; border: 1px solid var(--gold-edge); background: oklch(0.215 0.045 236 / 0.72); font-size: 13.5px; font-weight: 550; color: var(--ink-inverse); }
+.title-lang { position: absolute; left: 56px; top: 244px; width: 560px; font-size: 14.5px; line-height: 1.4; font-weight: 550; color: var(--gold-bright); }
+.title-by { position: absolute; left: 56px; top: 444px; font-size: 17px; font-weight: 650; color: var(--ink-inverse); }
+.partners { position: absolute; left: 56px; top: 474px; display: flex; align-items: flex-start; gap: 30px; }
+.partners i { display: block; margin-bottom: 6px; font-style: normal; font-size: 9.5px; font-weight: 650; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+.logo { display: flex; align-items: flex-end; height: 24px; color: var(--ink-inverse); }
+.logo svg { display: block; height: var(--h); width: auto; }
+
+.close-shade { position: absolute; inset: 0; background: linear-gradient(180deg, oklch(0.215 0.045 236 / 0.8) 0%, oklch(0.215 0.045 236 / 0.5) 45%, oklch(0.215 0.045 236 / 0) 78%); }
+.close-line { position: absolute; left: 56px; top: 58px; width: 760px; font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 50px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink-inverse); }
+.close-rule { position: absolute; left: 56px; top: 192px; width: 72px; height: 3px; border-radius: 2px; background: var(--gold); }
+.close-by { position: absolute; left: 56px; top: 208px; width: 620px; }
+.close-by b { display: block; font-family: 'Fraunces Deck', Georgia, serif; font-size: 24px; font-weight: 600; color: var(--gold-bright); }
+.close-by span { display: block; margin-top: 4px; font-size: 14px; color: var(--ink-inverse); }
+
+/* 2: the rule, with press clippings */
+.rule-date { position: absolute; left: 54px; top: 62px; font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 58px; line-height: 1; letter-spacing: -0.025em; color: var(--gold-bright); white-space: nowrap; }
+.rule-text { position: absolute; left: 56px; top: 136px; width: 384px; font-size: 18px; line-height: 1.38; font-weight: 450; }
+/* White, not kasavu: the card must match the page colour inside the screenshots. */
+.clip { position: absolute; display: flex; align-items: center; padding: 10px 12px; border-radius: 8px; background: #fff; box-shadow: var(--shadow-raised); }
+.clip img { display: block; width: 100%; }
+.clip-cap { position: absolute; font-size: 11.5px; line-height: 1.4; color: var(--ink-inverse-muted); }
+.clip-cap b { display: block; font-weight: 650; letter-spacing: 0.02em; color: var(--gold); }
+
+/* 3: the gap */
+.stats { position: absolute; left: 56px; top: 172px; width: 848px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.stat { height: 184px; padding: 22px 24px; }
+.stat .num { font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 64px; line-height: 1; letter-spacing: 0.01em; color: var(--gold-ink); }
+.stat .label { margin-top: 14px; font-size: 15px; line-height: 1.4; }
+.gap-note { position: absolute; left: 56px; top: 384px; width: 800px; font-size: 18px; line-height: 1.45; }
+
+/* 4: say, prove, show */
+.steps3 { position: absolute; left: 56px; top: 130px; width: 540px; }
+.steps3 .row { display: grid; grid-template-columns: 48px 1fr; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+.steps3 .row:first-child { border-top: 0; padding-top: 0; }
+.steps3 .n { font-family: 'Fraunces Deck', Georgia, serif; font-weight: 600; font-size: 32px; line-height: 1; color: var(--gold-edge); }
+.steps3 .t { font-family: 'Fraunces Deck', Georgia, serif; font-size: 20px; font-weight: 600; line-height: 1.2; }
+.steps3 .d { margin-top: 3px; font-size: 15px; line-height: 1.38; color: var(--ink-muted); }
+.install { position: absolute; left: 56px; top: 468px; padding: 8px 16px; border-radius: 999px; background: var(--teak-deep); color: var(--ink-inverse); font-size: 14.5px; font-weight: 550; }
+
+/* 5: proof levels */
+.ladder-label { position: absolute; left: 56px; top: 162px; font-size: 11.5px; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.ladder { position: absolute; left: 56px; top: 186px; width: 468px; }
+.ladder .row { display: grid; grid-template-columns: 124px 1fr; align-items: center; min-height: 46px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 15.5px; line-height: 1.35; }
+.ladder .row:first-child { border-top: 0; }
+.ladder .row.dispute { margin-top: 10px; padding-top: 14px; border-top: 2px solid var(--gold-edge); }
+
+/* 6: the receiver's approval and the reminder call */
+.half-head { position: absolute; top: 124px; font-size: 12px; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.approve { position: absolute; left: 266px; top: 156px; width: 208px; }
+.approve .row { padding: 13px 0; border-top: 1px solid oklch(1 0 0 / 0.14); font-size: 14.5px; line-height: 1.4; }
+.approve .row:first-child { border-top: 0; padding-top: 0; }
+.approve .row .pill { margin-bottom: 7px; }
+.approve .who { color: var(--ink-inverse-muted); }
+.vline { position: absolute; left: 497px; top: 124px; width: 1px; height: 372px; background: oklch(1 0 0 / 0.14); }
+.ring { display: flex; align-items: center; justify-content: center; flex: none; border-radius: 50%; background: var(--gold); color: var(--teak-deep); }
+.call { position: absolute; left: 524px; top: 150px; width: 380px; padding: 18px 20px; border-radius: 20px; background: var(--teak-raised); border: 1.5px solid var(--gold-edge); box-shadow: var(--shadow-raised); }
+.call .top { display: flex; align-items: center; gap: 14px; }
+.call .ring { width: 46px; height: 46px; }
+.call .top b { display: block; font-family: 'Fraunces Deck', Georgia, serif; font-size: 22px; font-weight: 600; line-height: 1.15; }
+.call .top span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-inverse-muted); }
+.call .say-label { margin-top: 14px; font-size: 11px; font-weight: 650; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+.call .say { margin-top: 7px; padding: 12px 14px; border-radius: 14px 14px 14px 4px; background: var(--teak-deep); font-size: 14.5px; line-height: 1.45; }
+.call .langs { display: flex; gap: 6px; margin-top: 12px; }
+.call .langs span { padding: 3px 11px; border-radius: 999px; border: 1px solid var(--gold-edge); font-size: 12px; font-weight: 600; color: var(--gold-bright); }
+.call-note { position: absolute; left: 524px; top: 454px; width: 380px; font-size: 14px; line-height: 1.45; color: var(--ink-inverse-muted); }
+
+/* 7: inspector */
+.browser { position: absolute; left: 56px; top: 122px; width: 550px; overflow: hidden; border-radius: 12px; border: 1.5px solid var(--teak-raised); background: var(--teak-deep); box-shadow: var(--shadow-raised); }
+.browser .bar { height: 16px; display: flex; align-items: center; gap: 5px; padding-left: 10px; }
+.browser .bar i { width: 6px; height: 6px; border-radius: 50%; background: var(--teak-raised); }
+.browser img { display: block; width: 100%; }
+.crop { position: absolute; overflow: hidden; border-radius: 16px; border: 1.5px solid var(--gold-edge); box-shadow: var(--shadow-raised); background: var(--kasavu); }
+.crop img { position: absolute; }
+
+/* 8: how it works */
+.flow { position: absolute; left: 56px; top: 126px; width: 848px; height: 276px; display: grid; grid-template-columns: 296px 40px 176px 40px 296px; align-items: center; }
+.flow .col { display: grid; grid-template-rows: repeat(3, 1fr); gap: 12px; height: 276px; }
+.flow .box { display: flex; flex-direction: column; justify-content: center; padding: 10px 16px; border-radius: 14px; background: var(--kasavu); border: 1.5px solid var(--line); }
+.flow .box b { font-size: 16px; font-weight: 650; line-height: 1.25; }
+.flow .box span { margin-top: 3px; font-size: 13px; line-height: 1.35; color: var(--ink-muted); }
+.flow .tags { display: flex; gap: 6px; margin-top: 6px; }
+.flow .box .tag { margin-top: 0; padding: 2px 8px; border-radius: 6px; background: oklch(0.46 0.085 224 / 0.1); color: var(--gold-ink); font-size: 12px; font-weight: 650; white-space: nowrap; }
+.flow .mid { height: 276px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 12px; padding: 20px; border-radius: 16px; background: var(--kasavu); border: 1.5px solid var(--gold-edge); box-shadow: var(--shadow-card); }
+.flow .mid b { font-family: 'Fraunces Deck', Georgia, serif; font-size: 22px; font-weight: 600; line-height: 1.15; margin-bottom: 4px; }
+.arrow { justify-self: center; position: relative; width: 24px; height: 2px; background: var(--gold-edge); }
+.arrow::after { content: ''; position: absolute; right: -2px; top: -4px; border-left: 8px solid var(--gold-edge); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.flow-call { position: absolute; left: 56px; top: 420px; width: 848px; display: flex; align-items: center; gap: 14px; padding: 11px 18px; border-radius: 14px; background: var(--teak-deep); color: var(--ink-inverse); font-size: 15px; line-height: 1.4; }
+.flow-call .ring { width: 32px; height: 32px; }
+.flow-call b { font-weight: 650; color: var(--gold-bright); }
+
+/* 9: three tracks */
+.tracks3 { position: absolute; left: 56px; top: 126px; width: 848px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.tracks3 .card { height: 358px; overflow: hidden; }
+.tracks3 .thumb { height: 136px; overflow: hidden; background: var(--teak-deep); border-bottom: 1.5px solid var(--gold-edge); }
+.tracks3 .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tracks3 .body { padding: 16px 20px; }
+.tracks3 .n { font-size: 11.5px; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-ink); }
+.tracks3 .t { margin-top: 3px; font-family: 'Fraunces Deck', Georgia, serif; font-size: 23px; font-weight: 600; line-height: 1.15; }
+.tracks3 .d { margin-top: 9px; font-size: 14.5px; line-height: 1.45; }
+
+/* 10: what is next */
+.next3 { position: absolute; left: 56px; top: 146px; width: 848px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.next3 .card { height: 262px; padding: 26px 24px; }
+.next3 .n { font-family: 'Fraunces Deck', Georgia, serif; font-size: 46px; font-weight: 600; line-height: 1; color: var(--gold-edge); }
+.next3 .t { margin-top: 18px; font-family: 'Fraunces Deck', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.15; }
+.next-built { position: absolute; left: 56px; top: 432px; width: 848px; font-size: 16.5px; line-height: 1.45; }
+.next-built b { font-weight: 650; color: var(--gold-ink); }
+.next3 .d { margin-top: 10px; font-size: 16px; line-height: 1.45; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+
+<section class="slide dark" data-title="Kayal Log: a Malayalam voice logbook that lets Alappuzha houseboat crews prove where their sewage and waste went, in the crew's own language. One solution for all three HackaThoni tracks. Built by Ajaneeshwar. Built with Devin, powered by Sarvam, HackaThoni partner smallest.ai.">
+  <div class="scene">{{scene:title}}</div>
+  <div class="title-shade"></div>
+  <div class="title-event">HackaThoni · Alappuzha · 21–22 November 2026</div>
+  <div class="title-name">Kayal Log</div>
+  <div class="title-rule"></div>
+  <div class="title-tag">A Malayalam voice logbook that lets Alappuzha houseboat crews prove where their sewage and waste went.</div>
+  <div class="title-lang">Built for Malayalam speakers. It hears and answers in the crew's own language: Malayalam, Tamil, Hindi, Bengali and more.</div>
+  <div class="title-tracks"><b>One solution, all three tracks</b><span>Place &amp; People</span><span>Voice &amp; Language</span><span>Physical-world computing</span></div>
+  <div class="title-by">Built by Ajaneeshwar</div>
+  <div class="partners">
+    <div><i>Built with</i><span class="logo" style="--h: 20px">{{logo:devin}}</span></div>
+    <div><i>Powered by</i><span class="logo" style="--h: 15px">{{logo:sarvam}}</span></div>
+    <div><i>HackaThoni partner</i><span class="logo" style="--h: 18px">{{logo:smallest}}</span></div>
+  </div>
+  <aside class="notes">
+    <p>Kayal Log is a Malayalam voice logbook that lets Alappuzha houseboat crews prove where their sewage and waste went.</p>
+    <p>It is built for Malayalam speakers, and it hears and answers in the crew's own language: Malayalam, Tamil, Hindi, Bengali and more.</p>
+    <p>It is one solution covering all three HackaThoni tracks. I am Ajaneeshwar, and I built it during HackaThoni.</p>
+  </aside>
+</section>
+
+<section class="slide dark" data-title="The problem: since 19 April 2026, a houseboat without pollution control and a valid certificate cannot run on Vembanad lake. With screenshots of four news articles.">
+  <div class="eyebrow">The problem</div>
+  <div class="rule-date">19 April 2026</div>
+  <div class="rule-text">From this date, a houseboat without pollution control and a valid certificate cannot run on Vembanad lake. The Kerala High Court ordered it.</div>
+  <div class="clip" style="left: 470px; top: 40px; width: 434px; transform: rotate(0.5deg)"><img src="{{news:clip-hindu.png}}" alt="Screenshot of The Hindu, 17 April 2026: Houseboats without pollution control systems barred from Vembanad lake"></div>
+  <div class="clip-cap" style="left: 470px; top: 238px; width: 434px"><b>The Hindu / PTI · 17 Apr 2026</b></div>
+  <div class="clip" style="left: 56px; top: 268px; width: 270px; transform: rotate(-0.7deg)"><img src="{{news:clip-onmanorama.png}}" alt="Screenshot of Onmanorama, 21 April 2026: Inspections begin on houseboats in Alappuzha over waste treatment lapses"></div>
+  <div class="clip-cap" style="left: 56px; top: 430px; width: 270px"><b>Onmanorama · 21 Apr 2026</b>One boat without valid papers took so long that the team could not check the others.</div>
+  <div class="clip" style="left: 345px; top: 268px; width: 270px; transform: rotate(0.6deg)"><img src="{{news:clip-dte.png}}" alt="Screenshot of Down To Earth, 25 May 2026: Houseboats can be easily blamed for pollution in Kerala's Lake Vembanad. The actual crisis though goes much deeper"></div>
+  <div class="clip-cap" style="left: 345px; top: 430px; width: 270px"><b>Down To Earth · 25 May 2026</b>About 700 registered and 750 unregistered boats. Only one of two plants works.</div>
+  <div class="clip" style="left: 634px; top: 268px; width: 270px; transform: rotate(-0.5deg)"><img src="{{news:clip-nie.png}}" alt="Screenshot of The New Indian Express, 16 October 2023: Alappuzha houseboats on the verge of extinction, say operators"></div>
+  <div class="clip-cap" style="left: 634px; top: 430px; width: 270px"><b>The New Indian Express · 16 Oct 2023</b>Boats must empty septage at a treatment plant every three months to renew a licence.</div>
+  <div class="source">Screenshots of the publishers' own pages, taken on 22 Nov 2026 and cropped. Nothing else is changed.</div>
+  <div class="pageno">Kayal Log · 2</div>
+  <aside class="notes">
+    <p>Since 19 April, houseboats without pollution control and valid certification cannot run on Vembanad lake. The High Court ordered it.</p>
+    <p>To renew a licence, a boat must empty its septage at a treatment plant every three months.</p>
+    <p>These are the real headlines, as screenshots of the articles: The Hindu, Onmanorama, Down To Earth and The New Indian Express.</p>
+    <p>Sources, if a judge asks: The Hindu / PTI, 17 Apr 2026 for the court order. New Indian Express, 16 Oct 2023 for the three-month rule. That rule comes from 2023 reporting, so do not state it as today's law.</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="The gap: about 1,450 houseboats by government estimate, one of two treatment plants working, and no shared record of who emptied what.">
+  <div class="eyebrow">The gap</div>
+  <h1 style="width: 800px">Boats must prove their pump-outs.<br>There is no shared record.</h1>
+  <div class="stats">
+    <div class="card stat"><div class="num">~1<span style="margin-right: 0.035em">,</span>450</div><div class="label">houseboats by government estimate: about 700 registered, 750 unregistered</div></div>
+    <div class="card stat"><div class="num">1 of 2</div><div class="label">treatment plants is reported to be working</div></div>
+    <div class="card stat"><div class="num">None</div><div class="label">No shared record of who emptied what. We found no tool for logging pump&#8209;outs.</div></div>
+  </div>
+  <div class="gap-note">Inspectors check boats one at a time. In April, one boat without valid papers took so long that the team could not check the others.</div>
+  <div class="source">Sources: Down To Earth, 25 May 2026 (boats, plants). Onmanorama, 21 Apr 2026 (inspection). PLAN.md (no shared record).</div>
+  <div class="pageno">Kayal Log · 3</div>
+  <aside class="notes">
+    <p>But only one of the two plants works. And there is no shared record of who emptied what.</p>
+    <p>Government estimates count about 700 registered houseboats and 750 unregistered ones. Inspectors check them one at a time. In April, dealing with one boat that had no valid papers took so long that the team could not check the others.</p>
+    <p>It hurts the crew, who earn their living on these boats. It hurts the lake. And a tourist has no way to check any of it.</p>
+    <p>Sources, if a judge asks: Down To Earth, 25 May 2026 for the boat estimate and the plants. Onmanorama, 21 Apr 2026 for the inspection. The boat count is an estimate, so do not give it as exact. Say "we found no existing tool", not "it is the only tool".</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="What Kayal Log does: say it, prove it, confirm it, show it. Screenshot of the crew page with the Tap to speak button.">
+  <div class="eyebrow">What Kayal Log does</div>
+  <h1 style="font-size: 32px; top: 66px">Say it. Prove it. Confirm it. Show it.</h1>
+  <div class="steps3">
+    <div class="row"><div class="n">1</div><div><div class="t">Say it</div><div class="d">The crew says it in their own language: Malayalam, Tamil, Hindi, Bengali or another.</div></div></div>
+    <div class="row"><div class="n">2</div><div><div class="t">Prove it</div><div class="d">The phone's location and a photo of the receipt back up the entry.</div></div></div>
+    <div class="row"><div class="n">3</div><div><div class="t">Confirm it</div><div class="d">The plant, truck, pump boat or collector approves the handover on their own phone.</div></div></div>
+    <div class="row"><div class="n">4</div><div><div class="t">Show it</div><div class="d">Tourists and inspectors see the boat's record, with a seal anyone can read.</div></div></div>
+  </div>
+  <div class="install">A website opened by QR code. Nothing to install.</div>
+  <div class="phone" style="left: 678px; top: 30px"><div class="screen" style="width: 204px; height: 441px"><img src="{{img:crew-phone.png}}" alt="The crew page with one large Tap to speak button"></div></div>
+  <div class="pageno">Kayal Log · 4</div>
+  <aside class="notes">
+    <p>A crew member says it in their own language: Malayalam, Tamil, Hindi, Bengali or another. The phone checks its location against the known collection points. It reads a photo of the receipt.</p>
+    <p>The plant, truck, pump boat or collector that took the waste then approves the handover on their own phone, on the receiver page.</p>
+    <p>Tourists scan a QR code on the boat and see the record. Inspectors see every boat on one map, most overdue first. Nothing to install.</p>
+    <p>Source: PLAN.md.</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="Proof levels: Declared, Location, Receipt and Confirmed, and Disputed when the receiver says the waste never arrived.">
+  <div class="eyebrow">Proof levels</div>
+  <h1 style="width: 480px">Every entry shows how strong its proof is.</h1>
+  <div class="ladder-label">Weakest to strongest</div>
+  <div class="ladder">
+    <div class="row"><div><span class="pill declared">Declared</span></div><div>The crew said it. Nothing else confirms it.</div></div>
+    <div class="row"><div><span class="pill verified">Location</span></div><div>The phone was at an open collection point.</div></div>
+    <div class="row"><div><span class="pill verified">Receipt</span></div><div>A photo of the receipt or slip backs the entry.</div></div>
+    <div class="row"><div><span class="pill confirmed">Confirmed</span></div><div>The receiver confirmed it on their own phone.</div></div>
+    <div class="row dispute"><div><span class="pill overdue">Disputed</span></div><div>The receiver says it never arrived. The entry drops to Declared.</div></div>
+  </div>
+  <div class="phone" style="left: 556px; top: 56px"><div class="screen" style="width: 164px; height: 355px"><img src="{{img:crew-proof-photo-phone.png}}" alt="A suction truck handover raised to Receipt after the crew added a photo of the slip"></div></div>
+  <div class="phone" style="left: 746px; top: 56px"><div class="screen" style="width: 164px; height: 355px"><img src="{{img:operator-confirmed-phone.png}}" alt="The receiver's screen after confirming a handover, with the Confirmed badge"></div></div>
+  <div class="caption" style="left: 556px; top: 434px; width: 178px">The crew adds a slip photo</div>
+  <div class="caption" style="left: 746px; top: 434px; width: 178px">The receiver confirms</div>
+  <div class="source">Location shows the phone was there, not that the tank was emptied. A receipt photo is read, not checked against the plant's records.</div>
+  <div class="pageno">Kayal Log · 5</div>
+  <aside class="notes">
+    <p>Each entry gets a proof level: Declared, Location, or Receipt. Then the plant, truck or collector that took the waste confirms it on their own phone. That is Confirmed, the strongest level.</p>
+    <p>If the receiver says the waste never reached them, the entry is marked Disputed and drops to Declared.</p>
+    <p>Do not say location proves the tank was emptied. It proves the phone was there. Do not say a receipt is proof. Source: PLAN.md and README.md.</p>
+  </aside>
+</section>
+
+<section class="slide dark" data-title="Two more checks: the receiver approves each handover on their own phone, and the boat owner gets a reminder call from Sarvam Voice Agents.">
+  <div class="eyebrow">Two more checks</div>
+  <h1>The receiver approves. The owner gets a call.</h1>
+  <div class="half-head" style="left: 56px">1 · The receiver's approval</div>
+  <div class="phone" style="left: 56px; top: 150px"><div class="screen" style="width: 172px; height: 344px; background: var(--teak-deep)"><img style="margin-top: -170px" src="{{img:operator-confirm-phone.png}}" alt="The receiver's page: a pump boat operator checks a 900-litre handover from the boat Pallathuruthy Mist, with Confirm received and Not received buttons"></div></div>
+  <div class="approve">
+    <div class="row"><span class="pill confirmed">Confirmed</span><br>The receiver taps <b style="font-weight: 650">Confirm received</b>. The entry rises to the strongest level.</div>
+    <div class="row"><span class="pill overdue">Disputed</span><br>They tap <b style="font-weight: 650">Not received</b>. The entry drops to Declared.</div>
+    <div class="row who">Plants, trucks, pump boats and collectors answer on their own phone, within 3 days.</div>
+  </div>
+  <div class="vline"></div>
+  <div class="half-head" style="left: 524px">2 · The reminder call</div>
+  <div class="call">
+    <div class="top"><div class="ring"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><b>Call owner</b><span>Placed by Sarvam Voice Agents</span></div></div>
+    <div class="say-label">What the call says, for example</div>
+    <div class="say">“Punnamada Star's 90-day sewage pump-out record is 12 days overdue. Empty the toilet tank at an approved treatment plant and log it in Kayal Log. Delays may affect licence renewal.”</div>
+    <div class="langs"><span>Malayalam</span><span>English</span></div>
+  </div>
+  <div class="call-note">For a boat that is due or overdue, the inspector taps Call owner on the dashboard.</div>
+  <div class="pageno">Kayal Log · 6</div>
+  <aside class="notes">
+    <p>Two more checks. First, the receiver. The plant, truck, pump boat or collector that took the waste opens the receiver page on their own phone, scans the code on the crew's phone, and taps Confirm received or Not received. Received raises the entry to Confirmed. Not received marks it Disputed, and it drops to Declared.</p>
+    <p>Second, the reminder call. For a boat that is due or overdue, the inspector taps Call owner, and Sarvam Voice Agents phones the owner with a reminder in Malayalam or English.</p>
+    <p>If a judge asks: the receiver has 3 days to answer, and the answer cannot be changed later. In this build every reminder call goes to one configured number.</p>
+    <p>Source: README.md.</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="For inspectors: every boat on one map, most overdue first. Screenshots of the dashboard and of an overdue boat record.">
+  <div class="eyebrow">For inspectors</div>
+  <h1>Every boat on one map, most overdue first.</h1>
+  <div class="browser"><div class="bar"><i></i><i></i><i></i></div><img src="{{img:dashboard-desktop.png}}" alt="The inspector dashboard with key numbers, a map of collection points and the live log"></div>
+  <div class="crop" style="left: 636px; top: 122px; width: 268px; height: 316px"><img src="{{img:overdue-record-desktop.png}}" alt="The public record of a boat with a red Overdue seal" style="left: -211px; top: -53px; width: 690px"></div>
+  <div class="caption" style="left: 636px; top: 448px; width: 268px">Overdue after 90 days with no sewage entry</div>
+  <div class="source">The screens show sample data.</div>
+  <div class="pageno">Kayal Log · 7</div>
+  <aside class="notes">
+    <p>Inspectors see every boat on one map, most overdue first. The key numbers are on top, and the log updates live.</p>
+    <p>When an inspector marks a plant closed, new entries naming that plant are saved but stay at Declared, with the reason shown. That makes the shortage visible, since only one of the two plants is reported to work.</p>
+    <p>Source: PLAN.md, and Down To Earth, 25 May 2026 for the plants.</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="How it works: the crew's voice, the phone's location and a receipt photo set a proof level, which leads to a spoken reply, the receiver's answer and the public record. A reminder call goes to the owner of a boat that is due.">
+  <div class="eyebrow">How it works</div>
+  <h1>One spoken sentence becomes a public record.</h1>
+  <div class="flow">
+    <div class="col">
+      <div class="box"><b>The crew's voice</b><div class="tags"><span class="tag">saaras:v4 hears it</span><span class="tag">gemma4 reads it</span></div></div>
+      <div class="box"><b>The phone's location</b><span>Matched to the known collection points</span></div>
+      <div class="box"><b>A receipt or slip photo</b><div class="tags"><span class="tag">gemma4 reads the photo</span></div></div>
+    </div>
+    <div class="arrow"></div>
+    <div class="mid"><b>Proof level</b><span class="pill declared">Declared</span><span class="pill verified">Location</span><span class="pill verified">Receipt</span></div>
+    <div class="arrow"></div>
+    <div class="col">
+      <div class="box"><b>A spoken reply</b><div class="tags"><span class="tag">sarvam-translate:v1</span><span class="tag">bulbul:v3</span></div></div>
+      <div class="box"><b>The receiver's answer</b><span>Raises the entry to Confirmed, or marks it Disputed</span></div>
+      <div class="box"><b>The public record</b><span>The boat's page and the inspector's dashboard</span></div>
+    </div>
+  </div>
+  <div class="flow-call"><div class="ring"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><b>Reminder call.</b> For a boat that is due or overdue, the inspector taps Call owner and Sarvam Voice Agents phones the owner.</div></div>
+  <div class="pageno">Kayal Log · 8</div>
+  <aside class="notes">
+    <p>This slide can be skipped if time is short.</p>
+    <p>The crew's speech, in Malayalam, Tamil, Hindi or another Indian language, is turned into text by Sarvam Saaras v4. Gemma 4 reads the sentence, and reads the receipt photo. The phone's position is compared with the known collection points. That sets the proof level.</p>
+    <p>The reply is translated into the language the crew spoke, by Sarvam-Translate, and spoken by Bulbul v3. The receiver's answer raises the entry to Confirmed, or marks it Disputed. Tourists and inspectors see the record straight away.</p>
+    <p>Source: docs/PITCH.md, section 4, and README.md.</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="One solution, all three HackaThoni tracks: Place and People, Voice and Language, and Physical-world computing.">
+  <div class="eyebrow">HackaThoni tracks</div>
+  <h1>One solution, all three tracks.</h1>
+  <div class="tracks3">
+    <div class="card"><div class="thumb"><img src="{{shot:track-dashboard.png}}" alt="The inspector dashboard with its key numbers and map"></div><div class="body"><div class="n">Track 01 · Primary</div><div class="t">Place &amp; People</div><div class="d">The Alappuzha challenge: houseboats and their waste on Vembanad lake, for crews, receivers, tourists and inspectors.</div></div></div>
+    <div class="card"><div class="thumb"><img src="{{shot:track-voice.png}}" alt="The crew page prompt: say what you emptied, in Malayalam, Tamil, Hindi or Bengali"></div><div class="body"><div class="n">Track 02</div><div class="t">Voice &amp; Language</div><div class="d">Built for Malayalis. The crew speaks and hears their own language: Malayalam, Tamil, Hindi, Bengali and more.</div></div></div>
+    <div class="card"><div class="thumb"><img src="{{shot:track-physical.png}}" alt="A handover entry with the operator's slip photo read, and the Add photo button"></div><div class="body"><div class="n">Track 03</div><div class="t">Physical-world computing</div><div class="d">GPS location, receipt photos and number plates tie each entry to a real place. QR codes link the boat, the crew and the receiver.</div></div></div>
+  </div>
+  <div class="pageno">Kayal Log · 9</div>
+  <aside class="notes">
+    <p>Kayal Log is one solution for all three tracks.</p>
+    <p>Track 01, Place and People: the problem is Alappuzha's houseboats and their waste, and the users are the crew, receivers, tourists and inspectors on that lake.</p>
+    <p>Track 02, Voice and Language: it is built for Malayalis, and the crew speaks and hears their own language, Malayalam, Tamil, Hindi, Bengali and more, all through Sarvam. The owner's reminder is a phone call through Sarvam Voice Agents.</p>
+    <p>Track 03, Physical-world computing: the phone's location, the receipt photo and the vehicle's number plate tie each entry to a real place and a real object.</p>
+    <p>Source: README.md, "Tracks".</p>
+  </aside>
+</section>
+
+<section class="slide" data-title="What is next: real sign-in, an offline queue, and plant-side intake records.">
+  <div class="eyebrow">What is next</div>
+  <h1>From a working build to the whole lake.</h1>
+  <div class="next3">
+    <div class="card"><div class="n">1</div><div class="t">Real sign-in</div><div class="d">Phone OTP for crews and receivers, and government accounts for inspectors.</div></div>
+    <div class="card"><div class="n">2</div><div class="t">An offline queue</div><div class="d">The crew logs on the lake without signal, and the phone sends it later.</div></div>
+    <div class="card"><div class="n">3</div><div class="t">Plant-side intake records</div><div class="d">Each plant keeps its own log of what it received.</div></div>
+  </div>
+  <div class="next-built"><b>Built at HackaThoni:</b> voice logging, four proof levels, the receiver's approval, the inspector's map and the reminder call.</div>
+  <div class="pageno">Kayal Log · 10</div>
+  <aside class="notes">
+    <p>What is next. Real sign-in: phone OTP for crews and receivers, and government accounts for inspectors.</p>
+    <p>An offline queue, so the crew can log on the lake without signal and send it later.</p>
+    <p>And plant-side intake records, so each plant keeps its own log of what it received.</p>
+    <p>Source: README.md, "What is next".</p>
+  </aside>
+</section>
+
+<section class="slide dark" data-title="Kayal Log: a record every boat can show, and every tourist can check. Built by Ajaneeshwar at HackaThoni.">
+  <div class="scene">{{scene:close}}</div>
+  <div class="close-shade"></div>
+  <div class="close-line">A record every boat can show, and every tourist can check.</div>
+  <div class="close-rule"></div>
+  <div class="close-by">
+    <b>Kayal Log</b>
+    <span>Built by Ajaneeshwar at HackaThoni · Alappuzha · 21–22 November 2026</span>
+  </div>
+  <aside class="notes">
+    <p>Kayal Log: a record every boat can show, and every tourist can check.</p>
+    <p>Thank you. I am happy to take questions.</p>
+  </aside>
+</section>
+
+</body>
+</html>

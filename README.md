@@ -4,6 +4,8 @@ A voice logbook that lets Alappuzha houseboats prove where their sewage went.
 
 Built solo at HackaThoni, Alappuzha, 21–22 November 2026.
 
+Pitch deck: [docs/deck/kayal-log.pptx](docs/deck/kayal-log.pptx), 11 slides with speaker notes. Slide images are in [docs/deck/slides](docs/deck/slides).
+
 ## Try it
 
 Start the app locally with the instructions in [Run it](#run-it). The sample data includes:
