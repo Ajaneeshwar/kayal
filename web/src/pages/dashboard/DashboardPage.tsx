@@ -56,7 +56,7 @@ function Stat({ label, value, tone, note }: { label: Text; value: number | strin
           </motion.span>
         </AnimatePresence>
       </p>
-      {note && <p className="mt-1.5 truncate text-caption text-ink-muted">{note}</p>}
+      {note && <p className="mt-1.5 break-words text-caption text-ink-muted xl:truncate">{note}</p>}
     </div>
   );
 }
