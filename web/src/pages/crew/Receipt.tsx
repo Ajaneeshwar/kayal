@@ -41,7 +41,7 @@ const number = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
 /** Speech to text drops or adds zeros ("8000" heard as "8"), so offer the nearby powers of ten. */
 function suggestions(amount: number | null) {
   if (amount == null || amount <= 0) return [];
-  const all = [amount * 10, amount * 100, amount * 1000, amount / 10].filter((n) => Number.isInteger(n) && n > 0 && n <= 1_000_000);
+  const all = [amount * 10, amount / 10, amount * 100, amount * 1000, amount / 100].filter((n) => Number.isInteger(n) && n > 0 && n <= 1_000_000);
   return [...new Set(all)].slice(0, 3).sort((a, b) => a - b);
 }
 
