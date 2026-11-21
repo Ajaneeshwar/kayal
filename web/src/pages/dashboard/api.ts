@@ -1,5 +1,6 @@
 // API calls for the inspector dashboard. Routes are described in docs/API.md.
 import { ADMIN_PIN_KEY, readAdminPin, type BoatState } from '../../lib/api.ts';
+import type { Method } from '../../components/MethodIcon.tsx';
 
 export type Level = 'declared' | 'location' | 'receipt';
 export type Waste = 'sewage' | 'solid' | 'oil';
@@ -43,6 +44,10 @@ export interface Entry {
   photo: { file: string; isReceipt: boolean; caption: string | null } | null;
   source: 'voice' | 'text' | 'sample';
   hash: string;
+  /** Absent on entries saved before handover methods existed. */
+  method?: Method;
+  vehicleNumber?: string | null;
+  handedTo?: string | null;
 }
 
 export interface Chain {

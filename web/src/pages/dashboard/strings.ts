@@ -26,6 +26,11 @@ export const en = {
   crewLink: 'Crew link',
   publicRecord: 'Public record',
   signOut: 'Sign out',
+  methodTruck: 'Suction truck',
+  methodPump: 'Mobile pump',
+  methodCollector: 'Waste collector',
+  methodBin: 'Waste bin',
+  receivedBy: 'Received by',
 } as const;
 
 export type DashKey = keyof typeof en;

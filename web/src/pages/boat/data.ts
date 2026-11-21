@@ -1,11 +1,12 @@
 // API calls and record shapes for the boat record page. See docs/API.md.
 import { en, type BoatStringKey } from './strings.ts';
 import mlFile from './ml.json';
+import type { Method } from '../../components/MethodIcon.tsx';
 
 export type BoatState = 'verified' | 'declared' | 'overdue';
 export type Level = 'declared' | 'location' | 'receipt';
 export type Kind = 'sewage_pumpout' | 'solid_waste' | 'engine_oil';
-export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | null;
+export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | 'no_fixed_point' | 'handover_slip' | 'waste_bin' | null;
 
 export interface LastHandover {
   at: string;
@@ -36,6 +37,10 @@ export interface Entry {
   hash: string;
   corrected?: boolean;
   correctedAt?: string | null;
+  /** Absent on entries saved before handover methods existed. */
+  method?: Method;
+  vehicleNumber?: string | null;
+  handedTo?: string | null;
 }
 
 export interface Chain {
@@ -169,5 +174,27 @@ export function reasonText(e: Entry): string {
       return 'No collection point for this waste is listed nearby.';
     default:
       return 'Nothing else confirms it.';
+  }
+}
+
+export const METHOD: Record<Method, BoatStringKey> = {
+  collection_point: 'methodPoint',
+  suction_truck: 'methodTruck',
+  mobile_pump: 'methodPump',
+  waste_collector: 'methodCollector',
+  waste_bin: 'methodBin',
+};
+
+/** The translated reason for a truck, pump, collector or bin entry. Null for the collection-point reasons, which `reasonText` words. */
+export function handoverReason(e: Entry): BoatStringKey | null {
+  switch (e.verification.reason) {
+    case 'no_fixed_point':
+      return 'reasonNoFixedPoint';
+    case 'handover_slip':
+      return 'reasonHandoverSlip';
+    case 'waste_bin':
+      return 'reasonWasteBin';
+    default:
+      return null;
   }
 }

@@ -70,6 +70,7 @@ export function Intro({ boat }: { boat: Boat }) {
       <div className="mt-3 border-s-2 border-gold-edge ps-3">
         <MlEn text={t('forExample')} layout="inline" className="text-caption text-ink-muted" mlClassName="text-caption" />
         <MlEn text={t('introExample')} className="mt-0.5" mlClassName="text-body" enClassName="!text-small text-ink-muted !opacity-100" />
+        <MlEn text={t('introExampleTruck')} className="mt-2" mlClassName="text-body" enClassName="!text-small text-ink-muted !opacity-100" />
       </div>
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-line pt-3 text-small">
         <MlEn text={t('lastSewage')} layout="inline" className="text-ink-muted" mlClassName="text-small" />

@@ -13,6 +13,7 @@ export const en = {
   sealDeclared: 'Declared only',
   sealOverdue: 'Overdue',
   sentenceVerified: 'This boat emptied its sewage tank at a treatment plant, and the crew’s phone was there when they logged it.',
+  sentenceVerifiedSlip: 'This boat handed its sewage to a truck or pump, and a photo of the operator’s slip or number plate backs it up.',
   sentenceDeclared: 'The crew says they emptied the sewage tank, but nothing confirms where the waste went.',
   sentenceOverdue: 'This boat has not logged emptying its sewage tank in the last 90 days.',
 
@@ -30,6 +31,19 @@ export const en = {
   levelDeclared: 'Declared',
   corrected: 'Quantity corrected',
   receiptPhoto: 'Receipt photo',
+
+  methodPoint: 'Collection point',
+  methodTruck: 'Suction truck',
+  methodPump: 'Mobile pump',
+  methodCollector: 'Waste collector',
+  methodBin: 'Waste bin',
+  vehicle: 'Vehicle',
+  receivedBy: 'Received by',
+  reasonNoFixedPoint: 'Handed over away from a plant, so the phone’s location cannot confirm it. No photo of a slip or number plate backs it up.',
+  reasonHandoverSlip: 'A photo of the operator’s slip or the vehicle’s number plate backs this handover.',
+  reasonWasteBin: 'Put in a public waste bin. Nobody receives it there, so it stays Declared.',
+  legendTruckTitle: 'Handed to a truck, pump or collector',
+  legendTruckBody: 'Some boats hand their waste to a septic truck on the shore, a pump boat or a waste collector instead of a plant. Such an entry stays Declared until a photo of the operator’s slip or the vehicle’s number plate backs it up. Then it counts as Receipt.',
 
   chainOk: 'Record intact',
   chainBroken: 'Record altered',

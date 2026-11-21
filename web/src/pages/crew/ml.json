@@ -28,12 +28,16 @@
     "ml": "റെക്കോർഡിംഗ് നിർത്തുക"
   },
   "introTitle": {
-    "en": "Say what you emptied, how much, and where",
-    "ml": "നിങ്ങൾ ഒഴിഞ്ഞ മാലിന്യത്തിന്റെ തരവും അളവും, അത് ഒഴിഞ്ഞ സ്ഥലവും പറയുക"
+    "en": "Say what you emptied, how much, and where or who took it",
+    "ml": "നിങ്ങൾ എന്താണ് ഒഴിഞ്ഞത്, എത്ര, എവിടെ അല്ലെങ്കിൽ ആരാണ് എടുത്തതെന്ന് പറയുക"
   },
   "introExample": {
     "en": "We emptied 800 litres from the toilet tank at Kumarakom STP.",
     "ml": "ഞങ്ങൾ കുമരകം എസ്.ടി.പിയിലെ ടോയ്‌ലറ്റ് ടാങ്കിൽ നിന്ന് 800 ലിറ്റർ മലിനജലം ഒഴുക്കിക്കളഞ്ഞു."
+  },
+  "introExampleTruck": {
+    "en": "A septic truck, KL-04-AB-1234, took 300 litres.",
+    "ml": "ഒരു സെപ്റ്റിക് ട്രക്ക്, KL-04-AB-1234, 300 ലിറ്റർ കൊണ്ടുപോയി."
   },
   "forExample": {
     "en": "For example",
@@ -202,6 +206,62 @@
   "photoNotReceipt": {
     "en": "Photo kept, but it did not look like a receipt.",
     "ml": "ഫോട്ടോ സൂക്ഷിച്ചു, പക്ഷേ അത് രസീത് പോലെ തോന്നിയില്ല."
+  },
+  "handover": {
+    "en": "Handed to",
+    "ml": "കൈമാറിയത്"
+  },
+  "methodPoint": {
+    "en": "Collection point",
+    "ml": "ശേഖരണ കേന്ദ്രം"
+  },
+  "methodTruck": {
+    "en": "Suction truck",
+    "ml": "സക്ഷൻ ട്രക്ക്"
+  },
+  "methodPump": {
+    "en": "Mobile pump",
+    "ml": "മൊബൈൽ പമ്പ്"
+  },
+  "methodCollector": {
+    "en": "Waste collector",
+    "ml": "മാലിന്യം ശേഖരിക്കുന്ന ഉപകരണം"
+  },
+  "methodBin": {
+    "en": "Waste bin",
+    "ml": "മാലിന്യ പാത്രം"
+  },
+  "vehicle": {
+    "en": "Vehicle",
+    "ml": "വാഹനം"
+  },
+  "receivedBy": {
+    "en": "Received by",
+    "ml": "സ്വീകരിച്ചത്"
+  },
+  "reasonNoFixedPoint": {
+    "en": "There is no fixed collection point to check, so only your word backs this entry.",
+    "ml": "പരിശോധിക്കാൻ ഒരു നിശ്ചിത ശേഖരണ കേന്ദ്രം ഇല്ലാത്തതിനാൽ, നിങ്ങളുടെ വാക്ക് മാത്രമേ ഈ എൻട്രിയെ പിന്തുണയ്ക്കുകയുള്ളൂ."
+  },
+  "reasonHandoverSlip": {
+    "en": "The photo shows the operator’s slip or the vehicle’s number plate.",
+    "ml": "ഫോട്ടോയിൽ ഓപ്പറേറ്ററുടെ സ്ലിപ്പോ വാഹനത്തിന്റെ നമ്പർ പ്ലേറ്റോ കാണിക്കുന്നു."
+  },
+  "reasonWasteBin": {
+    "en": "Nobody receives waste at a public bin, so this entry stays Declared.",
+    "ml": "പൊതു ചവറ്റുകുട്ടയിൽ ആരും മാലിന്യം സ്വീകരിക്കുന്നില്ല, അതിനാൽ ഈ എൻട്രി ഡിക്ലയേർഡ് ആയി തുടരുന്നു."
+  },
+  "slipTip": {
+    "en": "Add a photo of the operator’s slip or the number plate with your next entry to raise it to Receipt.",
+    "ml": "ഓപ്പറേറ്ററുടെ സ്ലിപ്പിന്റെയോ നമ്പർ പ്ലേറ്റിന്റെയോ ഫോട്ടോ നിങ്ങളുടെ അടുത്ത എൻട്രിയോടൊപ്പം ചേർത്ത് അത് രസീത് ആയി ഉയർത്തുക."
+  },
+  "photoIsSlip": {
+    "en": "Slip or number plate read",
+    "ml": "സ്ലിപ്പോ നമ്പർ പ്ലേറ്റോ വായിക്കുക"
+  },
+  "photoNotSlip": {
+    "en": "Photo kept, but it did not show a slip or a number plate.",
+    "ml": "ഫോട്ടോ സൂക്ഷിച്ചിട്ടുണ്ട്, പക്ഷേ അതിൽ സ്ലിപ്പോ നമ്പർ പ്ലേറ്റോ കാണിച്ചിട്ടില്ല."
   },
   "locFinding": {
     "en": "Finding location",

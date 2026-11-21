@@ -1,4 +1,14 @@
 import type { Entry, Level, Waste } from './api.ts';
+import { methodOf, type Method } from '../../components/MethodIcon.tsx';
+import { en, type DashKey } from './strings.ts';
+
+/** Labels for the handovers that happen away from a fixed collection point. */
+export const METHOD_KEY: Record<Exclude<Method, 'collection_point'>, DashKey> = {
+  suction_truck: 'methodTruck',
+  mobile_pump: 'methodPump',
+  waste_collector: 'methodCollector',
+  waste_bin: 'methodBin',
+};
 
 export const KIND_LABELS: Record<Entry['kind'], string> = {
   sewage_pumpout: 'Sewage pump-out',
@@ -39,7 +49,12 @@ export function distance(m: number) {
   return m < 950 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`;
 }
 
+/** Where the waste went, in English. A truck, pump, collector or bin is named instead of a distance to a plant. */
 export function whereText(entry: Entry) {
+  const method = methodOf(entry);
+  if (method !== 'collection_point') {
+    return [en[METHOD_KEY[method]], entry.vehicleNumber, entry.handedTo ? `${en.receivedBy} ${entry.handedTo}` : null].filter(Boolean).join(' · ');
+  }
   const { reason, facilityName, distanceM } = entry.verification;
   switch (reason) {
     case null:

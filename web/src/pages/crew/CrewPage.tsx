@@ -280,7 +280,7 @@ function Crew({ boatId }: { boatId: string }) {
   return (
     <div className="flex h-dvh flex-col bg-teak-deep text-ink-inverse">
       <header className="relative z-10 bg-teak pt-[env(safe-area-inset-top)] shadow-[0_12px_32px_-18px_var(--color-teak-deep)]">
-        <div className="mx-auto flex max-w-[36rem] items-center gap-1.5 px-2 pt-2">
+        <div className="mx-auto flex max-w-[36rem] items-start gap-1.5 px-2 pt-2">
           <Link
             to="/"
             aria-label={pick(t('back'), lang)}
@@ -288,11 +288,14 @@ function Crew({ boatId }: { boatId: string }) {
           >
             <Icon.Back size={22} />
           </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-heading font-semibold tracking-[-0.01em]">{boat.name}</h1>
-            <p className="truncate text-caption tabular-nums text-ink-inverse-muted">{boat.registration}</p>
+          {/* The full name wraps rather than truncates; the badge sits under it so the name keeps the width. */}
+          <div className="min-w-0 flex-1 pt-1.5">
+            <h1 className="font-display text-heading font-semibold leading-tight tracking-[-0.01em] [overflow-wrap:anywhere] [text-wrap:balance]">{boat.name}</h1>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <StatusBadge state={boat.status.state} bilingual={false} />
+              <p className="text-caption tabular-nums text-ink-inverse-muted [overflow-wrap:anywhere]">{boat.registration}</p>
+            </div>
           </div>
-          <StatusBadge state={boat.status.state} bilingual={false} className="shrink-0" />
           <LanguageSwitch compact className="me-1" />
         </div>
         <div className="mx-auto max-w-[36rem] px-4 pb-3 pt-2.5">

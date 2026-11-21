@@ -82,5 +82,25 @@
   "signOut": {
     "en": "Sign out",
     "ml": "സൈൻ ഔട്ട് ചെയ്യുക"
+  },
+  "methodTruck": {
+    "en": "Suction truck",
+    "ml": "ചൂഷണ ട്രക്ക്"
+  },
+  "methodPump": {
+    "en": "Mobile pump",
+    "ml": "മൊബൈൽ പമ്പ്"
+  },
+  "methodCollector": {
+    "en": "Waste collector",
+    "ml": "മാലിന്യ ശേഖരണി"
+  },
+  "methodBin": {
+    "en": "Waste bin",
+    "ml": "മാലിന്യ ബിൻ"
+  },
+  "receivedBy": {
+    "en": "Received by",
+    "ml": "സ്വീകരിച്ചത്"
   }
 }

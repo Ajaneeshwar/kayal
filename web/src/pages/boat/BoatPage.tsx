@@ -5,6 +5,7 @@ import { AppShell } from '../../components/AppShell.tsx';
 import { Bi } from '../../components/Bi.tsx';
 import { Button } from '../../components/Button.tsx';
 import { Card } from '../../components/Card.tsx';
+import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
 import { pick, useLang } from '../../i18n/language.ts';
 import { Seal } from './Seal.tsx';
 import { LevelChip, Timeline } from './Timeline.tsx';
@@ -16,6 +17,7 @@ import {
   fetchState,
   formatDate,
   LEVEL,
+  METHOD,
   NotFoundError,
   type BoatRecord,
   type BoatState,
@@ -160,14 +162,16 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
   const { state, overdueDays, lastSewage } = boat.status;
   const seal = SEAL[state];
   const word = bt(seal.word);
-  const sentence = bt(seal.sentence);
+  const lastEntry = lastSewage ? entries.find((e) => e.kind === 'sewage_pumpout' && e.at === lastSewage.at) : undefined;
+  const lastMethod = lastEntry ? methodOf(lastEntry) : 'collection_point';
+  // A boat verified by a truck operator's slip was never at a plant, so its sentence says so.
+  const sentence = bt(state === 'verified' && lastMethod !== 'collection_point' ? 'sentenceVerifiedSlip' : seal.sentence);
   // The overdue sentence names 90 days, so its Malayalam only holds for the default window.
   const sentenceText = state === 'overdue' && overdueDays !== 90
     ? { en: `This boat has not logged emptying its sewage tank in the last ${overdueDays} days.`, ml: '' }
     : sentence;
 
-  const lastEntry = lastSewage ? entries.find((e) => e.kind === 'sewage_pumpout' && e.at === lastSewage.at) : undefined;
-  const place = lastSewage?.facilityName ?? lastEntry?.facilityMentioned ?? null;
+  const place = lastMethod === 'collection_point' ? (lastSewage?.facilityName ?? lastEntry?.facilityMentioned ?? null) : null;
   const left = lastSewage ? overdueDays - lastSewage.daysAgo : 0;
 
   return (
@@ -241,8 +245,24 @@ function Certificate({ boat, entries, chain }: { boat: BoatRecord; entries: Entr
             )}
           </Fact>
           <Fact label="where">
-            <span className="block font-semibold [overflow-wrap:anywhere]">{place ?? '—'}</span>
-            {lastSewage && !lastSewage.facilityName && place && <span className="block text-small text-ink-muted">As the crew named it</span>}
+            {lastMethod !== 'collection_point' ? (
+              <>
+                <span className="flex items-start gap-1.5 font-semibold">
+                  <MethodIcon method={lastMethod} size={18} className="mt-[3px] text-gold-ink" />
+                  <Bi text={bt(METHOD[lastMethod])} mlClassName="text-small" />
+                </span>
+                {lastEntry?.vehicleNumber && (
+                  <span className="block text-small tabular-nums text-ink-muted [overflow-wrap:anywhere]">
+                    <bdi>{lastEntry.vehicleNumber}</bdi>
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="block font-semibold [overflow-wrap:anywhere]">{place ?? '—'}</span>
+                {lastSewage && !lastSewage.facilityName && place && <span className="block text-small text-ink-muted">As the crew named it</span>}
+              </>
+            )}
           </Fact>
           <Fact label="proof">{lastSewage ? <LevelChip level={lastSewage.level} stack /> : '—'}</Fact>
           <Fact label="daysLeft">
@@ -343,6 +363,15 @@ function Legend() {
           </li>
         ))}
       </ul>
+      <div className="mt-5 flex items-start gap-3 border-t border-line pt-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface text-gold-ink ring-1 ring-line">
+          <MethodIcon method="suction_truck" size={22} />
+        </span>
+        <div className="min-w-0 text-small">
+          <Bi text={bt('legendTruckTitle')} className="font-semibold text-ink" />
+          <Bi text={bt('legendTruckBody')} as="p" className="mt-1 text-ink-muted" mlClassName="mt-1 text-[0.95em]!" />
+        </div>
+      </div>
     </section>
   );
 }

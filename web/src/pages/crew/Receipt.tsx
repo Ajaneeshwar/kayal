@@ -5,6 +5,7 @@ import { t } from './i18n.ts';
 import { usePick } from '../../i18n/language.ts';
 import type { CrewKey } from './strings.ts';
 import { Icon, MlEn } from './ui.tsx';
+import { MethodIcon, isMobileHandover, methodOf, type Method } from '../../components/MethodIcon.tsx';
 
 const KIND: Record<Kind, CrewKey> = {
   sewage_pumpout: 'kindSewage',
@@ -20,6 +21,9 @@ const LEVEL: Record<Level, { key: CrewKey; className: string }> = {
 
 function reasonKey(entry: Entry): CrewKey {
   const { level, reason } = entry.verification;
+  if (reason === 'handover_slip') return 'reasonHandoverSlip';
+  if (reason === 'no_fixed_point') return 'reasonNoFixedPoint';
+  if (reason === 'waste_bin') return 'reasonWasteBin';
   if (level === 'receipt') return 'reasonReceipt';
   if (level === 'location') return 'reasonLocation';
   if (reason === 'no_facility') return 'reasonNoFacility';
@@ -27,6 +31,14 @@ function reasonKey(entry: Entry): CrewKey {
   if (reason === 'closed') return 'reasonClosed';
   return 'reasonNoLocation';
 }
+
+const METHOD: Record<Method, CrewKey> = {
+  collection_point: 'methodPoint',
+  suction_truck: 'methodTruck',
+  mobile_pump: 'methodPump',
+  waste_collector: 'methodCollector',
+  waste_bin: 'methodBin',
+};
 
 const DEFAULT_UNIT: Record<Kind, string> = { sewage_pumpout: 'litres', solid_waste: 'bags', engine_oil: 'litres' };
 
@@ -72,7 +84,9 @@ export function Receipt({
   const { amount, unit } = parseQuantity(entry.quantity, entry.kind);
   const [typed, setTyped] = useState('');
   const level = LEVEL[entry.verification.level];
-  const place = entry.verification.facilityName ?? entry.facilityMentioned;
+  const method = methodOf(entry);
+  const mobile = isMobileHandover(method);
+  const place = method === 'collection_point' ? (entry.verification.facilityName ?? entry.facilityMentioned) : null;
   const time = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date(entry.at));
 
   async function save(quantity: string) {
@@ -213,10 +227,42 @@ export function Receipt({
 
           </Row>
 
-          <Row label="place">
-            <p className="font-semibold">{place ?? pick(t('notSaid'))}</p>
-            {entry.verification.distanceM != null && entry.verification.distanceM > 0 && (
-              <p className="text-small tabular-nums text-ink-muted">{formatDistance(entry.verification.distanceM)}</p>
+          <Row label="handover">
+            <div className="flex items-start gap-2">
+              <MethodIcon method={method} size={20} className="mt-px text-gold-ink" />
+              <MlEn text={t(METHOD[method])} className="min-w-0 font-semibold" mlClassName="text-body" enClassName="!text-small font-normal" />
+            </div>
+            {method === 'collection_point' && (
+              <p className="mt-1 [overflow-wrap:anywhere]">
+                {place ?? <span className="text-ink-muted">{pick(t('notSaid'))}</span>}
+                {entry.verification.distanceM != null && entry.verification.distanceM > 0 && (
+                  <span className="ms-2 text-small tabular-nums text-ink-muted">{formatDistance(entry.verification.distanceM)}</span>
+                )}
+              </p>
+            )}
+            {(entry.vehicleNumber || entry.handedTo) && (
+              <dl className="mt-1.5 grid gap-1 text-small">
+                {entry.vehicleNumber && (
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <dt className="text-ink-muted">
+                      <MlEn text={t('vehicle')} layout="inline" mlClassName="text-small" enClassName="text-caption" />
+                    </dt>
+                    <dd className="font-semibold tabular-nums tracking-[0.02em] [overflow-wrap:anywhere]">
+                      <bdi>{entry.vehicleNumber}</bdi>
+                    </dd>
+                  </div>
+                )}
+                {entry.handedTo && (
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <dt className="text-ink-muted">
+                      <MlEn text={t('receivedBy')} layout="inline" mlClassName="text-small" enClassName="text-caption" />
+                    </dt>
+                    <dd className="font-semibold [overflow-wrap:anywhere]">
+                      <bdi>{entry.handedTo}</bdi>
+                    </dd>
+                  </div>
+                )}
+              </dl>
             )}
           </Row>
 
@@ -229,6 +275,13 @@ export function Receipt({
           </Row>
         </div>
 
+        {mobile && entry.verification.level === 'declared' && (
+          <div className="mt-4 flex items-start gap-2.5 rounded-control bg-surface px-3 py-2.5">
+            <Icon.Camera size={18} className="mt-0.5 shrink-0 text-gold-ink" />
+            <MlEn text={t('slipTip')} className="min-w-0 text-small" mlClassName="text-small" enClassName="!text-caption text-ink-muted !opacity-100" />
+          </div>
+        )}
+
         {entry.photo && (
           <div className="mt-4 flex items-center gap-3 rounded-control bg-surface p-2.5">
             <img
@@ -237,7 +290,10 @@ export function Receipt({
               className="size-14 rounded-[0.5rem] object-cover outline outline-1 -outline-offset-1 outline-black/10"
             />
             <div className="min-w-0 text-small">
-              <MlEn text={t(entry.photo.isReceipt ? 'photoIsReceipt' : 'photoNotReceipt')} enClassName="!text-caption text-ink-muted !opacity-100" />
+              <MlEn
+                text={t(mobile ? (entry.photo.isReceipt ? 'photoIsSlip' : 'photoNotSlip') : entry.photo.isReceipt ? 'photoIsReceipt' : 'photoNotReceipt')}
+                enClassName="!text-caption text-ink-muted !opacity-100"
+              />
               {entry.photo.issuer && <p className="truncate text-caption text-ink-muted">{entry.photo.issuer}</p>}
             </div>
           </div>

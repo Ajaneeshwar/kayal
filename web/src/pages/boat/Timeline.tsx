@@ -1,6 +1,7 @@
 import { Bi } from '../../components/Bi.tsx';
+import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
 import { useLang } from '../../i18n/language.ts';
-import { bt, formatDate, formatTime, KIND, LEVEL, reasonText, type Entry, type Level } from './data.ts';
+import { bt, formatDate, formatTime, handoverReason, KIND, LEVEL, METHOD, reasonText, type Entry, type Level } from './data.ts';
 
 const CHIP: Record<'verified' | 'declared', string> = {
   verified: 'bg-verified-soft text-verified',
@@ -58,17 +59,10 @@ export function LevelChip({ level, stack = false }: { level: Level; stack?: bool
   );
 }
 
-function PinIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-[3px] shrink-0">
-      <path d="M8 14.2s4.6-4.3 4.6-7.8a4.6 4.6 0 1 0-9.2 0c0 3.5 4.6 7.8 4.6 7.8z" />
-      <circle cx="8" cy="6.4" r="1.6" />
-    </svg>
-  );
-}
-
 function EntryCard({ entry }: { entry: Entry }) {
   const { level, facilityName } = entry.verification;
+  const method = methodOf(entry);
+  const handover = handoverReason(entry);
   const place = facilityName ?? entry.facilityMentioned;
   const lang = useLang();
   // The crew's own words. The English setting shows only the English summary.
@@ -106,13 +100,42 @@ function EntryCard({ entry }: { entry: Entry }) {
           </div>
         )}
         <div className="flex items-start gap-1.5">
-          <dt className="sr-only">Place</dt>
-          <PinIcon />
-          <dd>{place ?? <span className="text-ink-muted">No place named</span>}</dd>
+          <dt className="sr-only">Handed to</dt>
+          <MethodIcon method={method} size={17} className="mt-[3px] text-gold-ink" />
+          <dd className="min-w-0">
+            <Bi text={bt(METHOD[method])} className="font-semibold" mlClassName="text-small text-ink-muted" />
+            {method === 'collection_point' && (
+              <span className="mt-0.5 block [overflow-wrap:anywhere]">{place ?? <span className="text-ink-muted">No place named</span>}</span>
+            )}
+          </dd>
         </div>
+        {entry.vehicleNumber && (
+          <div className="flex flex-wrap items-baseline gap-x-2 ps-[1.4375rem] text-small">
+            <dt className="text-ink-muted">
+              <Bi text={bt('vehicle')} layout="inline" />
+            </dt>
+            <dd className="font-semibold tabular-nums tracking-[0.02em] [overflow-wrap:anywhere]">
+              <bdi>{entry.vehicleNumber}</bdi>
+            </dd>
+          </div>
+        )}
+        {entry.handedTo && (
+          <div className="flex flex-wrap items-baseline gap-x-2 ps-[1.4375rem] text-small">
+            <dt className="text-ink-muted">
+              <Bi text={bt('receivedBy')} layout="inline" />
+            </dt>
+            <dd className="font-semibold [overflow-wrap:anywhere]">
+              <bdi>{entry.handedTo}</bdi>
+            </dd>
+          </div>
+        )}
       </dl>
 
-      <p className="mt-2 text-small text-ink-muted">{reasonText(entry)}</p>
+      {handover ? (
+        <Bi text={bt(handover)} as="p" className="mt-2 text-small text-ink-muted" mlClassName="mt-0.5" />
+      ) : (
+        <p className="mt-2 text-small text-ink-muted">{reasonText(entry)}</p>
+      )}
 
       {translated && (
         <p lang={entry.heard.language.split('-')[0]} className="mt-3 border-s-2 border-gold-edge/60 ps-3 text-small text-ink-muted">

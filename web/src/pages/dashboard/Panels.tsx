@@ -5,7 +5,8 @@ import { StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
 import { useLang } from '../../i18n/language.ts';
 import type { Boat, Entry, Facility, Report } from './api.ts';
-import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, WASTE_LABELS, ago, daysAgo, whereText } from './format.ts';
+import { KIND_LABELS, LEVEL_LABELS, LEVEL_TONE, METHOD_KEY, WASTE_LABELS, ago, daysAgo, whereText } from './format.ts';
+import { MethodIcon, methodOf } from '../../components/MethodIcon.tsx';
 import { d } from './i18n.ts';
 
 export function PanelHead({ title, meta, children }: { title: Text; meta?: ReactNode; children?: ReactNode }) {
@@ -48,6 +49,31 @@ const KIND_GLYPH: Record<Entry['kind'], string> = {
   engine_oil: 'M3 9h9l2-2h3v3l-5 6H3zM6 9V6h3',
 };
 
+/** Where the waste went. A truck, pump, collector or bin shows the method and vehicle, never a distance to a plant. */
+function Where({ entry }: { entry: Entry }) {
+  const method = methodOf(entry);
+  if (method === 'collection_point') return <span className="text-caption text-ink-muted">{whereText(entry)}</span>;
+  return (
+    <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-caption text-ink-muted">
+      <MethodIcon method={method} size={15} className="text-gold-ink" />
+      <Bi text={d(METHOD_KEY[method])} layout="inline" className="font-semibold text-ink" mlClassName="font-medium" />
+      {entry.vehicleNumber && (
+        <span className="inline-flex items-center gap-x-1.5">
+          <span aria-hidden="true">·</span>
+          <bdi className="font-semibold tabular-nums tracking-[0.02em] text-ink [overflow-wrap:anywhere]">{entry.vehicleNumber}</bdi>
+        </span>
+      )}
+      {entry.handedTo && (
+        <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
+          <span aria-hidden="true">·</span>
+          <Bi text={d('receivedBy')} layout="inline" />
+          <bdi className="[overflow-wrap:anywhere]">{entry.handedTo}</bdi>
+        </span>
+      )}
+    </span>
+  );
+}
+
 function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined; fresh: boolean }) {
   const lang = useLang();
   // The crew's own words. The English setting shows only the English summary.
@@ -88,7 +114,7 @@ function FeedItem({ entry, boat, fresh }: { entry: Entry; boat: Boat | undefined
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
             <LevelChip level={entry.verification.level} />
-            <span className="text-caption text-ink-muted">{whereText(entry)}</span>
+            <Where entry={entry} />
           </div>
           {translated && (
             <p lang={entry.heard!.language} className="mt-2 border-s-2 border-gold-edge/60 ps-2.5 text-small text-ink-muted">

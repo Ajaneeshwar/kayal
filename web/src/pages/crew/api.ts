@@ -1,9 +1,10 @@
 // API calls and record shapes for the crew page. Routes are described in docs/API.md.
 import type { BoatState } from '../../lib/api.ts';
+import type { Method } from '../../components/MethodIcon.tsx';
 
 export type Kind = 'sewage_pumpout' | 'solid_waste' | 'engine_oil';
 export type Level = 'declared' | 'location' | 'receipt';
-export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | null;
+export type Reason = 'no_location' | 'no_facility' | 'too_far' | 'closed' | 'no_fixed_point' | 'handover_slip' | 'waste_bin' | null;
 
 export interface Facility {
   id: string;
@@ -54,6 +55,10 @@ export interface Entry {
   verification: { level: Level; facilityId: string | null; facilityName: string | null; distanceM: number | null; reason: Reason };
   photo: { file: string; isReceipt: boolean; issuer: string | null; date: string | null; amount: string | null; caption: string | null } | null;
   corrected?: boolean;
+  /** Absent on entries saved before handover methods existed. */
+  method?: Method;
+  vehicleNumber?: string | null;
+  handedTo?: string | null;
 }
 
 export interface LogResult {
