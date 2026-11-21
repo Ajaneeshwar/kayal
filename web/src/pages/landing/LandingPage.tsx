@@ -48,7 +48,7 @@ function Hero({ ready }: { ready: boolean }) {
             mlClassName="mt-1.5 text-gold-bright"
           />
         </motion.div>
-        <motion.div variants={heroItem} className="mt-7 hidden sm:block">
+        <motion.div variants={heroItem} className="mt-7">
           <a
             href="#doors"
             className="group inline-flex min-h-12 items-center gap-2 rounded-pill bg-gold px-5 font-semibold text-teak shadow-[var(--shadow-button)] transition-[background-color,transform] duration-150 [text-shadow:none] hover:bg-gold-bright active:scale-[0.97]"
