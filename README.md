@@ -4,11 +4,68 @@ A voice logbook that lets Alappuzha houseboats prove where their sewage went.
 
 Built solo at HackaThoni, Alappuzha, 21–22 November 2026.
 
-## Screenshots
+## Try it
+
+Start the app locally with the instructions in [Run it](#run-it). The sample data includes:
+
+- Crew: choose **Kayal Rani** (`SAMPLE-ALP-0101`) on the landing page, or open `/crew?boat=kayal-rani`.
+- Inspector: sign in with whatever `ADMIN_PIN` is set to in your environment.
+- Receiver: open `/operator`, choose **Vembanad Septic Services** (`KL-04-AB-1234`) and enter demo code `5826`, or choose **Kumarakom STP desk** and enter demo code `2714`. These are synthetic demo codes from `lib/seed.mjs`.
+- Guest: open `/boat/kayal-rani`. No sign-in is needed.
+
+## The problem
+
+The High Court ordered that houseboats without pollution control and valid certification may not run on Vembanad lake from 19 April 2026 ([The Hindu / PTI, 17 April 2026][hindu-ban]). To renew a licence, a boat must empty its septage at a treatment plant every three months ([New Indian Express, 16 October 2023][nie-extinction]). Only one of the two plants works ([Down To Earth, 25 May 2026][dte-vembanad]). Government estimates count about 700 registered and 750 unregistered houseboats ([Down To Earth, 25 May 2026][dte-vembanad]). Inspectors check them one at a time, and in April one boat without valid papers took so long that the team could not check the others ([Onmanorama, 21 April 2026][manorama-inspect]). There is no shared record of who emptied what.
+
+## What it does
+
+A crew member says what waste they emptied and who took it. The handover can be at a collection point, to a suction truck, a pump boat or a waste collector, or into a waste bin. Kayal Log records the vehicle number and the receiver, checks the phone's location against the known collection points, and adds the entry to the boat's public record. The crew's phone then shows a handover code and a QR code. The plant, truck or collector that took the waste confirms it on their own phone.
+
+The crew can speak Malayalam, Tamil, Hindi or another Indian language, and they hear the reply in the language they spoke. They can also type. Recording takes one tap to start and one tap to send. After an entry is saved, the crew can add a receipt or slip photo to it, or tap Fix to correct a misheard quantity.
+
+The screens open in English. Every page has a language switch for English, Malayalam, or English with Malayalam beside it, and it remembers the choice.
+
+| Screen | Path | For | What happens |
+| --- | --- | --- | --- |
+| Landing and sign-in | `/` | Everyone | The product in one view, with Crew, Receiver, Inspector and Guest doors. |
+| Crew page | `/crew` | Boat crew, on a phone | Speak or type a handover, hear the reply, add a receipt photo, fix the quantity and show the handover code. |
+| Receiver page | `/operator` | Receivers, on a phone | Treatment plants, suction trucks, pump boats and waste collectors sign in, scan or type the handover code, and mark it received or not received. Plants also record trucks that unload there. |
+| Boat record | `/boat/<id>` | Tourists, on a phone | A certificate with a green, amber or red seal, the boat's log, and a form to report dumping with a photo. Reached by QR code. |
+| Dashboard | `/dashboard` | Inspectors, on a laptop | Map, boats by urgency, live log, truck custody, tourist reports, QR stickers, CSV export and Call owner. |
 
 <img src="docs/screens/landing-desktop.png" alt="Landing page with a live boat record above the fold" width="100%">
 
 Landing — a live boat record and the voice-first logbook.
+
+Each entry gets one of four proof levels, from weakest to strongest. The seal is the boat's sewage status, not the proof badge on an individual entry. The seal column below applies to sewage entries within the configured overdue window (`OVERDUE_DAYS`, 90 days by default), excluding withdrawn and disputed entries. Solid-waste entries do not determine the seal.
+
+| Level | Meaning | Boat record seal |
+| --- | --- | --- |
+| Declared | The crew said it. Nothing else confirms it. Handovers into a waste bin stay at this level. | Amber Declared only, unless another qualifying sewage entry has stronger proof. |
+| Location | When the crew logged it, the phone was at an open collection point that takes this kind of waste. | Green Verified. |
+| Receipt | A photo backs the entry. At a collection point, the location matched and the photo was read as a receipt. For a truck, pump boat or collector, the photo shows the operator's slip or the vehicle's number plate. | Green Verified. |
+| **Confirmed** | The receiver confirmed on their own phone at `/operator` that they got the waste, within 3 days of the entry. | Green Verified, not a separate Confirmed seal. |
+
+If there is no qualifying sewage entry within the window, the seal is red Overdue, even if an older entry has Location, Receipt or Confirmed proof.
+
+If the receiver says the waste never reached them, the entry is marked Disputed. It drops to Declared, the boat's record shows the receiver's answer, and the entry no longer counts toward the boat's seal.
+
+On the dashboard, an inspector can:
+
+- See the truck chain of custody: for each suction truck and pump boat, the litres it confirmed picking up from boats over the last 30 days against the litres plants recorded it unloading. A gap is flagged.
+- Withdraw an entry with a reason. The entry stays on the record, marked Withdrawn, and stops counting toward the seal.
+- Add boats, collection points and receivers, and mark plants open or closed.
+- Print a QR sticker for each boat and export the boat list as CSV.
+- Review tourist reports. `gemma4` describes each report photo and says whether it looks like waste in the water.
+- Tap **Call owner** for a boat that is due or overdue. Sarvam Voice Agents phones the owner with a reminder in Malayalam or English.
+
+## Demo in three steps
+
+1. On Crew, pick Kayal Rani and log a sewage handover to the demo suction truck. For example: “A septic truck, KL-04-AB-1234, took 300 litres.” Keep the six-character handover code shown after saving.
+2. At `/operator`, choose Vembanad Septic Services and sign in with demo code `5826`. Type the handover code or scan the crew's QR code, check the quantity and choose **Confirm received**. The matching receiver can confirm within 72 hours of the entry.
+3. Open `/boat/kayal-rani` and the inspector dashboard. The entry now has Confirmed proof; the recent sewage handover qualifies for the green Verified seal. Both pages refresh after the confirmation. Kayal Rani may already have a green seal from another sewage entry, so check the entry's proof badge as well.
+
+## Screenshots
 
 <table>
   <tr>
@@ -28,7 +85,7 @@ Landing — a live boat record and the voice-first logbook.
   <tr>
     <td valign="top" align="center">
       <img src="docs/screens/crew-proof-photo-phone.png" alt="Kayal Rani crew page: a suction truck handover raised to Receipt after the crew added a photo of the operator's slip" width="260">
-      <p>Handover code for the receiver.</p>
+      <p>A slip photo raises the proof to Receipt.</p>
     </td>
     <td valign="top" align="center">
       <img src="docs/screens/operator-confirm-phone.png" alt="Pump boat operator checking a 900-litre toilet tank handover from Pallathuruthy Mist, with Confirm received and Not received buttons" width="260">
@@ -52,46 +109,6 @@ Inspector dashboard — the live map, weekly activity and recent waste handovers
 <img src="docs/screens/qr-sticker-desktop.png" alt="Printable Kayal Rani sticker with its seal and public-record QR code" width="100%">
 
 QR sticker — a printable link to Kayal Rani’s public waste record.
-
-## The problem
-
-The High Court ordered that houseboats without pollution control and valid certification may not run on Vembanad lake from 19 April 2026 ([The Hindu / PTI, 17 April 2026][hindu-ban]). To renew a licence, a boat must empty its septage at a treatment plant every three months ([New Indian Express, 16 October 2023][nie-extinction]). Only one of the two plants works ([Down To Earth, 25 May 2026][dte-vembanad]). Government estimates count about 700 registered and 750 unregistered houseboats ([Down To Earth, 25 May 2026][dte-vembanad]). Inspectors check them one at a time, and in April one boat without valid papers took so long that the team could not check the others ([Onmanorama, 21 April 2026][manorama-inspect]). There is no shared record of who emptied what.
-
-## What it does
-
-A crew member says what waste they emptied and who took it. The handover can be at a collection point, to a suction truck, a pump boat or a waste collector, or into a waste bin. Kayal Log records the vehicle number and the receiver, checks the phone's location against the known collection points, and adds the entry to the boat's public record. The crew's phone then shows a handover code and a QR code. The plant, truck or collector that took the waste confirms it on their own phone.
-
-The crew can speak Malayalam, Tamil, Hindi or another Indian language, and they hear the reply in the language they spoke. They can also type. Recording takes one tap to start and one tap to send. After an entry is saved, the crew can add a receipt or slip photo to it, or tap Fix to correct a misheard quantity.
-
-The screens open in English. Every page has a language switch for English, Malayalam, or English with Malayalam beside it, and it remembers the choice.
-
-| Screen | Path | For | What happens |
-| --- | --- | --- | --- |
-| Landing and sign-in | `/` | Everyone | The product in one view, then three doors: Crew, Inspector, Guest. |
-| Crew page | `/crew` | Boat crew, on a phone | Speak or type a handover, hear the reply, add a receipt photo, fix the quantity and show the handover code. |
-| Receiver page | `/operator` | Receivers, on a phone | Treatment plants, suction trucks, pump boats and waste collectors sign in, scan or type the handover code, and mark it received or not received. Plants also record trucks that unload there. |
-| Boat record | `/boat/<id>` | Tourists, on a phone | A certificate with a green, amber or red seal, the boat's log, and a form to report dumping with a photo. Reached by QR code. |
-| Dashboard | `/dashboard` | Inspectors, on a laptop | Map, boats by urgency, live log, truck custody, tourist reports, QR stickers, CSV export and Call owner. |
-
-Each entry gets one of four proof levels, from weakest to strongest.
-
-| Level | Meaning |
-| --- | --- |
-| Declared | The crew said it. Nothing else confirms it. Handovers into a waste bin stay at this level. |
-| Location | When the crew logged it, the phone was at an open collection point that takes this kind of waste. |
-| Receipt | A photo backs the entry. At a collection point, the location matched and the photo was read as a receipt. For a truck, pump boat or collector, the photo shows the operator's slip or the vehicle's number plate. |
-| **Confirmed** | The receiver confirmed on their own phone at `/operator` that they got the waste, within 3 days of the entry. |
-
-If the receiver says the waste never reached them, the entry is marked Disputed. It drops to Declared, the boat's record shows the receiver's answer, and the entry no longer counts toward the boat's seal.
-
-On the dashboard, an inspector can:
-
-- See the truck chain of custody: for each suction truck and pump boat, the litres it confirmed picking up from boats over the last 30 days against the litres plants recorded it unloading. A gap is flagged.
-- Withdraw an entry with a reason. The entry stays on the record, marked Withdrawn, and stops counting toward the seal.
-- Add boats, collection points and receivers, and mark plants open or closed.
-- Print a QR sticker for each boat and export the boat list as CSV.
-- Review tourist reports. `gemma4` describes each report photo and says whether it looks like waste in the water.
-- Tap **Call owner** for a boat that is due or overdue. Sarvam Voice Agents phones the owner with a reminder in Malayalam or English.
 
 ## How it works
 
@@ -185,7 +202,7 @@ Environment variables, set in `.env` or the shell:
 
 Call owner works only when `REMINDER_CALL_TO` and all the `SAMVAAD_*` variables are set. Without them, the rest of the app runs as normal.
 
-Unit tests, which cover the proof rules in `lib/logic.mjs`:
+Tests in `test/` cover proof rules and log integrity, server routes, receiver confirmation and custody, sample data, boat search and CSV export, entry-place rendering, and select-option navigation:
 
 ```bash
 npm test
