@@ -27,7 +27,7 @@ function Hero({ ready }: { ready: boolean }) {
   const boat = status === 'ready' ? boats[0] : undefined;
   return (
     <section aria-labelledby="hero-title" className="relative isolate min-h-[49rem] overflow-hidden pb-64 lg:min-h-[44rem] lg:pb-12">
-      <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full lg:h-full" />
+      <HouseboatScene className="absolute inset-x-0 bottom-0 -z-10 h-[22rem] w-full [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_75%,transparent)] lg:h-full lg:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-teak-deep/75 via-teak-deep/75 to-transparent lg:bg-gradient-to-r lg:from-teak-deep/75 lg:via-teak-deep/60 lg:via-35% lg:to-transparent lg:to-60%" />
       <motion.div
         initial="hidden"
@@ -57,11 +57,11 @@ function Hero({ ready }: { ready: boolean }) {
           </a>
         </motion.div>
         {boat && (
-          <motion.div variants={heroItem} className="mt-5 max-w-sm [text-shadow:none]">
+          <motion.div variants={heroItem} className="mt-5 w-full min-w-0 max-w-sm [text-shadow:none]">
             <Bi k="guestBody" as="p" className="mb-2 text-small text-ink-inverse" mlClassName="mt-1" />
             <a
               href={`/boat/${encodeURIComponent(boat.id)}`}
-              className="surface-light group flex items-center gap-3 rounded-card border border-gold-edge bg-kasavu p-3 text-ink shadow-raised"
+              className="surface-light group flex w-full min-w-0 items-center gap-3 rounded-card border border-gold-edge bg-kasavu p-3 text-ink shadow-raised"
             >
               <Seal state={boat.status.state} className="size-12 shrink-0" />
               <span className="min-w-0 flex-1">
