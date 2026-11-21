@@ -29,50 +29,63 @@ The sign-in check returns only `ok`. Keep including `x-admin-pin` on inspector w
 - **Boat** has string `id`, `name` and `registration`, and `status`. Server-created IDs begin with `b-`. Sample boats have readable IDs.
 - **Facility** has string `id`, `name`, nullable strings `operator` and `note`, `accepts` (array of `sewage`, `solid`, or `oil`), numeric `lat` and `lon`, numeric `radiusM`, and boolean `open`. Created facilities begin open with radius 400 m and null operator and note. Server-created IDs begin with `f-`.
 - **Entry** has string `id` (UUID), `boatId`, `at` (UTC ISO date), `kind` (`sewage_pumpout`, `solid_waste`, or `engine_oil`), `summaryEn`, nullable strings `quantity` (including units) and `facilityMentioned`, `heard`, nullable `location`, `verification`, nullable `photo`, `source` (`voice`, `text`, or `sample`), and SHA-256 hex strings `prevHash` and `hash`. `facilityMentioned` is what the crew said. `verification.facilityId` is the point matched to the phone.
+- **Handover** fields on each entry are `method` (`collection_point`, `suction_truck`, `mobile_pump`, `waste_collector`, or `waste_bin`), `vehicleNumber` (registration, up to 40 characters or null), and `handedTo` (recipient or operator name, up to 100 characters or null). These fields are extracted from text or speech. An absent or unrecognized extracted method falls back to `collection_point`. Older entries read as `collection_point` with both optional values null.
 - **Corrected entries** carry `corrected:true`, `correctionId` (UUID), `correctedAt` (UTC ISO date), and the latest `quantity`. An uncorrected entry has `corrected:false`, `correctionId:null`, and `correctedAt:null`. Proof, the recorded wording, and hashes still refer to the original event.
 - **Heard** has string `original`, `language` (locale such as `ml-IN`), and `english`. For English typed input, both text fields contain the input.
 - **Location** has numeric `lat` and `lon` and `accuracy` (rounded metres or null).
 - **Photo** has string `file`, boolean `isReceipt`, and nullable strings `issuer`, `date`, `amount`, and `caption`. Load it from `/uploads/${photo.file}`. A photo can be stored even when it does not add receipt proof.
 - **Verification** has `level`, nullable strings `facilityId` and `facilityName`, nullable number `distanceM` (rounded metres), and nullable string `reason`.
 - **Boat status** has `state` (`verified`, `declared`, or `overdue`), numeric `overdueDays`, and `lastSewage` and `lastSolid`. Each is null or `{at, daysAgo, level, facilityName}`. `daysAgo` is a whole number. `facilityName` is null if the entry was not verified. `lastSewage` picks the newest verified sewage entry within the window, then the newest declared sewage entry in that window, then the newest sewage entry overall. `lastSolid` is the newest solid waste entry regardless of age. The status is `verified` if there is a location or receipt sewage entry in the window, `declared` if there are only declared sewage entries in the window, and `overdue` otherwise. The default window is 90 days.
-- **Chain** has boolean `ok`, numeric `count` (all records in the chain), and `brokenAt` (zero-based insertion index, or null when intact). New entries include the named facility and photo metadata in the hash. Older entries retain their original hashes, which covered the uploaded filename but omitted those two fields. The chain does not hash the image bytes.
+- **Chain** has boolean `ok`, numeric `count` (all records in the chain), and `brokenAt` (zero-based insertion index, or null when intact). New entries hash the handover fields, named facility, and photo metadata. Older entries retain their original hashes. The chain does not hash the image bytes.
 - **Reply** has string `id` (UUID), `english`, `local`, and `language`. Show `local` beside `english` when they differ.
 
 ## Proof
 
 | Level | Meaning | Reason |
 | --- | --- | --- |
-| `declared` | Crew reported the handover. | `no_location` for no usable location, `no_facility` for no point accepting that waste, `too_far` for a point outside its radius, or `closed` for a closed point within range. |
+| `declared` | Crew reported a `collection_point` handover. | `no_location` for no usable location, `no_facility` for no point accepting that waste, `too_far` for a point outside its radius, or `closed` for a closed point within range. |
 | `location` | The phone was within the radius of an open collection point accepting the waste type. | `null` |
-| `receipt` | Location matched and the photo was recognized as a receipt, bill, token, or certificate. | `null` |
+| `receipt` | Collection point location matched and the photo was recognized as a receipt, bill, token, or certificate. | `null` |
+| `declared` | A `suction_truck`, `mobile_pump`, or `waste_collector` handover has no qualifying photo. | `no_fixed_point` |
+| `receipt` | A `suction_truck`, `mobile_pump`, or `waste_collector` photo shows a handover receipt, bill, token, certificate, operator slip, or legible registration plate. | `handover_slip` |
+| `declared` | Waste went into a public or communal bin. Photos can be saved at this level. | `waste_bin` |
 
-Proof follows the coordinates and accepted waste type. A different plant named in the text is preserved in `facilityMentioned` and does not override the location match. An open matching point in range wins over a closed point in range. A closed matching point in range wins over points outside their radii. Outside the radii, the nearest open eligible point is preferred, or the nearest eligible point if all are closed. `no_location` and `no_facility` leave the facility fields and distance null.
+For `collection_point`, proof follows the coordinates and accepted waste type. A different plant named in the text is preserved in `facilityMentioned` and does not override the location match. An open matching point in range wins over a closed point in range. A closed matching point in range wins over points outside their radii. Outside the radii, the nearest open eligible point is preferred, or the nearest eligible point if all are closed. `no_location` and `no_facility` leave the facility fields and distance null. For all other methods the facility fields and distance are null, and supplied GPS is stored in `entry.location`. Every sewage entry contributes to the 90-day status at its earned level.
 
 ## Crew log and playback
 
 Send `POST /api/log` with `boatId` and one of these inputs:
 
-- Typed: `{"boatId":"kayal-rani","text":"We emptied 800 litres from the toilet tank at Kumarakom STP.","lat":9.5965,"lon":76.4292,"accuracy":15,"photoBase64":null}`.
+- Typed: `{"boatId":"kayal-rani","text":"Septic truck KL-04-AB-1234 took 300 litres.","lat":9.5965,"lon":76.4292,"accuracy":15,"replyLanguage":"en-IN"}`.
 - Recorded: replace `text` with `audioBase64` (standard base64, no data URI prefix) and `audioMime` (MediaRecorder MIME type such as `audio/webm;codecs=opus`, `audio/mp4`, or `audio/ogg;codecs=opus`). Also accepted are `audio/wav`, `audio/x-wav`, `audio/mpeg` and `audio/aac`. The default MIME is `audio/webm`. Audio has a 2,000-byte minimum and 6 MiB maximum after decoding. Text is capped at 600 trimmed characters.
 - The position fields are optional and at the top level. Send `lat` (−90 to 90) and `lon` (−180 to 180) together as numbers and optional non-negative `accuracy` in metres. `photoBase64` is optional or null and carries raw base64 JPEG bytes up to 3 MiB decoded. The current crew UI resizes photos to a maximum side of 1280 px before converting to JPEG.
+- Optional `replyLanguage` controls both written and spoken replies. Use `ml-IN` (default) or `en-IN`. Other values return 400. With `en-IN`, `reply.local` equals `reply.english` and reply translation is skipped. Input transcription or translation still follows the input language.
 
-A saved result is `{stored:true, kind, heard, entry, status, reply, correctionToken}`. Retain the private `correctionToken` locally to allow an edit of this specific entry. It is not available from state or boat detail. Example from the sandbox before corrections were enabled, with the large entry and status objects abbreviated:
+A saved result is `{stored:true, kind, heard, entry, status, reply, correctionToken}`. Retain the private `correctionToken` locally to allow an edit of this specific entry. It is not available from state or boat detail. Example with the entry and status objects abbreviated:
 
 ```json
 {
   "stored": true,
   "kind": "sewage_pumpout",
   "heard": {
-    "original": "We emptied 800 litres from the toilet tank at Kumarakom STP.",
+    "original": "Septic truck KL-04-AB-1234 took 300 litres.",
     "language": "en-IN",
-    "english": "We emptied 800 litres from the toilet tank at Kumarakom STP."
+    "english": "Septic truck KL-04-AB-1234 took 300 litres."
   },
-  "entry": {"id":"ee55e0fb-775e-4991-87a5-78b885fb1731","quantity":"800 litres"},
-  "status": {"state":"verified","overdueDays":90},
+  "entry": {
+    "id": "ee55e0fb-775e-4991-87a5-78b885fb1731",
+    "quantity": "300 litres",
+    "method": "suction_truck",
+    "vehicleNumber": "KL-04-AB-1234",
+    "handedTo": null,
+    "verification": {"level":"declared","facilityId":null,"facilityName":null,"distanceM":null,"reason":"no_fixed_point"}
+  },
+  "status": {"state":"declared","overdueDays":90},
+  "correctionToken": "c19fe765-4638-44fa-ad84-5e114ac39e90",
   "reply": {
     "id": "f20ebf7c-f243-4c0e-badd-3c650648563e",
-    "english": "Saved. Toilet tank emptying recorded at Kumarakom STP. Your location is confirmed.",
-    "local": "Saved. Toilet tank emptying recorded at Kumarakom STP. Your location is confirmed.",
+    "english": "Saved. Toilet tank emptied by suction truck KL-04-AB-1234.",
+    "local": "Saved. Toilet tank emptied by suction truck KL-04-AB-1234.",
     "language": "en-IN"
   }
 }
@@ -80,7 +93,7 @@ A saved result is `{stored:true, kind, heard, entry, status, reply, correctionTo
 
 A question about waste returns 200 `{stored:false, kind:"question", heard, reply}` with open collection points and directions when location was supplied. Unrelated speech or text returns 422 `{error, stored:false, kind:"other", heard, reply}`. The reply asks the crew to describe what they emptied or handed over and where. Silence and other 422 errors may have only `error`. If extraction, translation or receipt reading fails or times out, the log returns 502 and saves no entry or receipt.
 
-Play the reply with `POST /api/speak` and `{"replyId":"…"}`. A real response starts `{"audioBase64":"//PAxAAAAANIAAAA…","mime":"audio/mpeg"}` (audio truncated). Assign the audio element a URL like `data:${mime};base64,${audioBase64}`. Reply IDs are kept in memory for up to ten minutes, with a 200-reply cache. Audio is generated on demand and cached with the reply.
+Play the reply with `POST /api/speak` and `{"replyId":"…"}`. Bulbul v3 generates MP3 in `reply.language` from `reply.local`. A real response starts `{"audioBase64":"//PAxAAAAANIAAAA…","mime":"audio/mpeg"}` (audio truncated). Assign the audio element a URL like `data:${mime};base64,${audioBase64}`. Reply IDs are kept in memory for up to ten minutes, with a 200-reply cache. Audio is generated on demand and cached with the reply.
 
 ## Quantity correction (new)
 

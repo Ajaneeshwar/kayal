@@ -72,6 +72,38 @@ test('verify: a kind nobody accepts has no facility', () => {
   assert.equal(v.reason, 'no_facility');
 });
 
+test('handover proof skips facility matching and allows slips except for waste bins', () => {
+  const noMatch = { facilityId: null, facilityName: null, distanceM: null };
+  for (const method of ['suction_truck', 'mobile_pump', 'waste_collector', 'waste_bin']) {
+    for (const location of [null, KUMARAKOM, { lat: 9.5, lon: 76.4 }]) {
+      for (const hasReceipt of [false, true]) {
+        const kind = method.startsWith('waste_') ? 'solid_waste' : 'sewage_pumpout';
+        const verification = verify({ kind, method, location, facilities: FACILITIES, hasReceipt });
+        const receipt = hasReceipt && method !== 'waste_bin';
+        assert.deepEqual(verification, {
+          ...noMatch,
+          level: receipt ? 'receipt' : 'declared',
+          reason: method === 'waste_bin' ? 'waste_bin' : receipt ? 'handover_slip' : 'no_fixed_point',
+        });
+      }
+    }
+  }
+});
+
+test('truck pump-outs count toward sewage status at their earned level', () => {
+  for (const hasReceipt of [false, true]) {
+    const kind = 'sewage_pumpout';
+    const method = 'suction_truck';
+    const verification = verify({ kind, method, hasReceipt });
+    const status = boatStatus([{ ...sewage(10, verification.level), method, verification }], NOW, 90);
+    assert.equal(status.state, hasReceipt ? 'verified' : 'declared');
+    assert.equal(status.lastSewage.level, verification.level);
+    assert.equal(status.lastSewage.facilityName, null);
+    assert.match(replyFor({ kind, method, vehicleNumber: 'KL-04-AB-1234', verification }),
+      /^Saved\. Toilet tank emptied by suction truck KL-04-AB-1234\./);
+  }
+});
+
 test('boat status: verified pump-out inside the window', () => {
   const s = boatStatus([sewage(40, 'declared'), sewage(12, 'receipt')], NOW, 90);
   assert.deepEqual([s.state, s.lastSewage.daysAgo, s.lastSewage.level], ['verified', 12, 'receipt']);
@@ -150,15 +182,29 @@ test('invalid quantities include non-finite and negative amounts', () => {
   assert.equal(hasInvalidQuantity('We emptied −൮ litres.'), true);
   assert.equal(hasInvalidQuantity('NaN litres'), true);
   assert.equal(hasInvalidQuantity('800 litres'), false);
+  assert.equal(hasInvalidQuantity('Septic truck KL-04-AB-1234 took 300 litres.'), false);
 });
 
 test('model JSON is read through code fences and bad kinds fall back', () => {
   const raw = parseModelJson('```json\n{"kind":"sewage_pumpout","quantity":"800 litres","facility_mentioned":null,"summary_en":"Emptied tank."}\n```');
   assert.deepEqual(normaliseExtraction(raw, 'x'), {
-    kind: 'sewage_pumpout', facilityMentioned: null, quantity: '800 litres', summaryEn: 'Emptied tank.',
+    kind: 'sewage_pumpout', method: 'collection_point', vehicleNumber: null, handedTo: null,
+    facilityMentioned: null, quantity: '800 litres', summaryEn: 'Emptied tank.',
   });
   assert.equal(normaliseExtraction({ kind: 'party' }, 'we gave plastic bottles').kind, 'solid_waste');
   assert.throws(() => parseModelJson('no json here'));
+});
+
+test('handover extraction validates methods and caps optional strings', () => {
+  for (const method of ['__proto__', 'paper boat', ['suction_truck'], {}, null, 42]) {
+    const entry = normaliseExtraction({ method, vehicle_number: {}, handed_to: 42 }, 'We gave dry waste');
+    assert.deepEqual([entry.method, entry.vehicleNumber, entry.handedTo], ['collection_point', null, null]);
+  }
+  const entry = normaliseExtraction({
+    method: 'suction_truck', vehicle_number: ` < ${'A'.repeat(50)} > `, handed_to: 'B'.repeat(110),
+  }, 'Septic truck took 300 litres');
+  assert.deepEqual([entry.method, entry.vehicleNumber, entry.handedTo],
+    ['suction_truck', 'A'.repeat(40), 'B'.repeat(100)]);
 });
 
 test('hash chain detects an edited entry', () => {
@@ -215,4 +261,16 @@ test('new entries bind the named plant and receipt fields alongside legacy hashe
   assert.equal(checkChain([legacy, { ...entry, facilityMentioned: 'Another plant' }]).brokenAt, 1);
   assert.equal(checkChain([legacy, { ...entry, photo: { ...entry.photo, isReceipt: false } }]).brokenAt, 1);
   assert.equal(Object.hasOwn(projectEntries([entry])[0], 'hashVersion'), false);
+  assert.equal(projectEntries([legacy])[0].method, 'collection_point');
+  assert.equal(Object.hasOwn(legacy, 'method'), false);
+
+  const handover = {
+    ...entry, id: 'handover', prevHash: entry.hash, hashVersion: 3, method: 'suction_truck',
+    vehicleNumber: 'KL-04-AB-1234', handedTo: 'Municipality',
+  };
+  handover.hash = entryHash(handover.prevHash, handover);
+  assert.equal(checkChain([legacy, entry, handover]).ok, true);
+  for (const field of ['method', 'vehicleNumber', 'handedTo']) {
+    assert.equal(checkChain([legacy, entry, { ...handover, [field]: 'edited' }]).brokenAt, 2);
+  }
 });
