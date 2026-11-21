@@ -1,6 +1,7 @@
 import { useId, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Bi } from '../../components/Bi.tsx';
+import { Select } from '../../components/Select.tsx';
 import { DisputedIcon, StampIcon, StatusBadge } from '../../components/StatusBadge.tsx';
 import type { Text } from '../../i18n/index.ts';
 import { useLang, usePick } from '../../i18n/language.ts';
@@ -267,6 +268,7 @@ export function BoatTable({
   const pick = usePick();
   const [query, setQuery] = useState('');
   const [state, setState] = useState('all');
+  const lang = useLang();
   const searched = filterBoats(boats, query);
   const filtered = filterBoats(searched, '', state);
   const count = t('boatMatches');
@@ -283,9 +285,14 @@ export function BoatTable({
       <PanelHead title={d('boatsTitle')} meta={`${boats.length} boats · a pump-out is due every ${window} days`} />
       <div className="grid gap-3 px-5 pb-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
         <label className="min-w-0 text-small font-semibold" htmlFor={`${id}-search`}><Bi text={d('boatSearch')} /><input id={`${id}-search`} type="search" value={query} onChange={(e) => setQuery(e.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-field-border bg-kasavu px-3 text-ink" /></label>
-        <label className="text-small font-semibold" htmlFor={`${id}-state`}><Bi text={d('stateFilter')} /><select id={`${id}-state`} value={state} onChange={(e) => setState(e.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-field-border bg-kasavu px-3 text-ink">
-          {(['all', 'overdue', 'declared', 'verified'] as const).map((value) => <option key={value} value={value}>{pick(value === 'all' ? d('filterAll') : t(value))} ({value === 'all' ? searched.length : searched.filter((b) => b.status.state === value).length})</option>)}
-        </select></label>
+        <div className="text-small font-semibold">
+          <label htmlFor={`${id}-state`}><Bi text={d('stateFilter')} /></label>
+          <Select id={`${id}-state`} value={state} onChange={setState} className="mt-2" options={(['all', 'overdue', 'declared', 'verified'] as const).map((value) => ({
+            value,
+            label: `${pick(value === 'all' ? d('filterAll') : t(value))} (${value === 'all' ? searched.length : searched.filter((b) => b.status.state === value).length})`,
+            lang: lang === 'ml' ? 'ml' : 'en',
+          }))} />
+        </div>
         <button type="button" onClick={exportCsv} className="min-h-12 rounded-control bg-gold px-4 text-small font-semibold text-teak"><Bi text={d('exportCsv')} /></button>
         <p role="status" className="text-small text-ink-muted sm:col-span-full"><Bi text={{ en: count.en.replace('{count}', String(filtered.length)), ml: count.ml.replace('{count}', String(filtered.length)) }} /></p>
       </div>
