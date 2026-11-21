@@ -191,7 +191,7 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
   return (
     <Panel>
       <PanelHead title={d('boatsTitle')} meta={`${boats.length} boats · a pump-out is due every ${window} days`} />
-      <div className="overflow-x-auto px-2 pb-2">
+      <div className="relative overflow-x-auto px-2 pb-2">
         <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-small">
           <thead>
             <tr className="text-start text-caption font-semibold uppercase tracking-[0.06em] text-ink-muted">
