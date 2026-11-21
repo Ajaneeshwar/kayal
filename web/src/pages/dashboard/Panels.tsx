@@ -222,7 +222,7 @@ export function BoatTable({ boats, window, onQr, freshBoats }: { boats: Boat[]; 
             <tr className="text-start text-caption font-semibold uppercase tracking-[0.06em] text-ink-muted">
               <th className="px-3 pb-2 text-start font-semibold">Boat</th>
               <th className="px-3 pb-2 text-start font-semibold">Status</th>
-              <th className="px-3 pb-2 text-start font-semibold">Last pump-out</th>
+              <th className="px-3 pb-2 text-start font-semibold"><Bi text={d('countedPumpOut')} /></th>
               <th className="px-3 pb-2 text-end font-semibold">
                 <span className="sr-only">Actions</span>
               </th>

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { boatsCsv, filterBoats } from '../web/src/lib/boatTools.ts';
+import { boatStatus } from '../lib/logic.mjs';
 
 const boats = [
   { name: 'Kayal Rani', registration: 'SAMPLE-01', status: { state: 'verified' } },
@@ -25,7 +26,7 @@ test('CSV includes BOM, English headers, escaped Unicode fields and existing pro
       lastSolid: { at: '2026-01-02T00:00:00Z', daysAgo: 0, level: 'receipt', facilityName: 'Plant' },
     },
   }]);
-  assert.ok(csv.startsWith('\uFEFF"Name","Registration","State","Days since sewage"'));
+  assert.equal(csv.split('\r\n')[0], '\uFEFF"Name","Registration","State","Days since counted sewage pump-out","Counted sewage pump-out date","Counted sewage pump-out proof","Counted sewage pump-out place","Last solid date","Solid proof","Solid place"');
   assert.ok(csv.includes('"Boat, ""special""\nΩ"'));
   assert.ok(csv.includes('"Verified","0","2026-01-01T00:00:00Z","Location","Jetty, east"'));
   assert.ok(csv.includes('"Receipt","Plant"\r\n'));
@@ -36,4 +37,15 @@ test('CSV exports headers when empty, handles missing handovers and neutralizes 
   assert.equal(boatsCsv([]).trim().split('\r\n').length, 1);
   const csv = boatsCsv([{ name: '=SUM(1,2)', registration: '+123', status: { state: 'overdue', lastSewage: null, lastSolid: null } }]);
   assert.ok(csv.includes('"\'=SUM(1,2)","\'+123","Overdue","","","","","","",""\r\n'));
+});
+
+test('CSV labels the verification-priority sewage entry as counted, not the newest entry', () => {
+  const status = boatStatus([
+    { kind: 'sewage_pumpout', at: '2026-01-01T00:00:00Z', verification: { level: 'location', reason: null, facilityName: 'Counted plant' } },
+    { kind: 'sewage_pumpout', at: '2026-01-02T00:00:00Z', verification: { level: 'declared', reason: 'no_location', facilityName: null } },
+  ], new Date('2026-01-03T00:00:00Z'), 90);
+  const csv = boatsCsv([{ name: 'Test boat', registration: 'TEST-1', status }]);
+  assert.ok(csv.includes('"Days since counted sewage pump-out"'));
+  assert.ok(csv.includes('"Verified","2","2026-01-01T00:00:00Z","Location","Counted plant"'));
+  assert.ok(!csv.includes('2026-01-02'));
 });
